@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.mivuelto.core.ui.theme.BlueSecondary
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.Lato
-import com.mediosdepago.corpocredit.core.ui.R
+import com.mivuelto.core.ui.R
 
 @Composable
 fun ButtonHome(

@@ -1,4 +1,4 @@
-package com.mivuelto.core.ui.screens
+package com.mivuelto.core.ui
 
 import android.graphics.Bitmap
 import androidx.activity.compose.BackHandler
@@ -19,7 +19,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
-import com.mediosdepago.corpocredit.core.ui.R
 import com.mivuelto.core.ui.design.HeaderAndFooter2
 import com.mivuelto.core.ui.design.IconMsg
 import com.mivuelto.core.ui.design.Loader

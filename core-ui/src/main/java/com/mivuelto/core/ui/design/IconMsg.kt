@@ -1,5 +1,6 @@
 package com.mivuelto.core.ui.design
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -13,8 +14,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.Lato
-import com.mediosdepago.corpocredit.core.ui.R
+import com.mivuelto.core.ui.R
 
+@SuppressLint("SuspiciousIndentation")
 @Composable
 fun IconMsg(
     modifier: Modifier = Modifier,

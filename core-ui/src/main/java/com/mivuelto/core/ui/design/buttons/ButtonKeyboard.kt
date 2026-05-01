@@ -14,10 +14,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.theme.BlueSecondary
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.GreenEnter
-import com.mediosdepago.corpocredit.core.ui.R
 import com.mivuelto.core.ui.theme.RedDelete
 import com.mivuelto.core.ui.theme.Roboto
 

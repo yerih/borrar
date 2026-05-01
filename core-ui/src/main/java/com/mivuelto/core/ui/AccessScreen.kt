@@ -19,10 +19,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
-import com.mivuelto.core.ui.theme.launch
+import com.mivuelto.core.ui.launch
 import com.mivuelto.core.ui.NavCommand
 import com.mivuelto.core.ui.navigation.NavFeature
-import com.mivuelto.core.ui.theme.toast
+import com.mivuelto.core.ui.toast
 import com.mivuelto.core.ui.design.HeaderAndFooter2
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.ui.R

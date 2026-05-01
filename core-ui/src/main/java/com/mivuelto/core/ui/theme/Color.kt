@@ -3,10 +3,7 @@ package com.mivuelto.core.ui.theme
 import androidx.compose.ui.graphics.Color
 
 val BluePrimary = Color(0xFF005696)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
 val BlueFonts     = Color(0xFF003C77)
-val BluePrimary   = Color(0xFF1263AB)
 val BlueSecondary = Color(0xFF469DD5)
 val BlueSelected  = Color(0xFFBEDAF3)
 

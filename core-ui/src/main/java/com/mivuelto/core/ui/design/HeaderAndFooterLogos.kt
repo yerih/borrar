@@ -19,9 +19,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.Lato
-import com.mediosdepago.corpocredit.core.ui.R
 import com.mivuelto.core.ui.navigation.NavFeature
 import com.mivuelto.core.ui.design.logos.BankLogo
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
@@ -72,7 +72,7 @@ fun HeaderAndFooterLogos(
                     )
 
             }
-        content(modifier = Modifier.constrainAs(contentRef) {
+        content(Modifier.constrainAs(contentRef) {
             centerHorizontallyTo(parent)
             top.linkTo(titles.bottom)
 //            top.linkTo(corpocredit.bottom)

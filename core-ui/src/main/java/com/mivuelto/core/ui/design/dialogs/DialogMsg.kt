@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.Lato
-import com.mediosdepago.corpocredit.core.ui.R
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.design.LottieAnim
 
 

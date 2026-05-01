@@ -11,7 +11,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mediosdepago.corpocredit.core.ui.R
+import com.mivuelto.core.ui.R
 
 @Composable
 fun CorpoCreditLogo(
@@ -22,7 +22,7 @@ fun CorpoCreditLogo(
         modifier = if(isVertical) modifier.size(150.dp, 80.dp) else modifier.size(175.dp, 47.dp),//modifier.size(190.dp, 57.dp),//.size(175.dp, 57.dp),
         contentScale = ContentScale.FillBounds,
 //        contentScale = ContentScale.Crop,
-        painter = painterResource(id = if(isVertical)R.drawable.logo_corpocredit_v else R.drawable.logo_corpocredit),
+        painter = painterResource(id = if(isVertical) R.drawable.logo_corpocredit_v else R.drawable.logo_corpocredit),
 //        painter = painterResource(id = if(isVertical)R.drawable.logo_librepago else R.drawable.logo_librepago),
         contentDescription = "logo corpocredit"
     )

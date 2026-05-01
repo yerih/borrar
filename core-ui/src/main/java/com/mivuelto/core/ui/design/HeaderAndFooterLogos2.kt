@@ -24,10 +24,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.Lato
-import com.mediosdepago.corpocredit.core.ui.R
-import com.mivuelto.core.ui.theme.isVisible
+import com.mivuelto.core.ui.isVisible
 import com.mivuelto.core.ui.navigation.NavFeature
 import com.mivuelto.core.ui.design.logos.BankLogo
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo

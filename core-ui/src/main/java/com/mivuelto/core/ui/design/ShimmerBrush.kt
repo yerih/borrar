@@ -1,5 +1,6 @@
 package com.mivuelto.core.ui.design
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -52,6 +53,7 @@ fun shimmerBrush(
     }
 }
 
+@SuppressLint("SuspiciousModifierThen")
 fun Modifier.shimmer(
     show: Boolean = true,
     corner: Dp = 16.dp,

@@ -1,6 +1,7 @@
 package com.mivuelto.core.ui
 
 import android.graphics.Bitmap
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -50,7 +51,7 @@ fun ErrorScreen(
                 Icon(
                     painter = iconByCode(code),
                     tint = RedDelete,
-                    modifier = Modifier.size(90.dp, 90.dp).takeIf { code != ErrorNum.CardNotRead.code }?:Modifier,
+                    modifier = Modifier.size(90.dp, 90.dp),
                     contentDescription = "icon"
                 )
                 Text(
@@ -86,21 +87,10 @@ fun ErrorScreen(
 }
 
 @Composable
-fun textByCode(code: Int): String = when(code){
-    ErrorNum.NoError.code -> ""
-    ErrorNum.CardNotRead.code -> stringResource(id = R.string.error_card_not_detected)
-    ErrorNum.NotConnection.code -> stringResource(id = R.string.check_connection)
-    ErrorNum.NoActiveLot.code -> stringResource(id = R.string.no_active_lot)
-    ErrorNum.NoBinRange.code -> stringResource(id = R.string.no_bin_range)
-    ErrorNum.NFCDisabled.code -> stringResource(id = R.string.nfc_is_not_enabled)
-    else -> CupException.getErrMsg(""+code)//"code not recognized"
-}
+fun textByCode(code: Int): String = "code not recognized$code"
 
 @Composable
-fun iconByCode(code: Int) = when(code){
-    ErrorNum.CardNotRead.code, ErrorNum.NFCDisabled.code -> painterResource(id = R.drawable.ic_card_not_read)
-    else -> painterResource(id = R.drawable.ic_failed)
-}
+fun iconByCode(code: Int) = painterResource(id = R.drawable.ic_failed)
 
 
 @Preview(

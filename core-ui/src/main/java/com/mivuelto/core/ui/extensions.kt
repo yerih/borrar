@@ -1,4 +1,4 @@
-package com.mivuelto.core.ui.theme
+package com.mivuelto.core.ui
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -21,12 +21,12 @@ import androidx.compose.ui.graphics.Canvas
 import androidx.compose.ui.graphics.drawscope.draw
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
-import com.mivuelto.core.ui.NavArgs
-import com.mivuelto.core.ui.NavCommand
+import androidx.navigation.NavHostController
 import com.mivuelto.core.ui.navigation.NavFeature
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope

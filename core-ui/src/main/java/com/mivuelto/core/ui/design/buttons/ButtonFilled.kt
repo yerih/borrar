@@ -17,7 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mivuelto.core.ui.theme.BluePrimary
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
-import com.mediosdepago.corpocredit.core.ui.R
+import com.mivuelto.core.ui.R
 
 @Composable
 fun ButtonFilled(

@@ -14,9 +14,9 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.LottieConstants
 import com.airbnb.lottie.compose.animateLottieCompositionAsState
 import com.airbnb.lottie.compose.rememberLottieComposition
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
-import com.mivuelto.core.ui.theme.clickableNoRipple
-import com.mediosdepago.corpocredit.core.ui.R
+import com.mivuelto.core.ui.clickableNoRipple
 
 @Composable
 fun LottieAnim(

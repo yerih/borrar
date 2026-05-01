@@ -13,9 +13,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.theme.Lato
-import com.mediosdepago.corpocredit.core.ui.R
-import com.mivuelto.core.ui.theme.isInvisible
+import com.mivuelto.core.ui.isInvisible
 
 @Composable
 fun Loader(

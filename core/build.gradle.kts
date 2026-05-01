@@ -29,6 +29,7 @@ dependencies {
 
     // Dagger Hilt
     api(libs.hilt.android)
+    api(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
 
     // Retrofit
@@ -38,6 +39,9 @@ dependencies {
     // Room
     api(libs.room.runtime)
     api(libs.room.ktx)
+
+    // Lottie
+    api(libs.lottie.compose)
 
     // Architecture Components
     api(libs.androidx.lifecycle.runtime.ktx)

@@ -32,10 +32,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.Lato
-import com.mivuelto.core.ui.theme.toCurrencyFmt
-import com.mivuelto.core.ui.theme.toNumber
-import com.mivuelto.core.ui.theme.ifThenDo
-import com.mivuelto.core.ui.theme.toCurrency
+import com.mivuelto.core.ui.toCurrencyFmt
+import com.mivuelto.core.ui.toNumber
+import com.mivuelto.core.ui.ifThenDo
+import com.mivuelto.core.ui.toCurrency
 import com.mivuelto.core.ui.design.buttons.ButtonKeyboard
 
 
