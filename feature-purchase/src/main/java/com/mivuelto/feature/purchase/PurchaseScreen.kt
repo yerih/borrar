@@ -1,6 +1,7 @@
 package com.mivuelto.feature.purchase
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,35 +12,45 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
+import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.theme.Lato
 
 @Composable
 fun PurchaseScreen(
     onNavigateBack: () -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .padding(16.dp)
     ) {
-        Text(text = "Pantalla de Compra", style = Lato.headlineMedium)
-        Spacer(modifier = Modifier.height(24.dp))
-        
-        ButtonFilled(
-            text = "Confirmar Compra",
-            onClick = { /* Acción */ }
+        CorpoCreditLogo(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 32.dp)
         )
         
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        ButtonBorder(
-            text = "Cancelar",
-            onClick = onNavigateBack
-        )
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(text = "Pantalla de Compra", style = Lato.headlineMedium)
+            Spacer(modifier = Modifier.height(24.dp))
+
+            ButtonFilled(
+                text = "Confirmar Compra",
+                onClick = { /* Acción */ }
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ButtonBorder(
+                text = "Cancelar",
+                onClick = onNavigateBack
+            )
+        }
     }
 }
