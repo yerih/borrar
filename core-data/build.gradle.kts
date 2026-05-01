@@ -24,6 +24,8 @@ dependencies {
     implementation(project(":core"))
     implementation(libs.retrofit.core)
     implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
+    implementation(libs.okhttp.profiler)
     implementation(libs.room.runtime)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
