@@ -33,3 +33,12 @@ app/release/output-metadata.json
 core-database/schemas/com.mediosdepago.corpocredit.core.database.databases.MerchantDatabase/2.json
 *.hprof
 core-database/schemas/com.mediosdepago.corpocredit.core.database.databases.TransactionDatabase/2.json
+app/build/generated/hilt/
+app/build/generated/ksp/
+app/build/intermediates/
+app/build/kotlin/
+app/build/
+core/build/
+core-data/build/
+core-ui/build/
+feature-purchase/build/
