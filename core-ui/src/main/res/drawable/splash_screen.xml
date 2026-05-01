@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@color/design_default_color_background"/>
+    <item
+        android:drawable="@drawable/logo_corpocredit_v"
+        android:width="200dp"
+        android:height="100dp"
+        android:gravity="center">
+    </item>
+<!--    <item-->
+<!--        android:drawable="@drawable/logo_librepago"-->
+<!--        android:gravity="center">-->
+<!--    </item>-->
+
+</layer-list>
