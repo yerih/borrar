@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo

@@ -2,6 +2,7 @@ package com.mivuelto.core.ui.navigation
 
 enum class NavFeature(val route: String) {
     WELCOME("welcome"),
+    LOGIN("login"),
     PASSWORD("password"),
     HOME("home"),
     PURCHASE("purchase"),
