@@ -4,56 +4,55 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.mivuelto.core.ui.navigation.NavFeature
+import com.mivuelto.core.ui.NavFeature
+import com.mivuelto.feature.purchase.ChangeScreen
+import com.mivuelto.feature.purchase.HistoricalScreen
 import com.mivuelto.feature.purchase.HomeScreen
 import com.mivuelto.feature.purchase.LoginScreen
-import com.mivuelto.feature.purchase.PurchaseScreen
-import com.mivuelto.feature.purchase.WelcomeScreen
+import com.mivuelto.feature.purchase.SettingScreen
+import com.mivuelto.feature.purchase.check_payment.CheckPaymentScreen
+import com.mivuelto.feature.purchase.check_payment.checkPaymentGraph
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
     NavHost(
         navController = navController,
-        startDestination = NavFeature.WELCOME.route
+        startDestination = NavFeature.LOGIN.route
     ) {
-        composable(NavFeature.WELCOME.route) {
-            WelcomeScreen(
-                onNavigateToPurchase = {
-                    navController.navigate(NavFeature.LOGIN.route) {
-                        popUpTo(NavFeature.WELCOME.route) { inclusive = true }
-                    }
-                }
-            )
-        }
         composable(NavFeature.LOGIN.route) {
-            LoginScreen(
-                onLoginClick = { usuario, contraseña ->
-                    navController.navigate(NavFeature.HOME.route) {
-                        popUpTo(NavFeature.LOGIN.route) { inclusive = true }
-                    }
-                },
-                onBack = {
-                    navController.navigate(NavFeature.WELCOME.route) {
-                        popUpTo(NavFeature.LOGIN.route) { inclusive = true }
-                    }
-                }
-            )
+            CheckPaymentScreen (onBack = {})
+//            LoginScreen(
+//                onLoginClick = { usuario, contraseña ->
+//                    navController.navigate(NavFeature.HOME.route)
+//                },
+//                onBack = {
+//                    navController.popBackStack()
+//                }
+//            )
         }
         composable(NavFeature.HOME.route) {
             HomeScreen(
-                onBack = {
-                    navController.navigate(NavFeature.LOGIN.route) {
-                        popUpTo(NavFeature.HOME.route) { inclusive = true }
-                    }
-                }
+                onFunctionClicked = {
+                    navController.navigate(it.route)
+                },
+                onBack = { navController.popBackStack() }
             )
         }
-        composable(NavFeature.PURCHASE.route) {
-            PurchaseScreen(
-                onNavigateBack = {
-                    navController.popBackStack()
-                }
+        checkPaymentGraph(navController)
+        composable(NavFeature.CHANGE.route) {
+            ChangeScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(NavFeature.HISTORICAL.route) {
+            HistoricalScreen(
+                onBack = { navController.popBackStack() }
+            )
+        }
+        composable(NavFeature.SETTING.route) {
+            SettingScreen(
+                onBack = { navController.popBackStack() }
             )
         }
     }

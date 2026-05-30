@@ -19,7 +19,6 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.Lato
-import com.mivuelto.core.ui.navigation.NavFeature
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.theme.RedDelete
 import com.mivuelto.core.ui.design.HeaderAndFooter2
@@ -30,7 +29,7 @@ fun ErrorScreen(
     text: String = "",
     textId: Int = 0,
     code: Int = 0,
-    feature: NavFeature = NavFeature.PURCHASE,
+    feature: NavFeature = NavFeature.CHECK_PAYMENT,
     bankImg: suspend ()-> Bitmap? = {null},
     withRetryBtn: Boolean = true,
     onBack: ()->Unit = {},

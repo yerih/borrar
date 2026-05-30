@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
 
 class NavAnimations {
     class Transitions constructor(
@@ -44,7 +45,7 @@ class NavAnimations {
     ) {}
 }
 
-fun NavGraphBuilder.composable(
+fun NavGraphBuilder.composableWithTransitions(
     route: String,
     transitions: NavAnimations.Transitions = NavAnimations.Transitions(),
     arguments: List<NamedNavArgument> = emptyList(),

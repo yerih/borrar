@@ -62,7 +62,7 @@ fun LoaderScreen(
     }
 
 
-    BackHandler(onBack = onAbort)
+    BackHandler(onBack = onBack)
     HeaderAndFooter2(
         subTitleId = headerTitle,
         isScrollable = false,

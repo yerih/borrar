@@ -1,0 +1,132 @@
+package com.mivuelto.feature.purchase.check_payment
+
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.mivuelto.core.ui.BaseScreen
+import com.mivuelto.core.ui.design.buttons.ButtonFilled
+import com.mivuelto.core.ui.design.buttons.ButtonBorder
+import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
+import com.mivuelto.core.ui.design.textfields.OutlinedTextFieldCustom
+import com.mivuelto.core.ui.theme.Lato
+import com.mivuelto.feature.purchase.R
+
+@Composable
+fun CheckPaymentScreen(
+    onTaskDone: (reference: String, amount: String) -> Unit = { _, _ -> },
+    onBack: () -> Unit = {}
+) {
+
+    BaseScreen(onBack) {
+
+        val reference = remember { mutableStateOf("") }
+        val amount = remember { mutableStateOf("") }
+        val phone = remember { mutableStateOf("") }
+        val bank = remember { mutableStateOf("") }
+        val referenceError = remember { mutableStateOf(false) }
+        val amountError = remember { mutableStateOf(false) }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+        ) {
+
+            Column(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Top
+            ) {
+                CorpoCreditLogo(
+                    modifier = Modifier.padding(top = 10.dp)
+                )
+
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(text = stringResource(R.string.verify_payment), style = Lato.headlineMedium)
+                Spacer(modifier = Modifier.height(15.dp))
+
+
+                OutlinedTextFieldCustom(
+                    value = reference.value,
+                    onValueChange = { reference.value = it },
+                    label = stringResource(R.string.reference),
+                    isError = referenceError.value,
+                    errorMessage = "La referencia es requerida",
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextFieldCustom(
+                    value = amount.value,
+                    onValueChange = { amount.value = it },
+                    label = stringResource(R.string.amount),
+                    isError = amountError.value,
+                    errorMessage = "El monto es requerido",
+                    isPassword = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedTextFieldCustom(
+                    value = phone.value,
+                    onValueChange = { phone.value = it },
+                    label = stringResource(R.string.phone),
+                    isPassword = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                OutlinedTextFieldCustom(
+                    value = bank.value,
+                    onValueChange = { phone.value = it },
+                    label = stringResource(R.string.bank),
+                    isPassword = true,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+
+
+            Column(
+                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(horizontal = 50.dp)
+            ) {
+                ButtonFilled(
+                    text = "Verificar pago",
+                    isMaxWidth = true,
+                    paddingHz = 0.dp,
+                    onClick = {
+
+                        referenceError.value = reference.value.isBlank()
+                        amountError.value = amount.value.isBlank()
+
+                        if (!referenceError.value && !amountError.value) {
+                            onTaskDone(reference.value, amount.value)
+                        }
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ButtonBorder(
+                    text = stringResource(com.mivuelto.core.ui.R.string.cancel),
+                    paddingHz = 0.dp,
+                    isMaxWidth = true,
+                    onClick = onBack
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+            }
+
+        }
+    }
+}

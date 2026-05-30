@@ -2,7 +2,6 @@ package com.mivuelto.core.ui
 
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.mivuelto.core.ui.navigation.NavFeature
 
 
 enum class NavItem {

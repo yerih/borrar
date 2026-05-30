@@ -1,28 +1,22 @@
 package com.mivuelto.core.ui.design
 
 import android.graphics.Bitmap
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
-import com.mivuelto.core.ui.theme.Lato
-import com.mivuelto.core.ui.navigation.NavFeature
+import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.core.ui.design.logos.BankLogo
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.design.logos.CrediCardLogo
@@ -49,29 +43,6 @@ fun HeaderAndFooterLogos(
         CorpoCreditLogo(modifier = Modifier.constrainAs(corpocredit) {
             centerHorizontallyTo(parent)
         })
-        if (feature != NavFeature.INVOICES)
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier.constrainAs(titles) {
-                    centerHorizontallyTo(parent)
-                    top.linkTo(corpocredit.bottom)
-                }
-            ) {
-                if (feature != NavFeature.HOME || titleId != 0)
-                    Text(
-                        text = stringResource(id = getTitleByFeature(feature, titleId)),
-                        style = Lato.screenTitle,
-                        modifier = Modifier.padding(top = 10.dp)
-                    )
-                if (subTitle != 0)
-                    Text(
-                        text = stringResource(id = subTitle),
-                        style = Lato.screenSubTitle,
-                        modifier = Modifier.padding(top = subTitPadTop)
-                    )
-
-            }
         content(Modifier.constrainAs(contentRef) {
             centerHorizontallyTo(parent)
             top.linkTo(titles.bottom)
@@ -93,10 +64,6 @@ fun HeaderAndFooterLogos(
 private fun getTitleByFeature(feature: NavFeature, titleId: Int = 0): Int =
     if (titleId != 0) titleId
     else when (feature) {
-        NavFeature.PURCHASE -> R.string.purchase
-        NavFeature.OTHER_OPERATIONS -> R.string.operations
-        NavFeature.VOID -> R.string.void_
-        NavFeature.SETTLEMENT -> R.string.settlement
         else -> R.string.title_not_valid
     }
 
@@ -112,7 +79,7 @@ private fun DefaultPreview() {
     CorpoCreditTheme {
         HeaderAndFooterLogos(
 //            feature = NavFeature.INVOICES,
-            feature = NavFeature.PURCHASE,
+            feature = NavFeature.CHECK_PAYMENT,
             subTitle = R.string.enter_id
         ) {}
     }

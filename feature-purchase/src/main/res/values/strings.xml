@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="verify_payment">Verificar pago</string>
+    <string name="make_change">Realizar vuelto</string>
+    <string name="historical">Histórico</string>
+    <string name="invoice">Recibo</string>
+    <string name="reference">Referencia</string>
+    <string name="amount">Monto</string>
+    <string name="phone">Teléfono</string>
+    <string name="bank">Banco</string>
+</resources>

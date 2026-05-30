@@ -8,13 +8,35 @@ plugins {
 android {
     namespace = "com.mivuelto"
     compileSdk = 34
+
+    signingConfigs {
+        create("release") {
+            storeFile = file("corpocredit.jks")
+            storePassword = "Corpo.123"
+            keyAlias = "corpocredit_key"
+            keyPassword = "Corpo.123"
+        }
+    }
+
     defaultConfig {
         applicationId = "com.mivuelto"
         minSdk = 26
         targetSdk = 34
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
     }
+
+    buildTypes {
+        release {
+            isMinifyEnabled = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
+    }
+
     buildFeatures {
         compose = true
     }
@@ -43,4 +65,28 @@ dependencies {
     
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+}
+
+tasks.register<Exec>("generateReleaseKeystore") {
+    val keystoreFile = file("corpocredit.jks")
+    onlyIf { !keystoreFile.exists() }
+    
+    executable = "keytool"
+    args(
+        "-genkeypair",
+        "-v",
+        "-keystore", keystoreFile.absolutePath,
+        "-alias", "corpocredit_key",
+        "-keyalg", "RSA",
+        "-keysize", "2048",
+        "-validity", "10000",
+        "-storepass", "Corpo.123",
+        "-keypass", "Corpo.123",
+        "-dname", "CN=MiVuelto, OU=Dev, O=CorpoCredit, L=City, S=State, C=AR",
+        "-noprompt"
+    )
+}
+
+tasks.matching { it.name.startsWith("packageRelease") }.configureEach {
+    dependsOn("generateReleaseKeystore")
 }
