@@ -21,15 +21,14 @@ fun AppNavigation() {
         startDestination = NavFeature.LOGIN.route
     ) {
         composable(NavFeature.LOGIN.route) {
-            CheckPaymentScreen (onBack = {})
-//            LoginScreen(
-//                onLoginClick = { usuario, contraseña ->
-//                    navController.navigate(NavFeature.HOME.route)
-//                },
-//                onBack = {
-//                    navController.popBackStack()
-//                }
-//            )
+            LoginScreen(
+                onLoginClick = { usuario, contraseña ->
+                    navController.navigate(NavFeature.HOME.route)
+                },
+                onBack = {
+                    navController.popBackStack()
+                }
+            )
         }
         composable(NavFeature.HOME.route) {
             HomeScreen(
