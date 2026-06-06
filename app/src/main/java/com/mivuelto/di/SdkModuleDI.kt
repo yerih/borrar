@@ -17,11 +17,15 @@ object SdkModuleDI{
 
     @Provides
     @Singleton
-    fun provideEngineRequester(
-        @ApplicationContext context: Context // Hilt provee esto automáticamente
-    ): DeviceEngineRequester {
-        val app = context as MainApplication
-        return DevEngRequesterImpl(app)
-    }
+    fun provideApplication(@ApplicationContext context: Context): MainApplication = context as MainApplication
+
+
+    @Provides
+    @Singleton
+    fun provideEngineRequester(app: MainApplication): DeviceEngineRequester = DevEngRequesterImpl(app)
+
+    @Provides
+    @Singleton
+    fun provideSerialNum(app: MainApplication): String = app.serialNum
 }
 

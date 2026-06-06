@@ -21,9 +21,7 @@ fun AppNavigation() {
     ) {
         composable(NavFeature.LOGIN.route) {
             LoginScreen(
-                onLoginClick = { usuario, contraseña ->
-                    navController.navigate(NavFeature.HOME.route)
-                },
+                onLoginSuccess = { navController.navigate(NavFeature.HOME.route) },
                 onBack = {
                     navController.popBackStack()
                 }
