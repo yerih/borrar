@@ -57,6 +57,8 @@ dependencies {
     implementation(project(":core-data"))
     implementation(project(":core-ui"))
     implementation(project(":feature-purchase"))
+
+    implementation(files("libs\\ysdk_5.91.c221d74_24092716.jar"))
     
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
