@@ -8,9 +8,8 @@ import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.feature.purchase.ChangeScreen
 import com.mivuelto.feature.purchase.HistoricalScreen
 import com.mivuelto.feature.purchase.HomeScreen
-import com.mivuelto.feature.purchase.LoginScreen
+import com.mivuelto.feature.purchase.ui.login.LoginScreen
 import com.mivuelto.feature.purchase.SettingScreen
-import com.mivuelto.feature.purchase.check_payment.CheckPaymentScreen
 import com.mivuelto.feature.purchase.check_payment.checkPaymentGraph
 
 @Composable

@@ -2,13 +2,15 @@ package com.mivuelto.core.ui.design.textfields
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
-import com.mivuelto.core.ui.theme.BluePrimary
 
 @Composable
 fun OutlinedTextFieldCustom(
@@ -19,6 +21,9 @@ fun OutlinedTextFieldCustom(
     isError: Boolean = false,
     errorMessage: String = "",
     isPassword: Boolean = false,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None
 ) {
     OutlinedTextField(
         value = value,
@@ -29,5 +34,8 @@ fun OutlinedTextFieldCustom(
         shape = RoundedCornerShape(4.dp),
         singleLine = true,
         supportingText = if (isError) {{ Text(errorMessage, color = Color.Red) }} else null,
+        keyboardActions = keyboardActions,
+        keyboardOptions = keyboardOptions,
+        visualTransformation = visualTransformation
     )
 }
