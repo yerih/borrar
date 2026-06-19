@@ -43,7 +43,7 @@ fun InvoiceScreen(
 
             ButtonBorder(
                 modifier = Modifier.align(Alignment.BottomCenter).padding(vertical = 20.dp),
-                text = stringResource(com.mivuelto.core.ui.R.string.cancel),
+                text = stringResource(com.mivuelto.core.ui.R.string.exit),
                 onClick = onBack
             )
         }

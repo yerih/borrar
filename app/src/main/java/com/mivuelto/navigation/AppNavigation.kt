@@ -10,7 +10,7 @@ import com.mivuelto.feature.purchase.HistoricalScreen
 import com.mivuelto.feature.purchase.HomeScreen
 import com.mivuelto.feature.purchase.ui.login.LoginScreen
 import com.mivuelto.feature.purchase.SettingScreen
-import com.mivuelto.feature.purchase.check_payment.checkPaymentGraph
+import com.mivuelto.feature.purchase.ui.navigation.checkPaymentGraph
 
 @Composable
 fun AppNavigation() {

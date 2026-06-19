@@ -1,4 +1,4 @@
-package com.mivuelto.feature.purchase.check_payment
+package com.mivuelto.feature.purchase.ui.navigation
 
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.navigation.NavController
@@ -8,6 +8,7 @@ import com.mivuelto.core.ui.LoaderScreen
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.feature.purchase.InvoiceScreen
+import com.mivuelto.feature.purchase.ui.check_payment.CheckPaymentScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -33,7 +34,7 @@ fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
         ){
             CheckPaymentScreen(
                 onBack = { navController.popBackStack() },
-                onTaskDone = { _,_->
+                onTaskDone = { _, _ ->
                     navController.navigate(CheckPaymentFlow.LOADER.route)
                 }
             )
