@@ -7,7 +7,7 @@ import androidx.navigation.navigation
 import com.mivuelto.core.ui.LoaderScreen
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.NavFeature
-import com.mivuelto.feature.purchase.InvoiceScreen
+import com.mivuelto.feature.purchase.ui.invoices.InvoiceScreen
 import com.mivuelto.feature.purchase.ui.check_payment.CheckPaymentScreen
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

@@ -1,4 +1,4 @@
-package com.mivuelto.feature.purchase
+package com.mivuelto.feature.purchase.ui.invoices
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +15,7 @@ import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.theme.Lato
+import com.mivuelto.feature.purchase.R
 
 
 @Composable

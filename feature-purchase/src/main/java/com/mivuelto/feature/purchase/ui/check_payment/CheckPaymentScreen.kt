@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -18,11 +20,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
+import com.mivuelto.core.ui.design.textfields.DecimalCurrencyVisualTransformation
 import com.mivuelto.core.ui.design.textfields.OutlinedTextFieldCustom
 import com.mivuelto.core.ui.theme.Lato
 import com.mivuelto.feature.purchase.R
@@ -67,6 +72,7 @@ fun CheckPaymentScreen(
                             onValueChange = { reference.value = it },
                             label = stringResource(R.string.reference),
                             isError = referenceError.value,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             errorMessage = "La referencia es requerida",
                             modifier = Modifier.fillMaxWidth(),
                         )
@@ -75,11 +81,17 @@ fun CheckPaymentScreen(
 
                         OutlinedTextFieldCustom(
                             value = amount.value,
-                            onValueChange = { amount.value = it },
+                            onValueChange = { input ->
+                                val digitsOnly = input.filter { it.isDigit() }
+                                amount.value = digitsOnly.dropWhile { it == '0' }
+//                                amount.value = it
+                                            },
                             label = stringResource(R.string.amount),
                             isError = amountError.value,
                             errorMessage = "El monto es requerido",
                             isPassword = true,
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                            visualTransformation = DecimalCurrencyVisualTransformation("Bs. "),
                             modifier = Modifier.fillMaxWidth(),
                         )
 
@@ -88,16 +100,18 @@ fun CheckPaymentScreen(
                         OutlinedTextFieldCustom(
                             value = phone.value,
                             onValueChange = { phone.value = it },
-                            label = stringResource(R.string.phone),
+                            label = stringResource(R.string.phone)+" (opcional)",
                             isPassword = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         OutlinedTextFieldCustom(
                             value = bank.value,
                             onValueChange = { phone.value = it },
-                            label = stringResource(R.string.bank),
+                            label = stringResource(R.string.bank)+" (opcional)",
                             isPassword = true,
+                            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             modifier = Modifier.fillMaxWidth(),
                         )
                         Spacer(modifier = Modifier.height(24.dp))
@@ -135,35 +149,5 @@ fun CheckPaymentScreen(
 
             }
         }
-//            Column(
-//                modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter).padding(horizontal = 50.dp)
-//            ) {
-//                ButtonFilled(
-//                    text = "Verificar pago",
-//                    isMaxWidth = true,
-//                    paddingHz = 0.dp,
-//                    onClick = {
-//
-//                        referenceError.value = reference.value.isBlank()
-//                        amountError.value = amount.value.isBlank()
-//
-//                        if (!referenceError.value && !amountError.value) {
-//                            onTaskDone(reference.value, amount.value)
-//                        }
-//                    }
-//                )
-//
-//                Spacer(modifier = Modifier.height(16.dp))
-//
-//                ButtonBorder(
-//                    text = stringResource(com.mivuelto.core.ui.R.string.cancel),
-//                    paddingHz = 0.dp,
-//                    isMaxWidth = true,
-//                    onClick = onBack
-//                )
-//                Spacer(modifier = Modifier.height(20.dp))
-//            }
-
-
     }
 }
