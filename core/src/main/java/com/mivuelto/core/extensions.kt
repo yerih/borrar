@@ -9,6 +9,7 @@ fun String.toMaskedRange(start: Int = 0, end: Int): String {
 }
 
 fun String.formatDate(): String = this // Simplificado para el ejemplo
+fun String.formatTime(): String = this // Simplificado para el ejemplo
 
 fun String.addCommas(): String {
     return try {
@@ -21,3 +22,8 @@ fun String.addCommas(): String {
 fun Double.addCommas(): String {
     return "%,.2f".format(this)
 }
+
+
+fun String.checkAmount(): String = if(isEmpty()) String.format("%.2f",0.00).replace(".",",") else if(!contains(",")) String.format("%.2f",toDouble()/100).replace(".",",") else this
+
+

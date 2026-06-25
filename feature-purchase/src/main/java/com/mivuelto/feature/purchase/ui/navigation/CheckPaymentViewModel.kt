@@ -1,0 +1,38 @@
+package com.mivuelto.feature.purchase.ui.navigation
+
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModel
+import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
+import com.mivuelto.core.domain.model.CheckPaymentModel
+import com.mivuelto.core.ui.launch
+import com.mivuelto.feature.purchase.ui.login.LoginEffect
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.receiveAsFlow
+import javax.inject.Inject
+
+class CheckPaymentViewModel @Inject constructor(
+
+): ViewModel(){
+
+    var state by mutableStateOf(CheckPaymentModel())
+        private set
+
+
+    private val _effect = Channel<UiEvent>()
+    val effect = _effect.receiveAsFlow()
+
+
+    fun updateState(model: CheckPaymentModel){state = model}
+
+    fun sendPayment(){
+        launch {
+            delay(3000)
+            _effect.send(UiEvent.OnSuccess)
+            delay(2000)
+            _effect.send(UiEvent.TaskDone())
+        }
+    }
+}

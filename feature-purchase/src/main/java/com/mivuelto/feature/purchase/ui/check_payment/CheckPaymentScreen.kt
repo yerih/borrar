@@ -15,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,6 +24,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
@@ -31,10 +34,13 @@ import com.mivuelto.core.ui.design.textfields.DecimalCurrencyVisualTransformatio
 import com.mivuelto.core.ui.design.textfields.OutlinedTextFieldCustom
 import com.mivuelto.core.ui.theme.Lato
 import com.mivuelto.feature.purchase.R
+import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 
 @Composable
 fun CheckPaymentScreen(
-    onTaskDone: (reference: String, amount: String) -> Unit = { _, _ -> },
+    onTaskDone: (CheckPaymentModel) -> Unit = { },
     onBack: () -> Unit = {}
 ) {
 
@@ -84,7 +90,6 @@ fun CheckPaymentScreen(
                             onValueChange = { input ->
                                 val digitsOnly = input.filter { it.isDigit() }
                                 amount.value = digitsOnly.dropWhile { it == '0' }
-//                                amount.value = it
                                             },
                             label = stringResource(R.string.amount),
                             isError = amountError.value,
@@ -138,7 +143,12 @@ fun CheckPaymentScreen(
                                     amountError.value = amount.value.isBlank()
 
                                     if (!referenceError.value && !amountError.value) {
-                                        onTaskDone(reference.value, amount.value)
+                                        onTaskDone(CheckPaymentModel(
+                                            reference = reference.value,
+                                            amount = amount.value,
+                                            phone = phone.value,
+                                            bank = bank.value
+                                        ))
                                     }
                                 }
                             )

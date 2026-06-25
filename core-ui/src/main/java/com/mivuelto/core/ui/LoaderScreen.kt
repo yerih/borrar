@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -13,15 +12,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
-import com.mivuelto.core.ui.theme.Lato
 import com.mivuelto.core.ui.design.HeaderAndFooter2
 import com.mivuelto.core.ui.design.Loader
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
+import com.mivuelto.core.ui.design.IconMsg
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -47,18 +46,26 @@ fun LoaderScreen(
     var loaderMsg by remember{ mutableStateOf(context.getString(R.string.loading)) }
 
     LaunchedEffect(key1 = Unit){
-        action()
         eventFlow.collect{ event ->
             isLoading = false; isError = false; isDone = false
             when(event){
                 is UiEvent.Loader -> { isLoading = event.isLoading; loaderMsg = context.getString(event.msg) }
                 is UiEvent.Error -> { isError = true; msg = event.msg.ifEmpty { context.getString(event.msgId) } }
-                is UiEvent.TaskDone -> {isDone = true; onTaskDone()}
+                is UiEvent.TaskDone -> {isDone = true; isError = false; isLoading = false; onTaskDone()}
                 is UiEvent.Notification -> { isLoading = event.isLoading; loaderMsg = event.msg }
                 UiEvent.OnBack -> onBack()
+                UiEvent.OnSuccess -> {
+                    isError = false
+                    isLoading = false
+                    isDone = true
+                }
                 else -> Unit
             }
         }
+    }
+
+    LaunchedEffect(key1 = Unit) {
+        action()
     }
 
 
@@ -73,28 +80,35 @@ fun LoaderScreen(
             val centerGuide = createGuidelineFromTop(0.4f)
             val bottomGuide = createGuidelineFromTop(1f)
 
-            Loader(
-                isLoading = isLoading,
-                msg = msg,
-                modifier = Modifier.constrainAs(loader){
-                    centerHorizontallyTo(parent)
-                    centerAround(centerGuide)
-                }
-            )
-            if(isDone || isError)
-                Text(text = msg, style = Lato.headlineMedium, textAlign = TextAlign.Center, modifier = Modifier.constrainAs(msgRef){
-                    centerTo(parent)
-                })
-            ButtonFilled(
-                textId = R.string.cancel,
-                modifier = Modifier
-                    .constrainAs(btn) {
+            if(isLoading)
+                Loader(
+                    isLoading = isLoading,
+                    msg = msg,
+                    modifier = Modifier.constrainAs(loader){
                         centerHorizontallyTo(parent)
-                        bottom.linkTo(bottomGuide)
+                        centerAround(centerGuide)
                     }
-                    .padding(bottom = 20.dp),
-                onClick = { onAbort() }
-            )
+                )
+            if(isDone || isError){
+                IconMsg(
+                    isDone = isDone,
+                    isError = isError,
+                    modifier = Modifier.constrainAs(msgRef){
+                        centerTo(parent)
+                    },
+                    msg = stringResource(R.string.process_success)
+                )
+            }
+//            ButtonFilled(
+//                textId = R.string.cancel,
+//                modifier = Modifier
+//                    .constrainAs(btn) {
+//                        centerHorizontallyTo(parent)
+//                        bottom.linkTo(bottomGuide)
+//                    }
+//                    .padding(bottom = 20.dp),
+//                onClick = { onAbort() }
+//            )
         }
     }
 }
