@@ -61,7 +61,9 @@ fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
         composableWithTransitions(
             route = CheckPaymentFlow.INVOICE.route
         ){
+            val viewModel: CheckPaymentViewModel = it.sharedViewModel(navController)
             InvoiceScreen(
+                data = viewModel.getInvoice(),
                 onTaskDone = {
                     navController.navigate(NavFeature.HOME.route){
                         popUpTo(NavFeature.LOGIN.route) { inclusive = true }
