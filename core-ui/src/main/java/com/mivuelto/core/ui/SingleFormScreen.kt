@@ -14,14 +14,20 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
+import com.mivuelto.core.ui.design.textfields.DecimalCurrencyVisualTransformation
 import com.mivuelto.core.ui.design.textfields.TextFieldCustom
 import com.mivuelto.core.ui.theme.Lato
 
@@ -30,10 +36,17 @@ import com.mivuelto.core.ui.theme.Lato
 fun SingleFormScreen(
     title: String,
     label: String,
+    errorMsg: String,
     onBack: ()->Unit,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    isError: Boolean = false,
     onValueChange: (String)->Unit,
     onTaskDone: ()->Unit = {}
 ){
+    val textValue = remember{ mutableStateOf("") }
+
     BaseScreen(onBack = onBack) {
 
         Box(modifier = Modifier.fillMaxSize().padding(horizontal = 10.dp)){
@@ -53,14 +66,18 @@ fun SingleFormScreen(
 
 
             TextFieldCustom(
-                value = "Text value",//reference.value,
+                value = textValue.value,
                 modifier = Modifier.padding(horizontal = 20.dp).align(Alignment.Center),
-                onValueChange = onValueChange,//{ reference.value = it },
+                onValueChange = {
+                    textValue.value = it
+                    onValueChange(it)
+                },
                 label = label,
-                isError = false,//referenceError.value,
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(onDone = { onTaskDone() }),
-                errorMessage = "La referencia es requerida"
+                isError = isError,
+                keyboardOptions = keyboardOptions,
+                keyboardActions = keyboardActions,
+                visualTransformation = visualTransformation,
+                errorMessage = errorMsg
             )
 
             Row(
@@ -80,7 +97,9 @@ fun SingleFormScreen(
                     modifier = Modifier.weight(1f),
                     paddingHz = 0.dp,
                     text = stringResource(R.string.next),
-                    onClick = onTaskDone
+                    onClick = {
+                        onTaskDone()
+                    }
                 )
 
             }

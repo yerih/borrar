@@ -27,18 +27,6 @@ fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
         startDestination = CheckPaymentFlow.FORM.route,
         route = NavFeature.CHECK_PAYMENT.route
     ) {
-//        composableWithTransitions(
-//            route = CheckPaymentFlow.FORM.route,
-//        ){
-//            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController)
-//            CheckPaymentScreen(
-//                onBack = { navController.popBackStack() },
-//                onTaskDone = { data ->
-//                    viewModel.updateState(data)
-//                    navController.navigate(CheckPaymentFlow.LOADER.route)
-//                }
-//            )
-//        }
 
         captureDataNavGraph(navController)
         composableWithTransitions(
