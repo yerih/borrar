@@ -24,8 +24,6 @@ object SdkModuleDI{
     @Singleton
     fun provideEngineRequester(app: MainApplication): DeviceEngineRequester = DevEngRequesterImpl(app)
 
-    @Provides
-    @Singleton
-    fun provideSerialNum(app: MainApplication): String = app.serialNum
+
 }
 

@@ -2,6 +2,7 @@ package com.mivuelto.feature.purchase.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.mivuelto.core.SerialNumberHolder
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    val serialNum: String
+    val serialNumHolder: SerialNumberHolder
 ) : ViewModel() {
 
 
@@ -45,14 +46,14 @@ class LoginViewModel @Inject constructor(
         val userError = _state.value.user.isBlank()
         val passError = _state.value.password.isBlank()
         val result = !userError && !passError
-            viewModelScope.launch(Dispatchers.IO){
-                _effect.send(if(result){
-                    LoginEffect.NavigateToHome
-                }
-                else{
-                    LoginEffect.TextFieldErrors(passwordError = passError, userError = userError)
-                })
+        viewModelScope.launch(Dispatchers.IO){
+            _effect.send(if(result){
+                LoginEffect.NavigateToHome
             }
+            else{
+                LoginEffect.TextFieldErrors(passwordError = passError, userError = userError)
+            })
+        }
         return result
     }
 }
