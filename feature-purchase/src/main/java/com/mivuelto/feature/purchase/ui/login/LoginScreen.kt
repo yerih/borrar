@@ -40,16 +40,15 @@ fun LoginScreen(
     modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit = {},
 //    onLoginClick: (user: String, password: String) -> Unit = { _, _ -> },
-    onBack: () -> Unit = {},
+    onBack: () -> Unit = {}
 ) {
 
     val state by viewModel.state.collectAsStateWithLifecycle()
     val context = LocalContext.current
 
-    val user = remember { mutableStateOf("") }
-    val password = remember { mutableStateOf("") }
     val userError = remember { mutableStateOf(false) }
     val passwordError = remember { mutableStateOf(false) }
+    val serialNum by viewModel.serialNumHolder.serialNumber.collectAsStateWithLifecycle()
 
 
     BackHandler{ onBack() }
@@ -85,7 +84,7 @@ fun LoginScreen(
 
 
             Text(
-                text = stringResource(R.string.login)+"\nserial: ${viewModel.serialNum}",
+                text = stringResource(R.string.login)+"\nserial: $serialNum",
                 style = Lato.headlineSmall,
                 modifier = Modifier.padding(top = 20.dp, bottom = 30.dp),
             )

@@ -160,4 +160,6 @@
     <string name="please_see_phone">Por favor, revise su teléfono</string>
     <string name="connect_wifi">Active la conexión wi-fi</string>
     <string name="login">Inicio de sesión</string>
+    <string name="reference">Referencia</string>
+    <string name="next">Siguiente</string>
 </resources>

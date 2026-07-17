@@ -1,19 +1,14 @@
 package com.mivuelto.feature.purchase.ui.navigation
 
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
-import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.ui.LoaderScreen
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.core.ui.sharedViewModel
 import com.mivuelto.feature.purchase.ui.invoices.InvoiceScreen
-import com.mivuelto.feature.purchase.ui.check_payment.CheckPaymentScreen
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import com.mivuelto.feature.purchase.ui.check_payment_data.CheckPaymentScreen
 
 
 sealed class CheckPaymentFlow(val route: String) {
@@ -32,19 +27,20 @@ fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
         startDestination = CheckPaymentFlow.FORM.route,
         route = NavFeature.CHECK_PAYMENT.route
     ) {
-        composableWithTransitions(
-            route = CheckPaymentFlow.FORM.route,
-        ){
-            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController)
-            CheckPaymentScreen(
-                onBack = { navController.popBackStack() },
-                onTaskDone = { data ->
-                    viewModel.updateState(data)
-                    navController.navigate(CheckPaymentFlow.LOADER.route)
-                }
-            )
-        }
+//        composableWithTransitions(
+//            route = CheckPaymentFlow.FORM.route,
+//        ){
+//            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController)
+//            CheckPaymentScreen(
+//                onBack = { navController.popBackStack() },
+//                onTaskDone = { data ->
+//                    viewModel.updateState(data)
+//                    navController.navigate(CheckPaymentFlow.LOADER.route)
+//                }
+//            )
+//        }
 
+        captureDataNavGraph(navController)
         composableWithTransitions(
             route = CheckPaymentFlow.LOADER.route
         ){

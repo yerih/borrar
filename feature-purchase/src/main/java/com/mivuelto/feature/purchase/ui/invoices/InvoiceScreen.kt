@@ -20,6 +20,7 @@ import com.mivuelto.core.checkAmount
 import com.mivuelto.core.formatDate
 import com.mivuelto.core.formatTime
 import com.mivuelto.core.ui.BaseScreen
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
@@ -50,7 +51,7 @@ fun InvoiceScreen(
                     items(1) {
 
                         InvoiceIconTitle(
-                            textId = if (data.trxMode == "void") com.mivuelto.core.ui.R.string.void_successfull else com.mivuelto.core.ui.R.string.transaction_successful,
+                            textId = R.string.transaction_successful,
                             modifier = Modifier.padding(top = 10.dp)
                         )
                         Column(
@@ -63,7 +64,7 @@ fun InvoiceScreen(
                                 Spacer(Modifier.height(10.dp))
 
                                 InvoiceElement(center = "$bank $bankRif", style)
-                                InvoiceElement(center = "Recibo de compra", style)
+                                InvoiceElement(center = "Recibo de validación", style)
                                 Spacer(Modifier.height(10.dp))
 
                                 style = Lato.invoiceAddress
@@ -73,14 +74,13 @@ fun InvoiceScreen(
 
                                 InvoiceElement(label = "rif", value = rif)
 
-                                style = style.copy(fontSize = 16.sp)
-                                Spacer(Modifier.height(10.dp))
-                                InvoiceElement(center = cardNumber, style)
                                 Spacer(Modifier.height(10.dp))
 
                                 InvoiceElement(label = "fecha", value = date.formatDate())
                                 InvoiceElement(label = "hora", value = time.formatTime())
                                 InvoiceElement(label = "ref", value = ref)
+                                InvoiceElement(label = "banco origen", value = bankOrigin)
+                                InvoiceElement(label = "Teléfono", value = phone)
 
                                 Spacer(Modifier.height(15.dp))
                                 InvoiceElement(
@@ -100,7 +100,7 @@ fun InvoiceScreen(
 
                     if (!data.hasPrinter)
                         ButtonFilled(
-                            textId = com.mivuelto.core.ui.R.string.exit,
+                            textId = R.string.exit,
                             modifier = Modifier.padding(top = 10.dp),
                             onClick = {
                                 onTaskDone()
@@ -114,7 +114,7 @@ fun InvoiceScreen(
                             horizontalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             ButtonBorder(
-                                textId = com.mivuelto.core.ui.R.string.exit,
+                                textId = R.string.exit,
                                 modifier = Modifier.weight(1f),
                                 paddingHz = 0.dp,
                                 onClick = {
@@ -123,7 +123,7 @@ fun InvoiceScreen(
                             )
 
                             ButtonFilled(
-                                textId = com.mivuelto.core.ui.R.string.print,
+                                textId = R.string.print,
                                 modifier = Modifier.weight(1f),
                                 paddingHz = 0.dp,
                                 onClick = {
