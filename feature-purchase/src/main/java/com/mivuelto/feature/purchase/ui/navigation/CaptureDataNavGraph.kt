@@ -1,5 +1,8 @@
 package com.mivuelto.feature.purchase.ui.navigation
 
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavBackStackEntry
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
@@ -20,7 +23,9 @@ sealed class CaptureDataFlow(val route: String) {
 }
 
 
-fun NavGraphBuilder.captureDataNavGraph(navController: NavController) {
+fun NavGraphBuilder.captureDataNavGraph(
+    navController: NavController
+) {
     navigation(
         startDestination = CaptureDataFlow.REFERENCE.route,
         route = CheckPaymentFlow.FORM.route
@@ -29,7 +34,7 @@ fun NavGraphBuilder.captureDataNavGraph(navController: NavController) {
         composableWithTransitions(
             route = CaptureDataFlow.REFERENCE.route
         ){
-            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController)
+            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController, route = NavFeature.CHECK_PAYMENT.route)
             ReferenceScreen(
                 onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
                 onTaskDone = { navController.navigate(route = CaptureDataFlow.AMOUNT.route) },
@@ -40,7 +45,7 @@ fun NavGraphBuilder.captureDataNavGraph(navController: NavController) {
         composableWithTransitions(
             route = CaptureDataFlow.AMOUNT.route
         ){
-            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController)
+            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController, route = NavFeature.CHECK_PAYMENT.route)
             AmountScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
@@ -50,7 +55,7 @@ fun NavGraphBuilder.captureDataNavGraph(navController: NavController) {
         composableWithTransitions(
             route = CaptureDataFlow.PHONE.route
         ){
-            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController)
+            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController, route = NavFeature.CHECK_PAYMENT.route)
             PhoneScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
@@ -60,7 +65,7 @@ fun NavGraphBuilder.captureDataNavGraph(navController: NavController) {
         composableWithTransitions(
             route = CaptureDataFlow.BANK.route
         ){
-            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController)
+            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController, route = NavFeature.CHECK_PAYMENT.route)
             BankScreen(
                 viewModel = viewModel,
                 onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },

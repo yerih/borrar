@@ -162,4 +162,5 @@
     <string name="login">Inicio de sesión</string>
     <string name="reference">Referencia</string>
     <string name="next">Siguiente</string>
+    <string name="validation_successful">Validación exitosa</string>
 </resources>

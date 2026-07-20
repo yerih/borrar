@@ -90,6 +90,15 @@ inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
     return hiltViewModel(parentEntry)
 }
 
+@Composable
+inline fun <reified T : ViewModel> NavBackStackEntry.sharedViewModel(
+    navController: NavController,
+    route: String,
+): T {
+    val parentEntry  = remember(this){ navController.getBackStackEntry(route) }
+    return hiltViewModel(parentEntry)
+}
+
 
 fun Modifier.clickableNoRipple(
     interactionSource: MutableInteractionSource = MutableInteractionSource(),

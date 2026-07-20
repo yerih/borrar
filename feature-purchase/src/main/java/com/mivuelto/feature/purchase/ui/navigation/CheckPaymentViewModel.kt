@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
+import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.ui.launch
 import com.mivuelto.feature.purchase.ui.invoices.InvoiceModel
@@ -30,9 +31,9 @@ class CheckPaymentViewModel @Inject constructor(
     fun getInvoice(): InvoiceModel = InvoiceModel(
         ref = state.reference?:"empty",
         date = "22/06/2026 6:33 pm",
-        bank = state.bank?:"empty",
+        bank = state.bank?: BankModel(),
         amount = state.amount?:"empty",
-//        phone = state.phone?:"empty"
+        phone = state.phone?:"empty"
     )
 
     fun sendPayment(){

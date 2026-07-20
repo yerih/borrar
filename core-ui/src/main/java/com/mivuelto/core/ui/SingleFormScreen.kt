@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -23,7 +24,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
@@ -36,6 +40,9 @@ import com.mivuelto.core.ui.theme.Lato
 fun SingleFormScreen(
     title: String,
     label: String,
+    initialValue: String = "",
+    fontSize: TextUnit = 44.sp,
+    textAlign: TextAlign = TextAlign.Center,
     errorMsg: String,
     onBack: ()->Unit,
     keyboardActions: KeyboardActions = KeyboardActions.Default,
@@ -45,7 +52,7 @@ fun SingleFormScreen(
     onValueChange: (String)->Unit,
     onTaskDone: ()->Unit = {}
 ){
-    val textValue = remember{ mutableStateOf("") }
+    val textValue = remember{ mutableStateOf(initialValue) }
 
     BaseScreen(onBack = onBack) {
 
@@ -67,9 +74,13 @@ fun SingleFormScreen(
 
             TextFieldCustom(
                 value = textValue.value,
-                modifier = Modifier.padding(horizontal = 20.dp).align(Alignment.Center),
+                textStyle = LocalTextStyle.current.copy(fontSize = fontSize, textAlign = textAlign),
+                modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.Center),
                 onValueChange = {
-                    textValue.value = it
+                    textValue.value = if(visualTransformation is DecimalCurrencyVisualTransformation){
+                        it.filter{ e -> e.isDigit()}
+                    }
+                    else it
                     onValueChange(it)
                 },
                 label = label,

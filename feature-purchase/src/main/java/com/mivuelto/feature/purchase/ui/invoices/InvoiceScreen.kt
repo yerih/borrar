@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.mivuelto.core.checkAmount
 import com.mivuelto.core.formatDate
 import com.mivuelto.core.formatTime
+import com.mivuelto.core.toPhoneFormat
 import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
@@ -51,7 +52,7 @@ fun InvoiceScreen(
                     items(1) {
 
                         InvoiceIconTitle(
-                            textId = R.string.transaction_successful,
+                            textId = R.string.validation_successful,
                             modifier = Modifier.padding(top = 10.dp)
                         )
                         Column(
@@ -63,8 +64,8 @@ fun InvoiceScreen(
                             with(data) {
                                 Spacer(Modifier.height(10.dp))
 
-                                InvoiceElement(center = "$bank $bankRif", style)
                                 InvoiceElement(center = "Recibo de validación", style)
+                                InvoiceElement(center = "$businessBank $businessBankRif", style)
                                 Spacer(Modifier.height(10.dp))
 
                                 style = Lato.invoiceAddress
@@ -79,12 +80,13 @@ fun InvoiceScreen(
                                 InvoiceElement(label = "fecha", value = date.formatDate())
                                 InvoiceElement(label = "hora", value = time.formatTime())
                                 InvoiceElement(label = "ref", value = ref)
-                                InvoiceElement(label = "banco origen", value = bankOrigin)
-                                InvoiceElement(label = "Teléfono", value = phone)
+                                InvoiceElement(label = "banco origen", value = bank.name)
+                                InvoiceElement(label = "Teléfono", value = phone.toPhoneFormat())
 
                                 Spacer(Modifier.height(15.dp))
                                 InvoiceElement(
                                     label = "monto",
+                                    style = Lato.invoiceIconTitle.copy(fontSize = 22.sp),
                                     value = "Bs. ${amount.checkAmount()}",
                                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
                                         .padding(bottom = 10.dp),

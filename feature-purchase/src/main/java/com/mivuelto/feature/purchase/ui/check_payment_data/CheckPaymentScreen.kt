@@ -141,7 +141,7 @@ fun CheckPaymentScreen(
                                             reference = reference.value,
                                             amount = amount.value,
                                             phone = phone.value,
-                                            bank = bank.value
+                                            bank = null
                                         ))
                                     }
                                 }

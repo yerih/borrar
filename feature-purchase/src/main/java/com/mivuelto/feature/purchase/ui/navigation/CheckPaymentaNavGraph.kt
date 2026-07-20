@@ -48,14 +48,8 @@ fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
             val viewModel: CheckPaymentViewModel = it.sharedViewModel(navController)
             InvoiceScreen(
                 data = viewModel.getInvoice(),
-                onTaskDone = {
-                    navController.navigate(NavFeature.HOME.route){
-                        popUpTo(NavFeature.LOGIN.route) { inclusive = true }
-                    }
-                },
-                onBack = { navController.navigate(NavFeature.HOME.route){
-                    popUpTo(NavFeature.LOGIN.route) { inclusive = true }
-                } }
+                onTaskDone = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
+                onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) }
             )
         }
 

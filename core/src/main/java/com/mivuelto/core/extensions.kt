@@ -26,4 +26,10 @@ fun Double.addCommas(): String {
 
 fun String.checkAmount(): String = if(isEmpty()) String.format("%.2f",0.00).replace(".",",") else if(!contains(",")) String.format("%.2f",toDouble()/100).replace(".",",") else this
 
+fun String.toPhoneFormat(): String {
+    val digits = filter(Char::isDigit)
 
+    if (digits.length != 11) return this
+
+    return "(${digits.substring(0, 4)}) ${digits.substring(4, 7)} ${digits.substring(7, 9)} ${digits.substring(9, 11)}"
+}
