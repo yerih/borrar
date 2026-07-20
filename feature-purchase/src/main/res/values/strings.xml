@@ -2,11 +2,13 @@
 <resources>
 
     <string name="verify_payment">Verificar pago</string>
-    <string name="make_change">Realizar vuelto</string>
+    <string name="digital_change">Realizar vuelto</string>
     <string name="historical">Histórico</string>
     <string name="invoice">Recibo</string>
     <string name="reference">Referencia</string>
     <string name="amount">Monto</string>
     <string name="phone">Teléfono</string>
     <string name="bank">Banco</string>
+    <string name="instant_debit">Débito inmediato</string>
+    <string name="verify_payment_mobile">Verificar pago móvil</string>
 </resources>

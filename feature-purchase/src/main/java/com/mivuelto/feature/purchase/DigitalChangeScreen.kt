@@ -21,7 +21,7 @@ import com.mivuelto.core.ui.theme.Lato
 
 
 @Composable
-fun ChangeScreen(
+fun DigitalChangeScreen(
     onBack: () -> Unit = {}
 ) {
     BaseScreen(onBack) {
@@ -42,7 +42,7 @@ fun ChangeScreen(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = stringResource(R.string.make_change), style = Lato.headlineMedium)
+                Text(text = stringResource(R.string.digital_change), style = Lato.headlineMedium)
                 Spacer(modifier = Modifier.height(24.dp))
 
                 ButtonFilled(
