@@ -113,3 +113,4 @@ feature-home/build/intermediates/classes/debug/transformDebugClassesWithAsm/dirs
 feature-home/build/intermediates/incremental/debug-mergeJavaRes/merge-state,feature-home/build/kspCaches/debug/sealed,feature-home/build/kspCaches/debug/sourceToOutputs,feature-home/build/kspCaches/debug/sourceToOutputs_i,feature-home/build/kspCaches/debug/symbols,feature-home/build/kspCaches/debug/symbols_i
 feature-home/build/
 feature-instant-debit/build/
+feature-send-change/build/

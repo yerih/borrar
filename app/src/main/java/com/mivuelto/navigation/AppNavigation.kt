@@ -7,6 +7,7 @@ import androidx.navigation.compose.rememberNavController
 import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.feature.home.navigation.homeGraph
 import com.mivuelto.feature.instantdebit.navigation.instantDebitGraph
+import com.mivuelto.feature.sendchange.navigation.sendChangeGraph
 import com.mivuelto.feature.purchase.DigitalChangeScreen
 import com.mivuelto.feature.purchase.HistoricalScreen
 import com.mivuelto.feature.purchase.ui.login.LoginScreen
@@ -31,6 +32,7 @@ fun AppNavigation() {
         homeGraph(navController)
         checkPaymentGraph(navController)
         instantDebitGraph(navController)
+        sendChangeGraph(navController)
         composable(NavFeature.DIGITAL_CHANGE.route) {
             DigitalChangeScreen(
                 onBack = { navController.popBackStack() }

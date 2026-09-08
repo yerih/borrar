@@ -63,6 +63,7 @@ dependencies {
     implementation(project(":feature-purchase"))
     implementation(project(":feature-home"))
     implementation(project(":feature-instant-debit"))
+    implementation(project(":feature-send-change"))
 
     implementation(files("libs\\ysdk_5.91.c221d74_24092716.jar"))
     
