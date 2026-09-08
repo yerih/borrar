@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mivuelto.feature.purchase"
+    namespace = "com.mivuelto.feature.instantdebit"
     compileSdk = 35
     defaultConfig {
         minSdk = 26
@@ -44,6 +44,4 @@ dependencies {
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.turbine)
     testImplementation(libs.mockk)
-    testImplementation(libs.hilt.android.testing)
-    kspTest(libs.hilt.android.compiler)
 }

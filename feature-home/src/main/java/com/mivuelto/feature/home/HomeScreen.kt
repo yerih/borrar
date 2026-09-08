@@ -1,4 +1,4 @@
-package com.mivuelto.feature.purchase
+package com.mivuelto.feature.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -74,9 +74,7 @@ fun HomeScreen(
                                 1 -> scope.launch {
                                     snackBar.showSnackbar(message = "Funcionalidad en desarrollo")
                                 }//onFunctionClicked(NavFeature.DIGITAL_CHANGE)
-                                2 -> scope.launch {
-                                    snackBar.showSnackbar(message = "Funcionalidad en desarrollo")
-                                }//onFunctionClicked(NavFeature.INSTANT_DEBIT)
+                                2 -> onFunctionClicked(NavFeature.INSTANT_DEBIT)
                                 3 -> scope.launch {
                                     snackBar.showSnackbar(message = "Funcionalidad en desarrollo")
                                 }//onFunctionClicked(NavFeature.HISTORICAL)
@@ -131,5 +129,4 @@ private fun DefaultPreview() {
         HomeScreen(modifier = Modifier.padding(10.dp))
     }
 }
-
 

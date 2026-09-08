@@ -1,0 +1,331 @@
+{
+  "info": {
+    "_postman_id": "bc0ecca1-e802-40be-9b22-6f0483805140",
+    "name": "WS02 qa envio de transferencia",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "21244212",
+    "_collection_link": "https://go.postman.co/collection/21244212-bc0ecca1-e802-40be-9b22-6f0483805140?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "envio transferencia subrogado",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //boradado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //boradado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"moneda\":\"VES\",\"canal\":\"23\",\"tipo_cce\":\"E\",\"tipo_proposito\":\"220\",\"tipo_instrumento_b\":\"T\",\"identificacion_o\":\"V00012705009\",\"identificacion_b\":\"V00017532062\",\"cuenta_origen\":\"01380001450010095969\",\"cuenta_destino\":\"\",\"telefono\":\"04125509071\",\"correo\":\"\",\"cod_banco_d\":\"0138\",\"cod_banco_a\":\"0172\",\"nombre_d\":\"DISTRIBUIDORA BEN S, C.A\",\"nombre_a\":\"Doris Wells\",\"monto\": 1.00,\"concepto\": \"PAGO PRUEBA\",\"direccion_ip\":\"127.0.0.1\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/cce/v1/v1/cce/pagoO/V00012705009",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "cce",
+            "v1",
+            "v1",
+            "cce",
+            "pagoO",
+            "V00012705009"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'https://openapi.bancoplaza.com:8243/cce/v1/v1/cce/pagoO/V00012705009' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI1MzU5NjksImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI1Mzk1NjksImlhdCI6MTc2MjUzNTk2OSwianRpIjoiNzM1YjdiNWEtMDVmZS00ZGJjLWE2ZmQtZTliY2Y2NjM0MmQ4IiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.XT7mcCC085CiEKvXHeZMe3Vrpru8Uk0g8dtmVSCGmS9hE66HCCfX9GZ9eqqU0mcuNmrq6cWPqfOlNftJ8sD8nJvj0SjX-2Yi4Q1XLuaM74N_c_octs2lFClXPnvOHpSZ0B5fdv2c0zVOi2T04srksgsesLyDegDZT0nupPbfdUr10qOX1e049Sstu3N3zmPeH5ix-0XHovinE2qrYj5Bp7o6CGgQOUgDU06WoTC8OW0e8Jo4V4_lJRh2wiXr0jG7gILP-UDnxHgtQnEAcrSHEWvm1jtBbc9GkYaTlHNklnTSNYmnVyKZpLkN_UrCpvS-pp31Tv_4GKBntaEPxEmoKw' \\\r\n  -d '{\"moneda\":\"VES\",\"canal\":\"23\",\"tipo_cce\":\"E\",\"tipo_proposito\":\"220\",\"tipo_instrumento_b\":\"T\",\"identificacion_o\":\"V00012705009\",\"identificacion_b\":\"V00017532062\",\"cuenta_origen\":\"01380001450010095969\",\"cuenta_destino\":\"\",\"telefono\":\"04125509071\",\"correo\":\"\",\"cod_banco_d\":\"0138\",\"cod_banco_a\":\"0172\",\"nombre_d\":\"DISTRIBUIDORA BEN S, C.A\",\"nombre_a\":\"Doris Wells\",\"monto\": 1.00,\"concepto\": \"PAGO PRUEBA\",\"direccion_ip\":\"127.0.0.1\"}'"
+      },
+      "response": []
+    },
+    {
+      "name": "consulta liq",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //boradado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //boradado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/cce/v1/v1/cce/consultaLiq/V00012705009?cuenta=01380001450010095969&referencia=00015756&monto=1.0&fecha=260116&canal=23",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "cce",
+            "v1",
+            "v1",
+            "cce",
+            "consultaLiq",
+            "V00012705009"
+          ],
+          "query": [
+            {
+              "key": "cuenta",
+              "value": "01380001450010095969"
+            },
+            {
+              "key": "referencia",
+              "value": "00015756"
+            },
+            {
+              "key": "monto",
+              "value": "1.0"
+            },
+            {
+              "key": "fecha",
+              "value": "260116"
+            },
+            {
+              "key": "canal",
+              "value": "23"
+            }
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'https://openapi.bancoplaza.com:8243/cce/v1/v1/cce/consultaLiq/V00012705009?cuenta=01380001450010095969&referencia=02719878&monto=1.0&fecha=251107&canal=23' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI1MzU5NjksImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI1Mzk1NjksImlhdCI6MTc2MjUzNTk2OSwianRpIjoiNzM1YjdiNWEtMDVmZS00ZGJjLWE2ZmQtZTliY2Y2NjM0MmQ4IiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.XT7mcCC085CiEKvXHeZMe3Vrpru8Uk0g8dtmVSCGmS9hE66HCCfX9GZ9eqqU0mcuNmrq6cWPqfOlNftJ8sD8nJvj0SjX-2Yi4Q1XLuaM74N_c_octs2lFClXPnvOHpSZ0B5fdv2c0zVOi2T04srksgsesLyDegDZT0nupPbfdUr10qOX1e049Sstu3N3zmPeH5ix-0XHovinE2qrYj5Bp7o6CGgQOUgDU06WoTC8OW0e8Jo4V4_lJRh2wiXr0jG7gILP-UDnxHgtQnEAcrSHEWvm1jtBbc9GkYaTlHNklnTSNYmnVyKZpLkN_UrCpvS-pp31Tv_4GKBntaEPxEmoKw'"
+      },
+      "response": []
+    },
+    {
+      "name": "envio de transferencia",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //boradado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //boradado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"moneda\":\"VES\",\"canal\":\"23\",\"tipo_cce\":\"E\",\"tipo_proposito\":\"220\",\"tipo_instrumento_b\":\"T\",\"identificacion_o\":\"J00400780810\",\"identificacion_b\":\"V00017532062\",\"cuenta_origen\":\"01380001440010066240\",\"cuenta_destino\":\"\",\"telefono\":\"04125509071\",\"correo\":\"\",\"cod_banco_d\":\"0138\",\"cod_banco_a\":\"0172\",\"nombre_d\":\"DISTRIBUIDORA BEN S, C.A\",\"nombre_a\":\"Doris Wells\",\"monto\": 1.00,\"concepto\": \"PAGO PRUEBA\",\"direccion_ip\":\"127.0.0.1\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/cce/v1/v1/cce/pagoO",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "cce",
+            "v1",
+            "v1",
+            "cce",
+            "pagoO"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'https://openapi.bancoplaza.com:8243/cce/v1/v1/cce/pagoO' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI1MzU5NjksImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI1Mzk1NjksImlhdCI6MTc2MjUzNTk2OSwianRpIjoiNzM1YjdiNWEtMDVmZS00ZGJjLWE2ZmQtZTliY2Y2NjM0MmQ4IiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.XT7mcCC085CiEKvXHeZMe3Vrpru8Uk0g8dtmVSCGmS9hE66HCCfX9GZ9eqqU0mcuNmrq6cWPqfOlNftJ8sD8nJvj0SjX-2Yi4Q1XLuaM74N_c_octs2lFClXPnvOHpSZ0B5fdv2c0zVOi2T04srksgsesLyDegDZT0nupPbfdUr10qOX1e049Sstu3N3zmPeH5ix-0XHovinE2qrYj5Bp7o6CGgQOUgDU06WoTC8OW0e8Jo4V4_lJRh2wiXr0jG7gILP-UDnxHgtQnEAcrSHEWvm1jtBbc9GkYaTlHNklnTSNYmnVyKZpLkN_UrCpvS-pp31Tv_4GKBntaEPxEmoKw' \\\r\n  -d '{\"moneda\":\"VES\",\"canal\":\"23\",\"tipo_cce\":\"E\",\"tipo_proposito\":\"220\",\"tipo_instrumento_b\":\"T\",\"identificacion_o\":\"J00400780810\",\"identificacion_b\":\"V00017532062\",\"cuenta_origen\":\"01380001440010066240\",\"cuenta_destino\":\"\",\"telefono\":\"04125509071\",\"correo\":\"\",\"cod_banco_d\":\"0138\",\"cod_banco_a\":\"0172\",\"nombre_d\":\"DISTRIBUIDORA BEN S, C.A\",\"nombre_a\":\"Doris Wells\",\"monto\": 0.01,\"concepto\": \"PAGO PRUEBA\",\"direccion_ip\":\"127.0.0.1\"}'"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "current_token",
+      "value": ""
+    }
+  ]
+}

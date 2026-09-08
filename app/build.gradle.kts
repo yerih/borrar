@@ -22,8 +22,9 @@ android {
         applicationId = "com.mivuelto"
         minSdk = 26
         targetSdk = 34
-        versionCode = 4
+        versionCode = 5
         versionName = "1.1.3"
+        testInstrumentationRunner = "com.mivuelto.HiltTestRunner"
     }
 
     buildTypes {
@@ -50,6 +51,9 @@ android {
     kotlinOptions {
         jvmTarget = "21"
     }
+    testOptions {
+        unitTests.isIncludeAndroidResources = true
+    }
 }
 
 dependencies {
@@ -57,6 +61,8 @@ dependencies {
     implementation(project(":core-data"))
     implementation(project(":core-ui"))
     implementation(project(":feature-purchase"))
+    implementation(project(":feature-home"))
+    implementation(project(":feature-instant-debit"))
 
     implementation(files("libs\\ysdk_5.91.c221d74_24092716.jar"))
     
@@ -67,6 +73,22 @@ dependencies {
     
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+
+    // Unit test dependencies
+    testImplementation(libs.junit)
+    testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.turbine)
+    testImplementation(libs.mockk)
+    testImplementation(libs.hilt.android.testing)
+    kspTest(libs.hilt.android.compiler)
+
+    // Instrumented test dependencies
+    androidTestImplementation(libs.androidx.test.core)
+    androidTestImplementation(libs.androidx.test.runner)
+    androidTestImplementation(libs.androidx.test.rules)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.hilt.android.testing)
+    kspAndroidTest(libs.hilt.android.compiler)
 }
 
 tasks.register<Exec>("generateReleaseKeystore") {

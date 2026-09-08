@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="instant_debit_title">Débito inmediato</string>
+    <string name="verify_payment">Verificar pago</string>
+    <string name="reference">Referencia</string>
+    <string name="amount">Monto</string>
+    <string name="phone">Teléfono</string>
+    <string name="bank">Banco</string>
+</resources>

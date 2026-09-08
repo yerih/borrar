@@ -1,0 +1,675 @@
+{
+  "info": {
+    "_postman_id": "8c222aa5-ce81-4bb2-bb18-a94746d60e3b",
+    "name": "WS02 qa cobro c2p",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "21244212",
+    "_collection_link": "https://go.postman.co/collection/21244212-8c222aa5-ce81-4bb2-bb18-a94746d60e3b?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "listar bancos",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //bordado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //bordado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/pagos/c2p/v1/v0/pagos/c2p/bancos",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "pagos",
+            "c2p",
+            "v1",
+            "v0",
+            "pagos",
+            "c2p",
+            "bancos"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'https://openapi.bancoplaza.com:8243/pagos/c2p/v1/v0/pagos/c2p/bancos' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI3Nzg1NjMsImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI3ODIxNjMsImlhdCI6MTc2Mjc3ODU2MywianRpIjoiYzhhZWQwMTUtOWNjMi00M2MyLTkzODEtYzljMDRiNzZlNzgwIiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.cJNzzNaEhqLz4uEK-ah1oM4cewZ_r321RIcQw4i2TnbMhEZL8EZNpeEIEsx52Jmqg0X0vPZheMly_Gp6Io8hTo87uT3JDEsfKK_hu1NMLugVX0bwwM6wSsBbX8MUWSn3mN02LN0mKOzRPpcEbB4DTZY0HYzK6yqZMFr-N5OJXEjQ6ocyWANRpSXytexv1lvE-fLJM_I1Txls6a4GiS0JU6b9Q91qMG6zxh883ye82qq4QRFRsxQ_X7C_giA5Yj9BJztex22dsDih6KvPii45JqaLN3OoFShK4JgSKkvidzGVB8gYWn7yQ8O3MaGiHzU-U6Uq_2JJnUwKnO_pNLjVnA'"
+      },
+      "response": []
+    },
+    {
+      "name": "cobro c2p",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //bordado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //bordado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"banco\":\"0138\",\"id\":\"V00012705009\",\"monto\":0.01,\"motivo\":\"Pago de servicio Fonet\",\"origen\":\"23\",\"telefonoCobrador\":\"4122377758\",\"telefonoPagador\":\"4241298180\",\"token\":\"04608526\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/pagos/c2p/v1/v0/pagos/c2p",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "pagos",
+            "c2p",
+            "v1",
+            "v0",
+            "pagos",
+            "c2p"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'https://openapi.bancoplaza.com:8243/pagos/c2p/v1/v0/pagos/c2p' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI3OTAxNjQsImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI3OTM3NjQsImlhdCI6MTc2Mjc5MDE2NCwianRpIjoiNTdkMDFmYzgtMjk1MC00NTEyLWE3YTgtNDJkZDVmMTdmMDA4IiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.WM6B1Y_0YBvbKuH3T6KpG8ep3d9TfETeLjkaZOh3-EpkyY2wxLbYjA6lsrM6hs7dhIyO2RnckJQ1CFs9jTgFPlg7_hJJgf9qB-Ei5geLyuE8ztagikqk1z6-JFe81sWXEp7pf7Mkz2oEN9tlcceDgDi1vciTm67FCjYqUPHW3kTniKOnufXpo7OFDcUy8kwGOX_Fu6mK9Lfy5iTB_B3LlKu_APQF3_SVAgEODN_xbxhdbQenPc63p0mW9n_Q_cSvVXK4tMxXhFkIPU57VZNIt0ChkNsA-x3-Gb_IZBvHmwKZX4KeJURBOYLKG5WcHzhAy0ylU-tVk6Sl75LIreE4hA' \\\r\n  -d '{\"banco\":\"0138\",\"id\":\"V00012705009\",\"monto\":0.01,\"motivo\":\"Pago de servicio Fonet\",\"origen\":\"23\",\"telefonoCobrador\":\"4122377758\",\"telefonoPagador\":\"4125509071\",\"token\":\"12740313\"}'"
+      },
+      "response": []
+    },
+    {
+      "name": "reverso c2p",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //bordado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //bordado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/pagos/c2p/v1/v0/pagos/c2p/000000615534",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "pagos",
+            "c2p",
+            "v1",
+            "v0",
+            "pagos",
+            "c2p",
+            "000000615534"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'DELETE' \\\r\n  'https://openapi.bancoplaza.com:8243/pagos/c2p/v1/v0/pagos/c2p/000000661911' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI3OTM3ODAsImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI3OTczODAsImlhdCI6MTc2Mjc5Mzc4MCwianRpIjoiOGNjNjZjOWMtYzA3NS00ZTEwLTgyM2YtODkyMjFkNjAyOTJjIiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.rQTxjFPYbDcTm3C_ukBtOiL8f678-GqaI-HdKQrwkNvmxQ0kXOEbnoHolmWdDi1zNxPYfGKm9yvXaPM8zJ0sR1fmS39GvjxJOF57eggTUW9rC4e5xV53j7omGl4Ho2UDz5WEtDBL8JsGDYz95-wdV4CSl39xdJe4wJi7Rh5xOcWKteBRog8fL85xsbYc03Zmit1XkpHOFEK33xtV1H1LB9iSG4Gsi1B4MSZXK21bcdgFaEH8NWwS59H9erFpA8IRzAH52uZWn3r9Mw_ZVMs8zkLNggfIAEjullqbnSS7RchhFVOd_EqLOqRfVxeDWgKihczAjzQQKTgRmSrbxkPPHA'"
+      },
+      "response": []
+    },
+    {
+      "name": "consulta de movimientos por rif",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //bordado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //bordado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/pagos/c2p/v1/v0/pagos/c2p/J00400780810",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "pagos",
+            "c2p",
+            "v1",
+            "v0",
+            "pagos",
+            "c2p",
+            "J00400780810"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'https://openapi.bancoplaza.com:8243/pagos/c2p/v1/v0/pagos/c2p/J00400780810' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI3OTM3ODAsImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI3OTczODAsImlhdCI6MTc2Mjc5Mzc4MCwianRpIjoiOGNjNjZjOWMtYzA3NS00ZTEwLTgyM2YtODkyMjFkNjAyOTJjIiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.rQTxjFPYbDcTm3C_ukBtOiL8f678-GqaI-HdKQrwkNvmxQ0kXOEbnoHolmWdDi1zNxPYfGKm9yvXaPM8zJ0sR1fmS39GvjxJOF57eggTUW9rC4e5xV53j7omGl4Ho2UDz5WEtDBL8JsGDYz95-wdV4CSl39xdJe4wJi7Rh5xOcWKteBRog8fL85xsbYc03Zmit1XkpHOFEK33xtV1H1LB9iSG4Gsi1B4MSZXK21bcdgFaEH8NWwS59H9erFpA8IRzAH52uZWn3r9Mw_ZVMs8zkLNggfIAEjullqbnSS7RchhFVOd_EqLOqRfVxeDWgKihczAjzQQKTgRmSrbxkPPHA'"
+      },
+      "response": []
+    },
+    {
+      "name": "cobro subrogado",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //bordado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //bordado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\"banco\":\"0138\",\"id\":\"V00012705009\",\"monto\":0.01,\"motivo\":\"Pago de servicio Fonet\",\"origen\":\"23\",\"telefonoCobrador\":\"4122377758\",\"telefonoPagador\":\"4241298180\",\"token\":\"00314821\"}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/pagos/c2p/v1/v0/pagos/c2p/J00400780810",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "pagos",
+            "c2p",
+            "v1",
+            "v0",
+            "pagos",
+            "c2p",
+            "J00400780810"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'POST' \\\r\n  'https://openapi.bancoplaza.com:8243/pagos/c2p/v1/v0/pagos/c2p/J00400780810' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Content-Type: application/json' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI3OTM3ODAsImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI3OTczODAsImlhdCI6MTc2Mjc5Mzc4MCwianRpIjoiOGNjNjZjOWMtYzA3NS00ZTEwLTgyM2YtODkyMjFkNjAyOTJjIiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.rQTxjFPYbDcTm3C_ukBtOiL8f678-GqaI-HdKQrwkNvmxQ0kXOEbnoHolmWdDi1zNxPYfGKm9yvXaPM8zJ0sR1fmS39GvjxJOF57eggTUW9rC4e5xV53j7omGl4Ho2UDz5WEtDBL8JsGDYz95-wdV4CSl39xdJe4wJi7Rh5xOcWKteBRog8fL85xsbYc03Zmit1XkpHOFEK33xtV1H1LB9iSG4Gsi1B4MSZXK21bcdgFaEH8NWwS59H9erFpA8IRzAH52uZWn3r9Mw_ZVMs8zkLNggfIAEjullqbnSS7RchhFVOd_EqLOqRfVxeDWgKihczAjzQQKTgRmSrbxkPPHA' \\\r\n  -d '{\"banco\":\"0138\",\"id\":\"V00017532062\",\"monto\":0.01,\"motivo\":\"Pago de servicio Fonet\",\"origen\":\"23\",\"telefonoCobrador\":\"4122377758\",\"telefonoPagador\":\"4125509071\",\"token\":\"55513787\"}'"
+      },
+      "response": []
+    },
+    {
+      "name": "reverso subrogado",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //bordado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //bordado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/pagos/c2p/v1/v0/pagos/c2p/J00400780810/000000615536",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "pagos",
+            "c2p",
+            "v1",
+            "v0",
+            "pagos",
+            "c2p",
+            "J00400780810",
+            "000000615536"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'DELETE' \\\r\n  'https://openapi.bancoplaza.com:8243/pagos/c2p/v1/v0/pagos/c2p/J00400780810/000000662626' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI3OTM3ODAsImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI3OTczODAsImlhdCI6MTc2Mjc5Mzc4MCwianRpIjoiOGNjNjZjOWMtYzA3NS00ZTEwLTgyM2YtODkyMjFkNjAyOTJjIiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.rQTxjFPYbDcTm3C_ukBtOiL8f678-GqaI-HdKQrwkNvmxQ0kXOEbnoHolmWdDi1zNxPYfGKm9yvXaPM8zJ0sR1fmS39GvjxJOF57eggTUW9rC4e5xV53j7omGl4Ho2UDz5WEtDBL8JsGDYz95-wdV4CSl39xdJe4wJi7Rh5xOcWKteBRog8fL85xsbYc03Zmit1XkpHOFEK33xtV1H1LB9iSG4Gsi1B4MSZXK21bcdgFaEH8NWwS59H9erFpA8IRzAH52uZWn3r9Mw_ZVMs8zkLNggfIAEjullqbnSS7RchhFVOd_EqLOqRfVxeDWgKihczAjzQQKTgRmSrbxkPPHA'"
+      },
+      "response": []
+    },
+    {
+      "name": "consulta de movimientos por rif y referencia",
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "exec": [
+              "// 1. Definir los datos para la solicitud del token\r",
+              "const tokenUrl = 'https://portalapiqa.bancoplaza.com/oauth2/token';\r",
+              "const clientId = 'N6nAqhrTrPd7rwjAazbeZ4EWpWMa';  //bordado qa\r",
+              "const clientSecret = 'rtUIiwvA4SWSMH8anD2eUdREQ6Aa'; //bordado qa\r",
+              "\r",
+              "\r",
+              "// WSO2 suele usar Basic Auth para el endpoint de token\r",
+              "const base64Auth = btoa(clientId + \":\" + clientSecret);\r",
+              "\r",
+              "const requestOptions = {\r",
+              "    url: tokenUrl,\r",
+              "    method: 'POST',\r",
+              "    header: {\r",
+              "        'Authorization': 'Basic ' + base64Auth,\r",
+              "        'Content-Type': 'application/x-www-form-urlencoded'\r",
+              "    },\r",
+              "    body: {\r",
+              "        mode: 'urlencoded',\r",
+              "        urlencoded: [\r",
+              "            { key: 'grant_type', value: 'client_credentials' }\r",
+              "        ]\r",
+              "    }\r",
+              "};\r",
+              "\r",
+              "// 2. Ejecutar la petición del token\r",
+              "pm.sendRequest(requestOptions, (err, response) => {\r",
+              "    if (err) {\r",
+              "        console.log(\"Error obteniendo el token:\", err);\r",
+              "    } else {\r",
+              "        const jsonResponse = response.json();\r",
+              "        const accessToken = jsonResponse.access_token;\r",
+              "        \r",
+              "        // 3. Guardar el token en una variable de colección\r",
+              "        // \"current_token\" es el NOMBRE de la etiqueta en Postman\r",
+              "        pm.collectionVariables.set(\"current_token\", accessToken);\r",
+              "        \r",
+              "        console.log(\"Token actualizado correctamente\");\r",
+              "        \r",
+              "        // CORRECCIÓN: Usamos accessToken que es la variable de JS\r",
+              "        console.log(\"Token: \" + accessToken); \r",
+              "    }\r",
+              "});"
+            ],
+            "type": "text/javascript",
+            "packages": {},
+            "requests": {}
+          }
+        }
+      ],
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "accept",
+            "value": "*/*"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{current_token}}"
+          }
+        ],
+        "url": {
+          "raw": "https://openapiqa.bancoplaza.com/pagos/c2p/v1/v0/pagos/c2p/J00400780810/hoy/000000615536",
+          "protocol": "https",
+          "host": [
+            "openapiqa",
+            "bancoplaza",
+            "com"
+          ],
+          "path": [
+            "pagos",
+            "c2p",
+            "v1",
+            "v0",
+            "pagos",
+            "c2p",
+            "J00400780810",
+            "hoy",
+            "000000615536"
+          ]
+        },
+        "description": "Generated from cURL: curl -X 'GET' \\\r\n  'https://openapi.bancoplaza.com:8243/pagos/c2p/v1/v0/pagos/c2p/J00400780810/hoy/000000662626' \\\r\n  -H 'accept: */*' \\\r\n  -H 'Authorization: Bearer eyJ4NXQiOiJaV1kxTkdWaVpERmpORFEzTTJVMU1UQXhPRFk1WkRobE1USmlORGMwTm1Kak5XUmtNRFZpTnpBeU5HWTFZemRqTlRnMk9XVmhOemMwWkdSak56YzVNZyIsImtpZCI6IlpXWTFOR1ZpWkRGak5EUTNNMlUxTVRBeE9EWTVaRGhsTVRKaU5EYzBObUpqTldSa01EVmlOekF5TkdZMVl6ZGpOVGcyT1dWaE56YzBaR1JqTnpjNU1nX1JTMjU2IiwidHlwIjoiYXQrand0IiwiYWxnIjoiUlMyNTYifQ.eyJzdWIiOiJhZDg5NmFkOC0zYjE5LTQ2YjktODhjNC0zNGM0ODhjYmM3MjYiLCJhdXQiOiJBUFBMSUNBVElPTiIsImF1ZCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJuYmYiOjE3NjI3OTM3ODAsImF6cCI6IlJXQXg2dkNRQ2dCMUhabE5zUlVHbUtfZ2JlWWEiLCJzY29wZSI6ImRlZmF1bHQiLCJpc3MiOiJodHRwczovL29wZW5hcGkuYmFuY29wbGF6YS5jb206OTQ0My9vYXV0aDIvdG9rZW4iLCJleHAiOjE3NjI3OTczODAsImlhdCI6MTc2Mjc5Mzc4MCwianRpIjoiOGNjNjZjOWMtYzA3NS00ZTEwLTgyM2YtODkyMjFkNjAyOTJjIiwiY2xpZW50X2lkIjoiUldBeDZ2Q1FDZ0IxSFpsTnNSVUdtS19nYmVZYSJ9.rQTxjFPYbDcTm3C_ukBtOiL8f678-GqaI-HdKQrwkNvmxQ0kXOEbnoHolmWdDi1zNxPYfGKm9yvXaPM8zJ0sR1fmS39GvjxJOF57eggTUW9rC4e5xV53j7omGl4Ho2UDz5WEtDBL8JsGDYz95-wdV4CSl39xdJe4wJi7Rh5xOcWKteBRog8fL85xsbYc03Zmit1XkpHOFEK33xtV1H1LB9iSG4Gsi1B4MSZXK21bcdgFaEH8NWwS59H9erFpA8IRzAH52uZWn3r9Mw_ZVMs8zkLNggfIAEjullqbnSS7RchhFVOd_EqLOqRfVxeDWgKihczAjzQQKTgRmSrbxkPPHA'"
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "current_token",
+      "value": ""
+    }
+  ]
+}
