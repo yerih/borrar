@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.dp
 import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.R
+import com.mivuelto.core.ui.design.HeaderTitles
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
@@ -35,6 +36,7 @@ import com.mivuelto.feature.instantdebit.navigation.InstantDebitViewModel
 @Composable
 fun BankScreen(
     viewModel: InstantDebitViewModel,
+    flowTitle: String,
     onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
@@ -72,9 +74,10 @@ fun BankScreen(
                     modifier = Modifier.padding(top = 10.dp)
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(text = "Ingrese banco", style = Lato.headlineMedium)
-                Spacer(modifier = Modifier.height(15.dp))
+                HeaderTitles(
+                    flowTitle = flowTitle,
+                    instruction = stringResource(R.string.enter_bank)
+                )
             }
 
             Column(

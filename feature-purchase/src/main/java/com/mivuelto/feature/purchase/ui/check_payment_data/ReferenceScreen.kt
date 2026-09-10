@@ -15,6 +15,7 @@ import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
 @Composable
 fun ReferenceScreen(
     viewModel: CheckPaymentViewModel,
+    flowTitle: String,
     onBack: ()->Unit = {},
     onTaskDone: ()->Unit = {}
 ){
@@ -29,6 +30,7 @@ fun ReferenceScreen(
     }
 
     SingleFormScreen(
+        flowTitle = flowTitle,
         title = "Ingrese referencia",
         label = "Referencia",
         onBack = onBack,

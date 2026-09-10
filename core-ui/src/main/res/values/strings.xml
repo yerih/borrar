@@ -163,4 +163,7 @@
     <string name="reference">Referencia</string>
     <string name="next">Siguiente</string>
     <string name="validation_successful">Validación exitosa</string>
+    <string name="enter_bank">Seleccione banco</string>
+    <string name="verify_payment">Verificar pago móvil</string>
+    <string name="verify_payment_mobile">Verificar pago móvil</string>
 </resources>

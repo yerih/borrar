@@ -17,6 +17,7 @@ import com.mivuelto.feature.instantdebit.navigation.InstantDebitViewModel
 @Composable
 fun AmountScreen(
     viewModel: InstantDebitViewModel,
+    flowTitle: String,
     onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
@@ -31,6 +32,7 @@ fun AmountScreen(
     }
 
     SingleFormScreen(
+        flowTitle = flowTitle,
         title = "Ingrese monto",
         label = "Monto",
         initialValue = amount,

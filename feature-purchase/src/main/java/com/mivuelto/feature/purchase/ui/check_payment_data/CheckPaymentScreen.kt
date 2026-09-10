@@ -63,7 +63,7 @@ fun CheckPaymentScreen(
                         )
 
                         Spacer(modifier = Modifier.height(10.dp))
-                        Text(text = stringResource(R.string.verify_payment), style = Lato.headlineMedium)
+                        Text(text = stringResource(R.string.verify_payment_mobile), style = Lato.headlineMedium)
                         Spacer(modifier = Modifier.height(15.dp))
 
 

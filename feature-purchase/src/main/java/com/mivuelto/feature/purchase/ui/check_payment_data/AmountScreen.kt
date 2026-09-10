@@ -7,9 +7,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
+import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.SingleFormScreen
 import com.mivuelto.core.ui.design.textfields.DecimalCurrencyVisualTransformation
 import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
@@ -17,6 +19,7 @@ import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
 @Composable
 fun AmountScreen(
     viewModel: CheckPaymentViewModel,
+    flowTitle: String,
     onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
@@ -31,7 +34,8 @@ fun AmountScreen(
     }
 
     SingleFormScreen(
-        title = "Ingrese monto",
+        flowTitle = flowTitle,
+        title = stringResource(R.string.enter_amount),
         label = "Monto",
         initialValue = amount,
         errorMsg = "El monto es requerido",

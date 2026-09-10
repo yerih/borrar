@@ -7,11 +7,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.mivuelto.core.ui.SingleFormScreen
 import com.mivuelto.core.ui.design.textfields.PhoneVisualTransformation
+import com.mivuelto.feature.instantdebit.R
 import com.mivuelto.feature.instantdebit.navigation.InstantDebitViewModel
 
 
@@ -19,6 +21,7 @@ import com.mivuelto.feature.instantdebit.navigation.InstantDebitViewModel
 fun PhoneScreen(
     viewModel: InstantDebitViewModel,
     onBack: ()->Unit,
+    flowTitle: String,
     onTaskDone: ()->Unit
 ){
     var phone by remember{ mutableStateOf("") }
@@ -33,6 +36,7 @@ fun PhoneScreen(
 
     SingleFormScreen(
         title = "Ingrese teléfono",
+        flowTitle = flowTitle,
         label = "Teléfono",
         onBack = onBack,
         isError = phoneError.value,

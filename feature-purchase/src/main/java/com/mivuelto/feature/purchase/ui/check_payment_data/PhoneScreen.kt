@@ -7,17 +7,20 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.mivuelto.core.ui.SingleFormScreen
 import com.mivuelto.core.ui.design.textfields.PhoneVisualTransformation
+import com.mivuelto.feature.purchase.R
 import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
 
 
 @Composable
 fun PhoneScreen(
     viewModel: CheckPaymentViewModel,
+    flowTitle: String,
     onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
@@ -32,6 +35,7 @@ fun PhoneScreen(
     }
 
     SingleFormScreen(
+        flowTitle = flowTitle,
         title = "Ingrese teléfono",
         label = "Teléfono",
         onBack = onBack,

@@ -7,10 +7,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,12 +18,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.ui.BaseScreen
-import com.mivuelto.core.ui.R
+import com.mivuelto.core.ui.design.HeaderTitles
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.design.selectors.BankSelector
-import com.mivuelto.core.ui.theme.Lato
+
+import com.mivuelto.core.ui.R.drawable.*
+import com.mivuelto.feature.purchase.R
 import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
 
 
@@ -35,19 +35,20 @@ import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
 @Composable
 fun BankScreen(
     viewModel: CheckPaymentViewModel,
+    flowTitle: String,
     onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
 
     val banks = listOf(
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA")
+        BankModel(logo_librepago, "0105", "Mercantil"),
+        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
+        BankModel(logo_librepago, "0105", "Mercantil"),
+        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
+        BankModel(logo_librepago, "0105", "Mercantil"),
+        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
+        BankModel(logo_librepago, "0105", "Mercantil"),
+        BankModel(logo_corpocredit, "0108", "Provincial BBVA")
 //    Bank(R.drawable.ic_bbva, "BBVA", "Cuenta terminación 9012"),
 //    Bank(R.drawable.ic_santander, "Santander", "Cuenta terminación 3456")
     )
@@ -74,9 +75,10 @@ fun BankScreen(
                     modifier = Modifier.padding(top = 10.dp)
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(text = "Ingrese banco", style = Lato.headlineMedium)
-                Spacer(modifier = Modifier.height(15.dp))
+                HeaderTitles(
+                    flowTitle = flowTitle,
+                    instruction = stringResource(R.string.enter_bank)
+                )
             }
 
             Column(

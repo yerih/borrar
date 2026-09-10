@@ -17,6 +17,7 @@ import com.mivuelto.feature.sendchange.navigation.SendChangeViewModel
 @Composable
 fun AmountScreen(
     viewModel: SendChangeViewModel,
+    flowTitle: String,
     onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
@@ -32,6 +33,7 @@ fun AmountScreen(
 
     SingleFormScreen(
         title = "Ingrese monto",
+        flowTitle = flowTitle,
         label = "Monto",
         initialValue = amount,
         errorMsg = "El monto es requerido",

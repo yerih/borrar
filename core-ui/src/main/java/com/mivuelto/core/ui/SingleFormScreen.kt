@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mivuelto.core.ui.design.HeaderTitles
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
@@ -39,6 +40,7 @@ import com.mivuelto.core.ui.theme.Lato
 @Composable
 fun SingleFormScreen(
     title: String,
+    flowTitle: String,
     label: String,
     initialValue: String = "",
     fontSize: TextUnit = 44.sp,
@@ -66,9 +68,11 @@ fun SingleFormScreen(
                     modifier = Modifier.padding(top = 10.dp)
                 )
 
-                Spacer(modifier = Modifier.height(10.dp))
-                Text(text = title, style = Lato.headlineMedium)
-                Spacer(modifier = Modifier.height(15.dp))
+
+                HeaderTitles(
+                    flowTitle = flowTitle,
+                    instruction = title,
+                )
             }
 
 
