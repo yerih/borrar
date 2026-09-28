@@ -10,10 +10,12 @@ import com.mivuelto.core.ui.sharedViewModel
 import com.mivuelto.feature.instantdebit.R
 import com.mivuelto.feature.instantdebit.ui.AmountScreen
 import com.mivuelto.feature.instantdebit.ui.BankScreen
+import com.mivuelto.feature.instantdebit.ui.IdScreen
 import com.mivuelto.feature.instantdebit.ui.PhoneScreen
 
 
 sealed class InstantDebitCaptureFlow(val route: String) {
+    object ID : InstantDebitCaptureFlow("instant_debit_capture/id")
     object AMOUNT : InstantDebitCaptureFlow("instant_debit_capture/amount")
     object PHONE : InstantDebitCaptureFlow("instant_debit_capture/phone")
     object BANK : InstantDebitCaptureFlow("instant_debit_capture/bank")
@@ -24,10 +26,21 @@ fun NavGraphBuilder.instantDebitCaptureNavGraph(
     navController: NavController
 ) {
     navigation(
-        startDestination = InstantDebitCaptureFlow.AMOUNT.route,
+        startDestination = InstantDebitCaptureFlow.ID.route,
         route = InstantDebitFlow.FORM.route
     ){
 
+        composableWithTransitions(
+            route = InstantDebitCaptureFlow.ID.route
+        ){
+            val viewModel = it.sharedViewModel<InstantDebitViewModel>(navController, route = NavFeature.INSTANT_DEBIT.route)
+            IdScreen(
+                viewModel = viewModel,
+                flowTitle = stringResource(R.string.instant_debit),
+                onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
+                onTaskDone = { navController.navigate(route = InstantDebitCaptureFlow.AMOUNT.route) }
+            )
+        }
         composableWithTransitions(
             route = InstantDebitCaptureFlow.AMOUNT.route
         ){

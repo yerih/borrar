@@ -51,6 +51,7 @@ fun SingleFormScreen(
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isError: Boolean = false,
+    digitsOnly: Boolean = false,
     onValueChange: (String)->Unit,
     onTaskDone: ()->Unit = {}
 ){
@@ -81,11 +82,13 @@ fun SingleFormScreen(
                 textStyle = LocalTextStyle.current.copy(fontSize = fontSize, textAlign = textAlign),
                 modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.Center),
                 onValueChange = {
-                    textValue.value = if(visualTransformation is DecimalCurrencyVisualTransformation){
-                        it.filter{ e -> e.isDigit()}
+                    val filtered = if (digitsOnly || visualTransformation is DecimalCurrencyVisualTransformation) {
+                        it.filter { e -> e.isDigit() }
+                    } else {
+                        it
                     }
-                    else it
-                    onValueChange(it)
+                    textValue.value = filtered
+                    onValueChange(filtered)
                 },
                 label = label,
                 isError = isError,
