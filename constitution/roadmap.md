@@ -36,7 +36,6 @@ _Up next to address. Ideally only one feature "in progress" at a time._
 | # | Feature | Summary | Priority |
 |---|---------|---------|----------|
 | 017 | **Security Hardening** — Move keystore credentials to `local.properties`, remove hardcoded passwords, add certificate pinning, encrypt token storage. | 🔴 Critical |
-| 018 | **Login API Integration** — Wire `ApiService.login()` with `LoginViewModel`, implement token storage and session management. | 🔴 Critical |
 | 019 | **RemoteDataSource Implementation** — Implement `fetchData()` with real API calls, add proper error handling with `Result<T>` wrapper. | 🔴 Critical |
 | 020 | **Check Payment API Integration** — Connect `sendPayment()` to `ApiService.queryTransaction()`, handle real responses and errors. | 🔴 Critical |
 
@@ -48,6 +47,7 @@ _Features with stub implementations that need completion._
 
 | # | Feature | Current State | What's Missing |
 |---|---------|---------------|----------------|
+| 018 | **Login API Integration** | auth-service wired end-to-end at data/domain layer (see *Auth-service* below). `:app:assembleDebug` green. | Wire `LoginUseCase` into `LoginViewModel`, persist session across process death, add unit tests |
 | 021 | **Digital Change Screen** | Basic UI shell | Business logic, API integration, amount calculation |
 | 022 | **Instant Debit Screen** | Not started | Full feature implementation |
 | 023 | **Historical Screen** | Basic UI shell | Transaction list, filtering, API integration |
@@ -84,7 +84,10 @@ _Issues to address that are not features per se._
 
 | Issue | Severity | Location |
 |-------|----------|----------|
-| Hardcoded API base URL (`api.example.com`) | 🔴 High | `core-data/.../NetworkModule.kt` |
+| ~~Hardcoded API base URL (`api.example.com`)~~ | ✅ Resolved | Now `BuildConfig.BASE_URL` in `core-data/build.gradle.kts` |
+| Auth token held in memory only — lost on process death | 🟡 Medium | `core-data/.../session/SessionManager.kt` |
+| `AuthRepository` throws `AuthException` instead of `Result<T>` — deviation, needs Architect sign-off | 🟡 Medium | `core-data/.../network/AuthException.kt` |
+| `ApiService.login` deprecated but not yet removed (duplicate login entry point) | 🟢 Low | `core-data/.../network/ApiService.kt` |
 | Keystore credentials in build.gradle | 🔴 High | `app/build.gradle.kts` |
 | HTTP body logging in release builds | 🟡 Medium | `core-data/.../NetworkModule.kt` |
 | `GetReportUseCase` returns hardcoded data | 🟡 Medium | `core/.../GetReportUseCase.kt` |
@@ -92,6 +95,70 @@ _Issues to address that are not features per se._
 | `BankScreen` has hardcoded bank list | 🟡 Medium | `feature-purchase/.../BankScreen.kt` |
 | No `Result<T>` wrapper for error propagation | 🟡 Medium | All data layer |
 | Room dependencies unused (no DAO/Entity/DB) | 🟡 Medium | `core-data/build.gradle.kts` |
+
+---
+
+## Recent Work
+
+### auth-service — Login POS / App móvil (#018, data/domain layers)
+
+_Implements API.md § 1 (`documentation/API corpocredit/API.md`): `POST /auth/app/login` and
+`POST /auth/app/logout` behind the api-gateway `/auth` base. Backend contract source of truth._
+
+**Added (`:core-data`)**
+
+| Path | Purpose |
+|------|---------|
+| `network/AuthApiService.kt` | Retrofit contract — `auth/app/login` (public), `auth/app/logout` (`Response<Unit>` for the 204) |
+| `network/AuthException.kt` | `ErrorResponse` (Spring default error body) + sealed `AuthException` mapping the spec's error table 1:1: `Validation` 400, `InvalidCredentials` 401, `RoleNotAllowed` 403, `Locked` 423, `Network`, `Server` |
+| `datasource/AuthRemoteDataSource.kt` | Thin calls over the contract, translating any `Throwable` into `AuthException` |
+| `session/SessionManager.kt` | In-memory JWT holder (`StateFlow`) |
+| `repository/AuthRepositoryImpl.kt` | Saves/clears session; local state always cleared after logout |
+
+**Added (`:core`)**
+
+| Path | Purpose |
+|------|---------|
+| `domain/model/AuthUser.kt`, `AuthSession.kt` | Typed domain models (no `Any`, per constitution) |
+| `domain/repository/AuthRepository.kt` | Domain contract + `authorizationHeader()` helper |
+| `domain/usecase/LoginUseCase.kt` | Blank-input validation + trim before hitting the network |
+| `domain/usecase/LogoutUseCase.kt` | Logout wrapper |
+
+**Changed**
+
+| Path | Change |
+|------|--------|
+| `core-data/build.gradle.kts` | `BuildConfig.BASE_URL` replaces the hardcoded `api.example.com`; default `http://10.0.2.2:8080/`, overridable with `-PapiBaseUrl=…`. No URLs in code |
+| `core-data/.../di/NetworkModule.kt` | Reads `BuildConfig.BASE_URL`, adds 30s timeouts, provides `AuthApiService` |
+| `core-data/.../di/RepositoryModule.kt` | Binds `AuthRepository` |
+| `core-data/.../network/ApiService.kt` | **Bug fix:** legacy `login` called `app/login`, missing the `/auth` prefix. Corrected and deprecated in favour of `AuthApiService` |
+| `network/requests/LoginRequest.kt`, `requests/UserData.kt`, `responses/LoginResponse.kt` | Explicit `@SerializedName` on every field |
+
+**Spec details that constrain the implementation**
+
+- Only `ADM`/`CSH` may log in here; `OWN`/`SAM` get 403.
+- `roleId` is the role **id**, not the slug — resolve against the catalog for a readable label.
+- `user.merchantId` is the commerce id, carried in the JWT as the `commerceId` claim.
+- Logout sets `sessions.active = false` but does **not** revoke the JWT (no blacklist), so the token
+  must not be trusted as "revoked" client-side — only its natural expiry applies.
+- `expiresAt` arrives as a `LocalDateTime` with no timezone (`2026-09-25T15:30:00`); currently kept
+  as `String` and not parsed.
+- 401 is intentionally generic ("Invalid credentials") across user-not-found / wrong password /
+  inactive user / invalid terminal — the UI must not attempt to distinguish them.
+
+**Verification:** `:core-data:assembleDebug`, `:core:assembleDebug`, `:app:assembleDebug` and
+`:core:testDebugUnitTest` all green. `:core-data:testDebugUnitTest` cannot run offline
+(`hilt-android-compiler` not in the local cache) — pre-existing, unrelated to this change.
+
+**Open follow-ups**
+
+1. Wire `LoginUseCase` into `LoginViewModel` (MVI: `LoginIntent`/`LoginState`/`LoginEffect`).
+2. Real backend base URL still pending — update the `apiBaseUrl` default in
+   `core-data/build.gradle.kts` when it arrives.
+3. Move the token from `SessionManager` to `EncryptedSharedPreferences`/DataStore so a POS session
+   survives process death (part of #017).
+4. Decide the `Result<T>` vs `AuthException` question project-wide before #019 is implemented, so
+   error handling is not defined twice.
 
 ---
 
