@@ -3,19 +3,22 @@ package com.mivuelto.feature.purchase.ui.login
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mivuelto.core.SerialNumberHolder
+import com.mivuelto.core.domain.repository.AuthRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.firstOrNull
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    val serialNumHolder: SerialNumberHolder
+    val serialNumHolder: SerialNumberHolder,
+    val authRepo: AuthRepository,
 ) : ViewModel() {
 
 
@@ -37,6 +40,11 @@ class LoginViewModel @Inject constructor(
     fun onLoginClicked() {
         if(checkCredentials()){
             viewModelScope.launch(Dispatchers.IO){
+                authRepo.login(
+                    username = _state.value.user,
+                    password = _state.value.password,
+                    terminalSerial = serialNumHolder.serialNumber.firstOrNull() ?: ""
+                )
                 _effect.send(LoginEffect.NavigateToHome)
             }
         }

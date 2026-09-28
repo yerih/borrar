@@ -10,6 +10,16 @@ android {
     compileSdk = 34
     defaultConfig {
         minSdk = 26
+        // Base URL del api-gateway (ver documentation/"API corpocredit"/API.md § Convenciones).
+        // Por defecto http://localhost:8080/. Cuando pases la URL real, cambiar solo aquí
+        // (o pasar -PapiBaseUrl=https://... por línea de comandos) — NetworkModule la lee
+        // vía BuildConfig.BASE_URL, no hay URLs hardcodeadas en código.
+        val apiBaseUrl = providers.gradleProperty("apiBaseUrl")
+            .getOrElse("http://10.0.2.2:8080/")
+        buildConfigField("String", "BASE_URL", "\"$apiBaseUrl\"")
+    }
+    buildFeatures {
+        buildConfig = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21

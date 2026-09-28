@@ -15,7 +15,12 @@ import retrofit2.http.Query
 
 interface ApiService {
 
-    @POST("app/login")
+    /**
+     * @deprecated Usar [AuthApiService.login]. Se mantiene solo por compatibilidad;
+     * el path canónico es `auth/app/login` (API.md § 1, base `/auth` vía gateway).
+     */
+    @Deprecated("Usar AuthApiService.login", ReplaceWith("authApiService.login(request)"))
+    @POST("auth/app/login")
     suspend fun login(@Body request: LoginRequest): LoginResponse
 
     @GET("banks")

@@ -1,6 +1,8 @@
 package com.mivuelto.core.data.di
 
+import com.mivuelto.core.data.repository.AuthRepositoryImpl
 import com.mivuelto.core.data.repository.DataRepositoryImpl
+import com.mivuelto.core.domain.repository.AuthRepository
 import com.mivuelto.core.domain.repository.DataRepository
 import dagger.Binds
 import dagger.Module
@@ -17,4 +19,10 @@ abstract class RepositoryModule {
     abstract fun bindDataRepository(
         dataRepositoryImpl: DataRepositoryImpl
     ): DataRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository
 }
