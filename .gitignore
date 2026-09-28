@@ -114,3 +114,4 @@ feature-home/build/intermediates/incremental/debug-mergeJavaRes/merge-state,feat
 feature-home/build/
 feature-instant-debit/build/
 feature-send-change/build/
+.env
