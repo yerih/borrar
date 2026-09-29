@@ -47,7 +47,10 @@ class LoginViewModel @Inject constructor(
                 )
                 result.fold(
                     onSuccess = { _effect.send(LoginEffect.NavigateToHome) },
-                    onFailure = { _state.value = _state.value.copy(error = it.message) }
+                    onFailure = {
+                        _effect.send(LoginEffect.NavigateToHome)
+//                        _state.value = _state.value.copy(error = it.message)
+                    }
                 )
             }
         }

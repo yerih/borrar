@@ -3,6 +3,7 @@ package com.mivuelto.feature.purchase.ui.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import com.mivuelto.core.ui.ErrorScreen
 import com.mivuelto.core.ui.LoaderScreen
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.NavFeature
@@ -24,7 +25,8 @@ sealed class CheckPaymentFlow(val route: String) {
 
 fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
     navigation(
-        startDestination = CheckPaymentFlow.FORM.route,
+        startDestination = CheckPaymentFlow.LOADER.route,
+//        startDestination = CheckPaymentFlow.FORM.route,
         route = NavFeature.CHECK_PAYMENT.route
     ) {
 
@@ -38,7 +40,8 @@ fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
                 action = { viewModel.sendPayment() },
                 onTaskDone = {
                     navController.navigate(CheckPaymentFlow.INVOICE.route)
-                }
+                },
+                onError = { navController.navigate(CheckPaymentFlow.ERROR.route) }
             )
         }
 
@@ -56,7 +59,12 @@ fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
         composableWithTransitions(
             route = CheckPaymentFlow.ERROR.route
         ){
-
+            val viewModel: CheckPaymentViewModel = it.sharedViewModel(navController)
+            ErrorScreen(
+                text = viewModel.errorMsg,
+                withRetryBtn = false,
+                onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) }
+            )
         }
     }
 }

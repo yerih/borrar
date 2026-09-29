@@ -36,7 +36,8 @@ fun LoaderScreen(
     headerTitle: Int = 0,
     msgInitId: Int = R.string.processing,
     action: ()->Unit = {},
-    onTaskDone: ()->Unit = {}
+    onTaskDone: ()->Unit = {},
+    onError: ()->Unit = {}
 ){
     var isLoading by remember{ mutableStateOf(true) }
     var isDone by remember{ mutableStateOf(false) }
@@ -50,7 +51,10 @@ fun LoaderScreen(
             isLoading = false; isError = false; isDone = false
             when(event){
                 is UiEvent.Loader -> { isLoading = event.isLoading; loaderMsg = context.getString(event.msg) }
-                is UiEvent.Error -> { isError = true; msg = event.msg.ifEmpty { context.getString(event.msgId) } }
+                is UiEvent.Error -> {
+                    onError()
+//                    isError = true; msg = event.msg.ifEmpty { context.getString(event.msgId) }
+                }
                 is UiEvent.TaskDone -> {isDone = true; isError = false; isLoading = false; onTaskDone()}
                 is UiEvent.Notification -> { isLoading = event.isLoading; loaderMsg = event.msg }
                 UiEvent.OnBack -> onBack()
