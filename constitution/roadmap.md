@@ -37,7 +37,6 @@ _Up next to address. Ideally only one feature "in progress" at a time._
 |---|---------|---------|----------|
 | 017 | **Security Hardening** — Move keystore credentials to `local.properties`, remove hardcoded passwords, add certificate pinning, encrypt token storage. | 🔴 Critical |
 | 019 | **RemoteDataSource Implementation** — Implement `fetchData()` with real API calls, add proper error handling with `Result<T>` wrapper. | 🔴 Critical |
-| 020 | **Check Payment API Integration** — Connect `sendPayment()` to `ApiService.queryTransaction()`, handle real responses and errors. | 🔴 Critical |
 
 ---
 
@@ -48,6 +47,7 @@ _Features with stub implementations that need completion._
 | # | Feature | Current State | What's Missing |
 |---|---------|---------------|----------------|
 | 018 | **Login API Integration** | auth-service wired end-to-end at data/domain layer (see *Auth-service* below). `:app:assembleDebug` green. | Wire `LoginUseCase` into `LoginViewModel`, persist session across process death, add unit tests |
+| 020 | **Check Payment API Integration** | `POST /transactions/query` wired end-to-end at data/domain layer (see *core-service* below). 11 new unit tests green. | Wire `QueryTransactionUseCase` into `CheckPaymentViewModel`, resolve `transactionType`/`status` ids against `/configs` for display |
 | 021 | **Digital Change Screen** | Basic UI shell | Business logic, API integration, amount calculation |
 | 022 | **Instant Debit Screen** | Not started | Full feature implementation |
 | 023 | **Historical Screen** | Basic UI shell | Transaction list, filtering, API integration |
@@ -85,8 +85,9 @@ _Issues to address that are not features per se._
 | Issue | Severity | Location |
 |-------|----------|----------|
 | ~~Hardcoded API base URL (`api.example.com`)~~ | ✅ Resolved | Now `BuildConfig.BASE_URL` in `core-data/build.gradle.kts` |
+| ~~Fabricated `router/movimientos` endpoint returning `Any`~~ | ✅ Removed | Violated § 8 (router is internal) and the no-`Any` rule; nothing referenced it |
 | Auth token held in memory only — lost on process death | 🟡 Medium | `core-data/.../session/SessionManager.kt` |
-| `AuthRepository` throws `AuthException` instead of `Result<T>` — deviation, needs Architect sign-off | 🟡 Medium | `core-data/.../network/AuthException.kt` |
+| `AuthRepository`/`TransactionRepository` throw sealed exceptions instead of `Result<T>` — deviation, needs Architect sign-off | 🟡 Medium | `core-data/.../network/AuthException.kt`, `TransactionException.kt` |
 | `ApiService.login` deprecated but not yet removed (duplicate login entry point) | 🟢 Low | `core-data/.../network/ApiService.kt` |
 | Keystore credentials in build.gradle | 🔴 High | `app/build.gradle.kts` |
 | HTTP body logging in release builds | 🟡 Medium | `core-data/.../NetworkModule.kt` |
@@ -99,6 +100,78 @@ _Issues to address that are not features per se._
 ---
 
 ## Recent Work
+
+### core-service — Motor transaccional (#020, data/domain layers)
+
+_Implements API.md § 2 (`documentation/API corpocredit/API.md`): `POST /transactions/query`,
+`POST /transactions/send-change`, `GET /transactions/history` and `GET /transactions/stats`.
+Base `/transactions`, requires the auth-service Bearer token._
+
+**Added (`:core-data`)**
+
+| Path | Purpose |
+|------|---------|
+| `network/TransactionApiService.kt` | Retrofit contract — the four endpoints. `sendChange` returns `Response<Unit>` because the backend answers 501 with no body |
+| `network/TransactionException.kt` | Sealed errors for § 2: `Validation` 400, `CommerceInactive` 403, `NotFound` 404, `Unprocessable` 422, `NotImplemented` 501, `BankCommunication` 502, `BankUnavailable` 503, `GatewayTimeout` 504, `Server` 500, `Network` |
+| `network/ApiException.kt` | Common sealed parent of `AuthException` and `TransactionException` — one catch site in the UI; a 401 from any service means "re-login" |
+| `datasource/TransactionRemoteDataSource.kt` | Thin calls, translating any `Throwable` into `ApiException` |
+| `repository/TransactionRepositoryImpl.kt` | Maps wire → domain, converts money to cents, requires an active session |
+| `network/requests/SendChangeRequest.kt` | `send-change` body |
+| `network/responses/TransactionStatsResponse.kt` | `stats` body + `DailyStatResponse` |
+
+**Added (`:core`)**
+
+| Path | Purpose |
+|------|---------|
+| `domain/model/TransactionType.kt` | `PAGO_MOVIL` / `TRANSFERENCIA`; the enum constants **are** the wire values, so Gson serializes them directly |
+| `domain/model/Transaction.kt`, `TransactionQuery.kt`, `SendChangeCommand.kt` | Typed domain models (no `Any`) |
+| `domain/model/TransactionStats.kt` | `TransactionStats` + `DailyStat`, amounts in cents |
+| `domain/repository/TransactionRepository.kt` | Domain contract |
+| `domain/usecase/QueryTransactionUseCase.kt` | Client-side validation: amount ≠ 0, `reference` `\d{6,}`, `document` required for TRANSFERENCIA, `phone` dropped for TRANSFERENCIA |
+| `domain/usecase/SendChangeUseCase.kt` | `amount > 0` + required fields |
+| `domain/usecase/GetTransactionHistoryUseCase.kt` | Pass-through |
+| `domain/usecase/GetTransactionStatsUseCase.kt` | `endDate >= startDate`, range ≤ 31 days |
+
+**Changed**
+
+| Path | Change |
+|------|--------|
+| `core-data/.../di/NetworkModule.kt` | Provides `TransactionApiService` |
+| `core-data/.../di/RepositoryModule.kt` | Binds `TransactionRepository` |
+| `network/requests/TransactionQueryRequest.kt` | **Added the missing `transactionType`** (required by § 2); `reference`/`phone`/`document` now nullable |
+| `network/responses/TransactionResponse.kt` | `amount` `Double` → `BigDecimal`; explicit `@SerializedName` |
+| `network/requests/SendChangeRequest.kt`, `TransactionStatsResponse.kt` | Amounts `Double` → `BigDecimal` |
+| `network/ApiService.kt` | **Removed `getBankMovements`** — a fabricated `router/movimientos` returning `Any` that violated § 8 (router is internal, not for direct consumption) and the no-`Any` rule. Nothing referenced it. Interface now holds only the § 7 public catalogs |
+| `network/ApiService.kt` | `getBanks`/`getConfigs` no longer send an `Authorization` header — § 7 marks them `permitAll` |
+
+**Spec details that constrain the implementation**
+
+- `transactionType` and `status` in the response are **ids of `configs`**, not literals. Resolve
+  against `GET /configs?type=TRANSACCIONES` / `TRANSACCION_STATUS` before displaying.
+- `send-change` returns **501 always** after passing validation — that is the expected behaviour
+  today, not a transient failure. The UI must not offer retry.
+- `history` returns only the last 20 **vueltos** (`transactionType = VUELTO`), no pagination.
+- `stats` aggregates **vueltos** only, max 31 days, and is meant for the backoffice dashboard.
+- `bankId` is required only when the commerce has more than one active account — the client
+  cannot know that, so it must be sent whenever the commerce has multiple accounts.
+- `phone` is ignored by the backend for TRANSFERENCIA; the use case drops it rather than
+  sending a field that will be discarded.
+- Money: wire sends decimals (`150.50`), the domain stores **cents** (`Long`), converted with
+  `BigDecimal.movePointRight(2)` — never through `Double`, per the project's currency convention.
+
+**Verification:** `:core:assembleDebug`, `:core-data:assembleDebug`, `:app:assembleDebug` green.
+`:core:testDebugUnitTest` 11/11 pass (`QueryTransactionUseCaseTest` 7, `GetTransactionStatsUseCaseTest` 4).
+`:core-data:testDebugUnitTest` 12/12 pass. Note: `core-data` tests need network access the first
+time — `hilt-android-compiler` is not in the offline Gradle cache.
+
+**Open follow-ups**
+
+1. Wire `QueryTransactionUseCase` into `CheckPaymentViewModel` and resolve the config ids for display.
+2. Decide `Result<T>` vs sealed exceptions project-wide (now that two services use exceptions).
+3. `send-change` UI must treat 501 as "not available", not as an error to retry.
+4. `history`/`stats` have no consumer yet — #023 (Historical Screen) and the dashboard.
+
+---
 
 ### auth-service — Login POS / App móvil (#018, data/domain layers)
 
