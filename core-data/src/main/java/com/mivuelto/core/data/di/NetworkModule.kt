@@ -4,6 +4,7 @@ import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.mivuelto.core.data.BuildConfig
 import com.mivuelto.core.data.network.ApiService
 import com.mivuelto.core.data.network.AuthApiService
+import com.mivuelto.core.data.network.TransactionApiService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -52,6 +53,12 @@ object NetworkModule {
     @Singleton
     fun provideAuthApiService(retrofit: Retrofit): AuthApiService {
         return retrofit.create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideTransactionApiService(retrofit: Retrofit): TransactionApiService {
+        return retrofit.create(TransactionApiService::class.java)
     }
 
     @Provides

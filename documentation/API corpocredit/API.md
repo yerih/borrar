@@ -8,6 +8,9 @@ ejecución. `backend-node` está deprecado y no se documenta aquí.
 
 - **Base URL**: todo el tráfico externo pasa por `api-gateway` (por defecto `http://localhost:8080`).
   No se debe llamar a los microservicios internos directamente salvo en desarrollo local.
+  url_backoffice = http://consultas.corpocredit.app/ 
+  url_app_movil  = http://api.consultas.corpocredit.app/
+
 - **Autenticación**: `Authorization: Bearer <token>` en cada request autenticado. Hay **dos esquemas de
   token independientes**, no intercambiables entre sí (ver detalle en cada sección):
   - Token de `auth-service` (login POS / app móvil) — `sub` = `userId`.

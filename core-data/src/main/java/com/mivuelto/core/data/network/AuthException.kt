@@ -22,7 +22,8 @@ data class ErrorResponse(
  * Mapea 1:1 con la tabla de errores del spec para no filtrar info al usuario
  * más allá de lo que el backend ya revela.
  */
-sealed class AuthException(message: String, cause: Throwable? = null) : IOException(message, cause) {
+sealed class AuthException(message: String, cause: Throwable? = null) :
+    ApiException(message, cause) {
     /** 400 — username/password/terminalSerial vacíos o body inválido. */
     class Validation(message: String) : AuthException(message)
 
@@ -66,8 +67,8 @@ fun HttpException.toAuthException(): AuthException {
     }
 }
 
-/** Envuelve cualquier [Throwable] de una llamada auth en [AuthException]. */
-fun Throwable.asAuthException(): AuthException = when (this) {
+/** Envuelve cualquier [Throwable] de una llamada auth en [ApiException]. */
+fun Throwable.asAuthException(): ApiException = when (this) {
     is AuthException -> this
     is HttpException -> toAuthException()
     is IOException -> AuthException.Network(this)
