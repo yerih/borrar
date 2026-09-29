@@ -10,24 +10,24 @@ import java.time.LocalDate
  * core-service — Motor transaccional (API.md § 2).
  * Implementación en `:core-data`. Requiere el token de auth-service: el
  * repositorio toma el header `Authorization` de la sesión activa, por lo que
- * estas operaciones lanzan [com.mivuelto.core.data.network.AuthException.InvalidCredentials]
- * si no hay sesión y [com.mivuelto.core.data.network.TransactionException]
- * en los demás casos (404 no encontrado, 422 banco sin API, 501 send-change...).
+ * sin sesión la operación devuelve `Result.failure(ApiError.Unauthorized)`.
+ * El resto de fallos son `ApiError` (404 no encontrado, 422 banco sin API,
+ * 501 send-change, ...) siempre dentro de `Result.failure`.
  */
 interface TransactionRepository {
 
     /** `POST /transactions/query` — verifica el pago o transferencia. */
-    suspend fun queryTransaction(query: TransactionQuery): Transaction
+    suspend fun queryTransaction(query: TransactionQuery): Result<Transaction>
 
     /**
      * `POST /transactions/send-change` — hoy siempre termina en
-     * `TransactionException.NotImplemented` (501) tras pasar las validaciones.
+     * `ApiError.NotImplemented` (501) tras pasar las validaciones.
      */
-    suspend fun sendChange(command: SendChangeCommand)
+    suspend fun sendChange(command: SendChangeCommand): Result<Unit>
 
     /** `GET /transactions/history` — últimos 20 vueltos del comercio, sin filtros. */
-    suspend fun getHistory(): List<Transaction>
+    suspend fun getHistory(): Result<List<Transaction>>
 
     /** `GET /transactions/stats?startDate=&endDate=` — rango máximo 31 días. */
-    suspend fun getStats(startDate: LocalDate, endDate: LocalDate): TransactionStats
+    suspend fun getStats(startDate: LocalDate, endDate: LocalDate): Result<TransactionStats>
 }

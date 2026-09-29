@@ -1,5 +1,6 @@
 package com.mivuelto.core.domain.usecase
 
+import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionType
@@ -17,19 +18,19 @@ import javax.inject.Inject
 class QueryTransactionUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
-    suspend operator fun invoke(query: TransactionQuery): Transaction {
-        require(query.amount != ZERO) { "amount must be different from 0" }
+    suspend operator fun invoke(query: TransactionQuery): Result<Transaction> {
+        if (query.amount == ZERO) {
+            return Result.failure(ApiError.Validation("amount must be different from 0"))
+        }
 
         query.reference?.let { reference ->
-            require(reference.length >= MIN_REFERENCE_LENGTH && reference.all(Char::isDigit)) {
-                "reference must match \\d{6,}"
+            if (reference.length < MIN_REFERENCE_LENGTH || !reference.all(Char::isDigit)) {
+                return Result.failure(ApiError.Validation("reference must match \\d{6,}"))
             }
         }
 
-        if (query.transactionType == TransactionType.TRANSFERENCIA) {
-            require(!query.document.isNullOrBlank()) {
-                "document is required for TRANSFERENCIA"
-            }
+        if (query.transactionType == TransactionType.TRANSFERENCIA && query.document.isNullOrBlank()) {
+            return Result.failure(ApiError.Validation("document is required for TRANSFERENCIA"))
         }
 
         return repository.queryTransaction(

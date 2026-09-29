@@ -1,14 +1,15 @@
-package com.mivuelto.feature.purchase.ui
+package com.mivuelto.feature.home.ui.login
 
 import app.cash.turbine.test
 import com.mivuelto.core.SerialNumberHolder
-import com.mivuelto.feature.purchase.ui.login.LoginEffect
-import com.mivuelto.feature.purchase.ui.login.LoginIntent
-import com.mivuelto.feature.purchase.ui.login.LoginViewModel
+import com.mivuelto.core.domain.error.ApiError
+import com.mivuelto.core.domain.model.AuthSession
+import com.mivuelto.core.domain.model.AuthUser
+import com.mivuelto.core.domain.repository.AuthRepository
+import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -23,12 +24,25 @@ class LoginViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val serialNumberHolder: SerialNumberHolder = mockk(relaxed = true)
+    private val authRepository: AuthRepository = mockk(relaxed = true)
     private lateinit var viewModel: LoginViewModel
+
+    private val authSession = AuthSession(
+        sessionToken = "token",
+        expiresAt = "2030-01-01T00:00:00",
+        user = AuthUser(
+            id = "u1",
+            username = "admin",
+            roleId = "ADM",
+            merchantId = "m1"
+        )
+    )
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = LoginViewModel(serialNumberHolder)
+        coEvery { authRepository.login(any(), any(), any()) } returns Result.success(authSession)
+        viewModel = LoginViewModel(serialNumberHolder, authRepository)
     }
 
     @After
@@ -83,6 +97,38 @@ class LoginViewModelTest {
             assertEquals(true, effect is LoginEffect.NavigateToHome)
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `OnLoginClicked when login fails sets error in state and does not navigate`() = runTest {
+        coEvery { authRepository.login(any(), any(), any()) } returns
+            Result.failure(ApiError.Unauthorized("Invalid credentials"))
+
+        viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
+        viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onIntent(LoginIntent.OnLoginClicked)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals("Invalid credentials", viewModel.state.value.error)
+    }
+
+    @Test
+    fun `OnDismissError clears the error`() = runTest {
+        coEvery { authRepository.login(any(), any(), any()) } returns
+            Result.failure(ApiError.Unauthorized("Invalid credentials"))
+
+        viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
+        viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onIntent(LoginIntent.OnLoginClicked)
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals("Invalid credentials", viewModel.state.value.error)
+
+        viewModel.onIntent(LoginIntent.OnDismissError)
+        assertEquals(null, viewModel.state.value.error)
     }
 
     @Test

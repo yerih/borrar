@@ -9,7 +9,6 @@ import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.ui.launch
 import com.mivuelto.feature.purchase.ui.invoices.InvoiceModel
-import com.mivuelto.feature.purchase.ui.login.LoginEffect
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow

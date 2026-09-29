@@ -17,7 +17,7 @@ interface AuthApiService {
 
     /**
      * POST /auth/app/login — público.
-     * 200 -> [LoginResponse]; errores 400 / 401 / 403 / 423 (ver [com.mivuelto.core.data.network.AuthException]).
+     * 200 -> [LoginResponse]; errores 400 / 401 / 403 / 423 (ver [com.mivuelto.core.domain.error.ApiError]).
      */
     @POST("auth/app/login")
     suspend fun login(@Body request: LoginRequest): LoginResponse

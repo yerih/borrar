@@ -1,4 +1,4 @@
-package com.mivuelto.feature.purchase.ui.login
+package com.mivuelto.feature.home.ui.login
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -39,7 +39,6 @@ fun LoginScreen(
     viewModel: LoginViewModel = hiltViewModel(),
     modifier: Modifier = Modifier,
     onLoginSuccess: () -> Unit = {},
-//    onLoginClick: (user: String, password: String) -> Unit = { _, _ -> },
     onBack: () -> Unit = {}
 ) {
 
@@ -106,7 +105,7 @@ fun LoginScreen(
                 onValueChange = {viewModel.onIntent(LoginIntent.OnPasswordChanged(it))},//{ user.value = it },
                 label = "Contraseña",
                 isError = passwordError.value,
-                errorMessage = "La contraseña es requerida",
+                errorMessage = "La contraseña es requerido",
                 isPassword = true,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
@@ -140,5 +139,4 @@ private fun LoginScreenPreview() {
         LoginScreen()
     }
 }
-
 

@@ -10,7 +10,7 @@ import com.mivuelto.feature.instantdebit.navigation.instantDebitGraph
 import com.mivuelto.feature.sendchange.navigation.sendChangeGraph
 import com.mivuelto.feature.purchase.DigitalChangeScreen
 import com.mivuelto.feature.purchase.HistoricalScreen
-import com.mivuelto.feature.purchase.ui.login.LoginScreen
+import com.mivuelto.feature.home.ui.login.LoginScreen
 import com.mivuelto.feature.purchase.SettingScreen
 import com.mivuelto.feature.purchase.ui.navigation.checkPaymentGraph
 

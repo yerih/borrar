@@ -1,5 +1,6 @@
 package com.mivuelto.core.domain.usecase
 
+import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.TransactionStats
 import com.mivuelto.core.domain.repository.TransactionRepository
 import java.time.LocalDate
@@ -18,10 +19,14 @@ class GetTransactionStatsUseCase @Inject constructor(
     suspend operator fun invoke(
         startDate: LocalDate,
         endDate: LocalDate
-    ): TransactionStats {
-        require(!endDate.isBefore(startDate)) { "endDate must not be before startDate" }
+    ): Result<TransactionStats> {
+        if (endDate.isBefore(startDate)) {
+            return Result.failure(ApiError.Validation("endDate must not be before startDate"))
+        }
         val days = ChronoUnit.DAYS.between(startDate, endDate) + 1
-        require(days <= MAX_RANGE_DAYS) { "date range must not exceed $MAX_RANGE_DAYS days" }
+        if (days > MAX_RANGE_DAYS) {
+            return Result.failure(ApiError.Validation("date range must not exceed $MAX_RANGE_DAYS days"))
+        }
         return repository.getStats(startDate, endDate)
     }
 

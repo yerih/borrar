@@ -1,12 +1,11 @@
 package com.mivuelto.core.data.repository
 
 import com.mivuelto.core.data.datasource.TransactionRemoteDataSource
-import com.mivuelto.core.data.network.AuthException
 import com.mivuelto.core.data.network.requests.SendChangeRequest
 import com.mivuelto.core.data.network.requests.TransactionQueryRequest
 import com.mivuelto.core.data.network.responses.TransactionResponse
-import com.mivuelto.core.data.network.responses.TransactionStatsResponse
 import com.mivuelto.core.data.session.SessionManager
+import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.DailyStat
 import com.mivuelto.core.domain.model.SendChangeCommand
 import com.mivuelto.core.domain.model.Transaction
@@ -24,9 +23,10 @@ class TransactionRepositoryImpl @Inject constructor(
     private val session: SessionManager
 ) : TransactionRepository {
 
-    override suspend fun queryTransaction(query: TransactionQuery): Transaction =
-        remote.queryTransaction(
-            authorization = requireAuthorization(),
+    override suspend fun queryTransaction(query: TransactionQuery): Result<Transaction> {
+        val authorization = authorization().getOrElse { return Result.failure(it) }
+        return remote.queryTransaction(
+            authorization = authorization,
             request = TransactionQueryRequest(
                 transactionType = query.transactionType.wireValue,
                 amount = query.amount,
@@ -36,11 +36,13 @@ class TransactionRepositoryImpl @Inject constructor(
                 document = query.document,
                 bankId = query.bankId
             )
-        ).toDomain()
+        ).map { it.toDomain() }
+    }
 
-    override suspend fun sendChange(command: SendChangeCommand) {
-        remote.sendChange(
-            authorization = requireAuthorization(),
+    override suspend fun sendChange(command: SendChangeCommand): Result<Unit> {
+        val authorization = authorization().getOrElse { return Result.failure(it) }
+        return remote.sendChange(
+            authorization = authorization,
             request = SendChangeRequest(
                 amount = command.amount,
                 phone = command.phone,
@@ -51,23 +53,29 @@ class TransactionRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getHistory(): List<Transaction> =
-        remote.getHistory(requireAuthorization()).map { it.toDomain() }
+    override suspend fun getHistory(): Result<List<Transaction>> {
+        val authorization = authorization().getOrElse { return Result.failure(it) }
+        return remote.getHistory(authorization).map { list -> list.map { it.toDomain() } }
+    }
 
-    override suspend fun getStats(startDate: LocalDate, endDate: LocalDate): TransactionStats {
-        val response: TransactionStatsResponse =
-            remote.getStats(requireAuthorization(), startDate, endDate)
-        return TransactionStats(
-            totalAmountCents = response.totalAmount.toCents(),
-            totalCount = response.totalCount,
-            chartData = response.chartData.map { day ->
-                DailyStat(
-                    date = day.date,
-                    amountCents = day.amount.toCents(),
-                    count = day.count
-                )
-            }
-        )
+    override suspend fun getStats(
+        startDate: LocalDate,
+        endDate: LocalDate
+    ): Result<TransactionStats> {
+        val authorization = authorization().getOrElse { return Result.failure(it) }
+        return remote.getStats(authorization, startDate, endDate).map { response ->
+            TransactionStats(
+                totalAmountCents = response.totalAmount.toCents(),
+                totalCount = response.totalCount,
+                chartData = response.chartData.map { day ->
+                    DailyStat(
+                        date = day.date,
+                        amountCents = day.amount.toCents(),
+                        count = day.count
+                    )
+                }
+            )
+        }
     }
 
     /**
@@ -75,9 +83,9 @@ class TransactionRepositoryImpl @Inject constructor(
      * Sin sesión en memoria no hay request posible: fallar rápido en cliente en
      * lugar de dejar que el gateway responda 401.
      */
-    private fun requireAuthorization(): String =
-        session.currentToken()?.let { "Bearer $it" }
-            ?: throw AuthException.InvalidCredentials("No active session. Login required.")
+    private fun authorization(): Result<String> =
+        session.currentToken()?.let { Result.success("Bearer $it") }
+            ?: Result.failure(ApiError.Unauthorized("No active session. Login required."))
 
     private fun TransactionResponse.toDomain() = Transaction(
         id = id,

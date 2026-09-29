@@ -53,7 +53,7 @@ _Map of where everything lives. Only what a newcomer needs to get oriented._
 | `core-data/.../repository/DataRepositoryImpl.kt` | Repository implementation |
 | `core-ui/.../theme/` | Color, Type (Lato), Theme definitions |
 | `core-ui/.../design/` | Button, Dialog, Keyboard, Loader, Textfield components |
-| `feature-purchase/.../ui/login/LoginViewModel.kt` | MVI ViewModel example |
+| `feature-home/.../ui/login/LoginViewModel.kt` | MVI ViewModel example |
 | `feature-purchase/.../HomeScreen.kt` | Home screen with function grid |
 
 ---

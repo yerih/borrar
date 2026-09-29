@@ -1,4 +1,4 @@
-package com.mivuelto.feature.purchase.ui.login
+package com.mivuelto.feature.home.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -33,19 +33,22 @@ class LoginViewModel @Inject constructor(
             is LoginIntent.OnUsernameChanged -> _state.value = _state.value.copy(user = intent.newUsername)
             is LoginIntent.OnPasswordChanged -> _state.value = _state.value.copy(password = intent.newPass)
             LoginIntent.OnLoginClicked -> onLoginClicked()
-            LoginIntent.OnDismissError -> Unit
+            LoginIntent.OnDismissError -> _state.value = _state.value.copy(error = null)
         }
     }
 
     fun onLoginClicked() {
         if(checkCredentials()){
-            viewModelScope.launch(Dispatchers.IO){
-                authRepo.login(
+            viewModelScope.launch{
+                val result = authRepo.login(
                     username = _state.value.user,
                     password = _state.value.password,
                     terminalSerial = serialNumHolder.serialNumber.firstOrNull() ?: ""
                 )
-                _effect.send(LoginEffect.NavigateToHome)
+                result.fold(
+                    onSuccess = { _effect.send(LoginEffect.NavigateToHome) },
+                    onFailure = { _state.value = _state.value.copy(error = it.message) }
+                )
             }
         }
     }
@@ -54,16 +57,11 @@ class LoginViewModel @Inject constructor(
         val userError = _state.value.user.isBlank()
         val passError = _state.value.password.isBlank()
         val result = !userError && !passError
-        viewModelScope.launch(Dispatchers.IO){
-            _effect.send(if(result){
-                LoginEffect.NavigateToHome
+        if (!result) {
+            viewModelScope.launch(Dispatchers.IO){
+                _effect.send(LoginEffect.TextFieldErrors(passwordError = passError, userError = userError))
             }
-            else{
-                LoginEffect.TextFieldErrors(passwordError = passError, userError = userError)
-            })
         }
         return result
     }
 }
-
-

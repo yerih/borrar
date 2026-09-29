@@ -1,4 +1,4 @@
-package com.mivuelto.feature.purchase.ui.login
+package com.mivuelto.feature.home.ui.login
 
 
 data class LoginState(
@@ -21,5 +21,3 @@ sealed interface LoginEffect {
     data class ShowToast(val message: String) : LoginEffect
     data class TextFieldErrors(val userError: Boolean, val passwordError: Boolean) : LoginEffect
 }
-
-

@@ -1,5 +1,6 @@
 package com.mivuelto.core.domain.usecase
 
+import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionType
 import io.mockk.coEvery
@@ -8,6 +9,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -22,7 +24,7 @@ class QueryTransactionUseCaseTest {
     @Test
     fun `PAGO_MOVIL forwards the query and keeps phone`() = runTest {
         val query = baseQuery().copy(phone = "04121234567")
-        coEvery { repository.queryTransaction(any()) } returns mockk()
+        coEvery { repository.queryTransaction(any()) } returns Result.success(mockk())
 
         useCase(query)
 
@@ -37,7 +39,7 @@ class QueryTransactionUseCaseTest {
             document = "J013759368",
             phone = "04121234567"
         )
-        coEvery { repository.queryTransaction(any()) } returns mockk()
+        coEvery { repository.queryTransaction(any()) } returns Result.success(mockk())
 
         useCase(query)
 
@@ -45,38 +47,50 @@ class QueryTransactionUseCaseTest {
         assertEquals(null, captured.captured.phone)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `TRANSFERENCIA without document is rejected`() = runTest {
         val query = baseQuery().copy(transactionType = TransactionType.TRANSFERENCIA, document = null)
 
-        useCase(query)
+        val result = useCase(query)
+
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is ApiError.Validation)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `zero amount is rejected`() = runTest {
         val query = baseQuery().copy(amount = BigDecimal.ZERO)
 
-        useCase(query)
+        val result = useCase(query)
+
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is ApiError.Validation)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `reference shorter than six digits is rejected`() = runTest {
         val query = baseQuery().copy(reference = "12345")
 
-        useCase(query)
+        val result = useCase(query)
+
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is ApiError.Validation)
     }
 
-    @Test(expected = IllegalArgumentException::class)
+    @Test
     fun `non numeric reference is rejected`() = runTest {
         val query = baseQuery().copy(reference = "12345A")
 
-        useCase(query)
+        val result = useCase(query)
+
+        assertTrue(result.isFailure)
+        assertTrue(result.exceptionOrNull() is ApiError.Validation)
     }
 
     @Test
     fun `null reference is allowed`() = runTest {
         val query = baseQuery().copy(reference = null)
-        coEvery { repository.queryTransaction(any()) } returns mockk()
+        coEvery { repository.queryTransaction(any()) } returns Result.success(mockk())
 
         useCase(query)
 

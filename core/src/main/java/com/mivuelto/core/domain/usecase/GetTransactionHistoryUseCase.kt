@@ -11,5 +11,5 @@ import javax.inject.Inject
 class GetTransactionHistoryUseCase @Inject constructor(
     private val repository: TransactionRepository
 ) {
-    suspend operator fun invoke(): List<Transaction> = repository.getHistory()
+    suspend operator fun invoke(): Result<List<Transaction>> = repository.getHistory()
 }

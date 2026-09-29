@@ -1,5 +1,7 @@
 package com.mivuelto.core
 
+import android.util.Log
+
 fun Int.isOdd(): Boolean = this % 2 != 0
 
 fun String.toMaskedRange(start: Int = 0, end: Int): String {
@@ -33,3 +35,5 @@ fun String.toPhoneFormat(): String {
 
     return "(${digits.substring(0, 4)}) ${digits.substring(4, 7)} ${digits.substring(7, 9)} ${digits.substring(9, 11)}"
 }
+
+fun Any.log(msg: String = "", tag: String = "TGB") = Log.i(tag, msg)

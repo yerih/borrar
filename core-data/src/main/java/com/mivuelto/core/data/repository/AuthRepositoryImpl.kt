@@ -18,19 +18,21 @@ class AuthRepositoryImpl @Inject constructor(
         username: String,
         password: String,
         terminalSerial: String
-    ): AuthSession {
-        val response = remote.login(LoginRequest(username, password, terminalSerial))
-        session.saveToken(response.sessionToken)
-        return response.toDomain()
-    }
-
-    override suspend fun logout() {
-        val token = session.currentToken()
-        try {
-            if (token != null) remote.logout(token)
-        } finally {
-            session.clear()
+    ): Result<AuthSession> =
+        remote.login(LoginRequest(username, password, terminalSerial)).map { response ->
+            session.saveToken(response.sessionToken)
+            response.toDomain()
         }
+
+    override suspend fun logout(): Result<Unit> {
+        val token = session.currentToken()
+        val result = if (token == null) {
+            Result.success(Unit)
+        } else {
+            remote.logout(token)
+        }
+        session.clear()
+        return result
     }
 
     override fun currentToken(): String? = session.currentToken()
