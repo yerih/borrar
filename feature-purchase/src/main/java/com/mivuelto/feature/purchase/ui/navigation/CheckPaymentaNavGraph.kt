@@ -25,8 +25,7 @@ sealed class CheckPaymentFlow(val route: String) {
 
 fun NavGraphBuilder.checkPaymentGraph(navController: NavController) {
     navigation(
-        startDestination = CheckPaymentFlow.LOADER.route,
-//        startDestination = CheckPaymentFlow.FORM.route,
+        startDestination = CheckPaymentFlow.FORM.route,
         route = NavFeature.CHECK_PAYMENT.route
     ) {
 
