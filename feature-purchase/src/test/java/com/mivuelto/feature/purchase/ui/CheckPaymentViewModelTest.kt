@@ -1,22 +1,33 @@
 package com.mivuelto.feature.purchase.ui
 
+import app.cash.turbine.test
+import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.domain.model.CheckPaymentModel
+import com.mivuelto.core.domain.repository.AuthRepository
 import com.mivuelto.feature.purchase.ui.invoices.InvoiceModel
 import com.mivuelto.feature.purchase.ui.navigation.CheckPaymentViewModel
+import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
+import io.mockk.coEvery
+import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 
 class CheckPaymentViewModelTest {
 
     private lateinit var viewModel: CheckPaymentViewModel
+    private val authRepo: AuthRepository = mockk(relaxed = true)
 
     @Before
     fun setup() {
-        viewModel = CheckPaymentViewModel()
+        coEvery { authRepo.login(any(), any(), any()) } returns Result.failure(
+            ApiError.Unauthorized("Invalid credentials")
+        )
+        viewModel = CheckPaymentViewModel(authRepo)
     }
 
     @Test
@@ -86,6 +97,18 @@ class CheckPaymentViewModelTest {
         viewModel.updateState(CheckPaymentModel(reference = "REF"))
         val invoice = viewModel.getInvoice()
         assertEquals("empty", invoice.phone)
+    }
+
+    @Test
+    fun `sendPayment emits error event and stores errorMsg when login fails`() = runTest {
+        viewModel.sendPayment()
+
+        viewModel.effect.test {
+            val event = awaitItem()
+            assertTrue(event is UiEvent.Error)
+            assertEquals("Invalid credentials", (event as UiEvent.Error).msg)
+        }
+        assertEquals("Invalid credentials", viewModel.errorMsg)
     }
 }
 

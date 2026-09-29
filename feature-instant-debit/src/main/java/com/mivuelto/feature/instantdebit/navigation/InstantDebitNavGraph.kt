@@ -3,6 +3,7 @@ package com.mivuelto.feature.instantdebit.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import com.mivuelto.core.ui.ErrorScreen
 import com.mivuelto.core.ui.LoaderScreen
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.NavFeature
@@ -37,7 +38,8 @@ fun NavGraphBuilder.instantDebitGraph(navController: NavController) {
                 action = { viewModel.sendPayment() },
                 onTaskDone = {
                     navController.navigate(InstantDebitFlow.INVOICE.route)
-                }
+                },
+                onError = { navController.navigate(InstantDebitFlow.ERROR.route) }
             )
         }
 
@@ -55,7 +57,12 @@ fun NavGraphBuilder.instantDebitGraph(navController: NavController) {
         composableWithTransitions(
             route = InstantDebitFlow.ERROR.route
         ){
-
+            val viewModel: InstantDebitViewModel = it.sharedViewModel(navController)
+            ErrorScreen(
+                text = viewModel.errorMsg,
+                withRetryBtn = false,
+                onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) }
+            )
         }
     }
 }

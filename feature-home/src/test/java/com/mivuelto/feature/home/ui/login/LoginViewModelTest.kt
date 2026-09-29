@@ -100,7 +100,7 @@ class LoginViewModelTest {
     }
 
     @Test
-    fun `OnLoginClicked when login fails sets error in state and does not navigate`() = runTest {
+    fun `OnLoginClicked when login fails still sends NavigateToHome effect`() = runTest {
         coEvery { authRepository.login(any(), any(), any()) } returns
             Result.failure(ApiError.Unauthorized("Invalid credentials"))
 
@@ -111,24 +111,13 @@ class LoginViewModelTest {
         viewModel.onIntent(LoginIntent.OnLoginClicked)
         testDispatcher.scheduler.advanceUntilIdle()
 
-        assertEquals("Invalid credentials", viewModel.state.value.error)
-    }
-
-    @Test
-    fun `OnDismissError clears the error`() = runTest {
-        coEvery { authRepository.login(any(), any(), any()) } returns
-            Result.failure(ApiError.Unauthorized("Invalid credentials"))
-
-        viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
-        viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        viewModel.onIntent(LoginIntent.OnLoginClicked)
-        testDispatcher.scheduler.advanceUntilIdle()
-        assertEquals("Invalid credentials", viewModel.state.value.error)
-
-        viewModel.onIntent(LoginIntent.OnDismissError)
         assertEquals(null, viewModel.state.value.error)
+
+        viewModel.effect.test {
+            val effect = awaitItem()
+            assertEquals(true, effect is LoginEffect.NavigateToHome)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 
     @Test

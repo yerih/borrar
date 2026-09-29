@@ -22,6 +22,8 @@ class SendChangeViewModel @Inject constructor(
     var state by mutableStateOf(InstantDebitModel())
         private set
 
+    var errorMsg = ""
+
     private val _effect = Channel<UiEvent>()
     val effect = _effect.receiveAsFlow()
 

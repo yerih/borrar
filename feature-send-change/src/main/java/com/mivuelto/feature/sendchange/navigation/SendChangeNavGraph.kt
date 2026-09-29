@@ -3,6 +3,7 @@ package com.mivuelto.feature.sendchange.navigation
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import com.mivuelto.core.ui.ErrorScreen
 import com.mivuelto.core.ui.LoaderScreen
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.NavFeature
@@ -37,7 +38,8 @@ fun NavGraphBuilder.sendChangeGraph(navController: NavController) {
                 action = { viewModel.sendPayment() },
                 onTaskDone = {
                     navController.navigate(SendChangeFlow.INVOICE.route)
-                }
+                },
+                onError = { navController.navigate(SendChangeFlow.ERROR.route) }
             )
         }
 
@@ -55,7 +57,12 @@ fun NavGraphBuilder.sendChangeGraph(navController: NavController) {
         composableWithTransitions(
             route = SendChangeFlow.ERROR.route
         ){
-
+            val viewModel: SendChangeViewModel = it.sharedViewModel(navController)
+            ErrorScreen(
+                text = viewModel.errorMsg,
+                withRetryBtn = false,
+                onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) }
+            )
         }
     }
 }
