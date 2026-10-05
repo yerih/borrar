@@ -34,6 +34,7 @@ fun AmountScreen(
     SingleFormScreen(
         title = "Ingrese monto",
         flowTitle = flowTitle,
+        digitsLimit = 12,
         label = "Monto",
         initialValue = amount,
         errorMsg = "El monto es requerido",

@@ -71,7 +71,7 @@ object Lato{
 
     val welcomeStyle = textStyleDefault.copy(fontSize = 28.sp)
 
-    val buttonHome = textStyleDefault.copy(fontSize = 18.sp, lineHeight = 17.sp)
+    val buttonHome = textStyleDefault.copy(fontSize = 16.sp, lineHeight = 17.sp)
 
     val screenTitle       = textStyleDefault.copy(fontSize = 18.sp, color = BlueFonts,)
     val screenSubTitle    = textStyleDefault.copy(fontSize = 23.sp, color = BlueFonts,)

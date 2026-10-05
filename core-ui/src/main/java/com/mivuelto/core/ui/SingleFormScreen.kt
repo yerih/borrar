@@ -52,10 +52,11 @@ fun SingleFormScreen(
     visualTransformation: VisualTransformation = VisualTransformation.None,
     isError: Boolean = false,
     digitsOnly: Boolean = false,
+    digitsLimit: Int = 12,
     onValueChange: (String)->Unit,
     onTaskDone: ()->Unit = {}
 ){
-    val textValue = remember{ mutableStateOf(initialValue) }
+    val textValue = remember{ mutableStateOf("") }
 
     BaseScreen(onBack = onBack) {
 
@@ -82,13 +83,15 @@ fun SingleFormScreen(
                 textStyle = LocalTextStyle.current.copy(fontSize = fontSize, textAlign = textAlign),
                 modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.Center),
                 onValueChange = {
+                    if(it.length > digitsLimit) return@TextFieldCustom
                     val filtered = if (digitsOnly || visualTransformation is DecimalCurrencyVisualTransformation) {
                         it.filter { e -> e.isDigit() }
                     } else {
                         it
                     }
                     textValue.value = filtered
-                    onValueChange(filtered)
+                    if(filtered.isNotEmpty())
+                        onValueChange(filtered)
                 },
                 label = label,
                 isError = isError,

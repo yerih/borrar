@@ -8,11 +8,11 @@ import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.feature.home.navigation.homeGraph
 import com.mivuelto.feature.instantdebit.navigation.instantDebitGraph
 import com.mivuelto.feature.sendchange.navigation.sendChangeGraph
-import com.mivuelto.feature.purchase.DigitalChangeScreen
-import com.mivuelto.feature.purchase.HistoricalScreen
+import com.mivuelto.feature.checkpayment.DigitalChangeScreen
+import com.mivuelto.feature.checkpayment.HistoricalScreen
 import com.mivuelto.feature.home.ui.login.LoginScreen
-import com.mivuelto.feature.purchase.SettingScreen
-import com.mivuelto.feature.purchase.ui.navigation.checkPaymentGraph
+import com.mivuelto.feature.checkpayment.SettingScreen
+import com.mivuelto.feature.checkpayment.ui.navigation.checkPaymentGraph
 
 @Composable
 fun AppNavigation() {

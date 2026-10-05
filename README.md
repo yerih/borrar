@@ -47,7 +47,7 @@ The project follows **Clean Architecture** with **Modularized Design** principle
 │                    :app (Application)                    │
 │  Single Activity │ Navigation │ SDK Integration │ Hilt  │
 ├─────────────────────────────────────────────────────────┤
-│               :feature-purchase (Feature)                │
+│               :feature-check-payment (Feature)             │
 │  UI Screens │ ViewModels │ Feature Navigation Graphs   │
 ├──────────────────────┬──────────────────────────────────┤
 │    :core (Domain)    │       :core-ui (Shared UI)       │
@@ -144,7 +144,7 @@ Reusable design system, navigation utilities, and shared screen components.
 | **Keyboard** | Custom `Keyboard` component |
 | **Extensions** | Currency formatting, phone formatting, ViewModel sharing, navigation helpers |
 
-### `:feature-purchase` — Feature Module
+### `:feature-check-payment` — Feature Module
 Complete feature implementation with screens, ViewModels, and nested navigation.
 
 | Flow | Screens |

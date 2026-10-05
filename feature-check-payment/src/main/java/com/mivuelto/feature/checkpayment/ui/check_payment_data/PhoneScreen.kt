@@ -1,4 +1,4 @@
-package com.mivuelto.feature.instantdebit.ui
+package com.mivuelto.feature.checkpayment.ui.check_payment_data
 
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -13,15 +13,15 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.sp
 import com.mivuelto.core.ui.SingleFormScreen
 import com.mivuelto.core.ui.design.textfields.PhoneVisualTransformation
-import com.mivuelto.feature.instantdebit.R
-import com.mivuelto.feature.instantdebit.navigation.InstantDebitViewModel
+import com.mivuelto.feature.checkpayment.R
+import com.mivuelto.feature.checkpayment.ui.navigation.CheckPaymentViewModel
 
 
 @Composable
 fun PhoneScreen(
-    viewModel: InstantDebitViewModel,
-    onBack: ()->Unit,
+    viewModel: CheckPaymentViewModel,
     flowTitle: String,
+    onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
     var phone by remember{ mutableStateOf("") }
@@ -35,9 +35,8 @@ fun PhoneScreen(
     }
 
     SingleFormScreen(
-        title = "Ingrese teléfono",
-        digitsLimit = 11,
         flowTitle = flowTitle,
+        title = "Ingrese teléfono",
         label = "Teléfono",
         onBack = onBack,
         isError = phoneError.value,

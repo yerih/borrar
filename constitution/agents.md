@@ -18,7 +18,7 @@ _Definition of agent roles, responsibilities, and workflows for the development 
 - Maintain the `constitution/` documentation
 - Ensure POS SDK integration follows established patterns
 
-**Scope:** All modules (`:app`, `:core`, `:core-data`, `:core-ui`, `:feature-purchase`)
+**Scope:** All modules (`:app`, `:core`, `:core-data`, `:core-ui`, `:feature-check-payment`)
 
 **Deliverables:**
 - Architecture decision records (ADRs) for significant changes

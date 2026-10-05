@@ -60,7 +60,7 @@ dependencies {
     implementation(project(":core"))
     implementation(project(":core-data"))
     implementation(project(":core-ui"))
-    implementation(project(":feature-purchase"))
+    implementation(project(":feature-check-payment"))
     implementation(project(":feature-home"))
     implementation(project(":feature-instant-debit"))
     implementation(project(":feature-send-change"))

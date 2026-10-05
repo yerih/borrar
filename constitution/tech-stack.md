@@ -36,7 +36,7 @@ _Map of where everything lives. Only what a newcomer needs to get oriented._
 | `core/` | Domain models, use cases, repository interfaces (pure Kotlin) |
 | `core-data/` | Repository implementations, API service, network DI |
 | `core-ui/` | Design system, shared screens, navigation utilities, theme |
-| `feature-purchase/` | Feature screens, ViewModels, nested navigation graphs |
+| `feature-check-payment/` | Feature screens, ViewModels, nested navigation graphs |
 
 ### Key Source Files
 

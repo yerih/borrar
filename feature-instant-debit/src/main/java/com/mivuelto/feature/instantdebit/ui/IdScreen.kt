@@ -40,6 +40,7 @@ fun IdScreen(
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
         keyboardActions = KeyboardActions(onDone = { onDone() }),
         digitsOnly = true,
+        digitsLimit = 8,
         onTaskDone = onDone
     )
 }

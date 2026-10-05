@@ -9,9 +9,9 @@ import java.text.DecimalFormatSymbols
 import java.util.Locale
 
 class DecimalCurrencyVisualTransformation(private val prefix: String) : VisualTransformation {
-    private val symbols = DecimalFormatSymbols(Locale.US).apply {
-        groupingSeparator = ','
-        decimalSeparator = '.'
+    private val symbols = DecimalFormatSymbols(Locale.GERMANY).apply {
+        groupingSeparator = '.'
+        decimalSeparator = ','
     }
     private val formatter = DecimalFormat("#,##0.00", symbols)
 
@@ -19,7 +19,14 @@ class DecimalCurrencyVisualTransformation(private val prefix: String) : VisualTr
         val originalText = text.text
 
         if (originalText.isEmpty()) {
-            return TransformedText(AnnotatedString(""), OffsetMapping.Identity)
+            val out = prefix + formatter.format(0.0)
+            return TransformedText(
+                AnnotatedString(out),
+                object : OffsetMapping {
+                    override fun originalToTransformed(offset: Int): Int = out.length
+                    override fun transformedToOriginal(offset: Int): Int = 0
+                }
+            )
         }
 
         val number = originalText.toDouble() / 100.0

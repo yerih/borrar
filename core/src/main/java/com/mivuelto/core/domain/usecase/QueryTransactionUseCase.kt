@@ -23,11 +23,11 @@ class QueryTransactionUseCase @Inject constructor(
             return Result.failure(ApiError.Validation("amount must be different from 0"))
         }
 
-        query.reference?.let { reference ->
-            if (reference.length < MIN_REFERENCE_LENGTH || !reference.all(Char::isDigit)) {
-                return Result.failure(ApiError.Validation("reference must match \\d{6,}"))
-            }
-        }
+//        query.reference?.let { reference ->
+//            if (reference.length < MIN_REFERENCE_LENGTH || !reference.all(Char::isDigit)) {
+//                return Result.failure(ApiError.Validation("reference must match \\d{6,}"))
+//            }
+//        }
 
         if (query.transactionType == TransactionType.TRANSFERENCIA && query.document.isNullOrBlank()) {
             return Result.failure(ApiError.Validation("document is required for TRANSFERENCIA"))

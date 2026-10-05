@@ -200,7 +200,7 @@ p.add_run(
     '  +-- core\n'
     '  +-- core-data --> core\n'
     '  +-- core-ui --> core\n'
-    '  +-- feature-purchase --> core, core-ui\n'
+    '  +-- feature-check-payment --> core, core-ui\n'
     '  +-- feature-home --> core, core-ui\n'
     '  +-- feature-send-change --> core, core-ui\n'
     '  +-- feature-instant-debit --> core, core-ui'

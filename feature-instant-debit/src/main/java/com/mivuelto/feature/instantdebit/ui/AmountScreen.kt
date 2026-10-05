@@ -21,7 +21,7 @@ fun AmountScreen(
     onBack: ()->Unit,
     onTaskDone: ()->Unit
 ){
-    var amount by remember{ mutableStateOf("0") }
+    var amount by remember{ mutableStateOf("") }
     val amountError = remember{ mutableStateOf(false) }
     val onDone: ()->Unit = {
         amountError.value = amount.isBlank()
@@ -35,7 +35,8 @@ fun AmountScreen(
         flowTitle = flowTitle,
         title = "Ingrese monto",
         label = "Monto",
-        initialValue = amount,
+        digitsLimit = 12,
+        initialValue = "0",
         errorMsg = "El monto es requerido",
         fontSize = 44.sp,
         isError = amountError.value,

@@ -41,7 +41,7 @@ app/build/
 core/build/
 core-data/build/
 core-ui/build/
-feature-purchase/build/
+feature-check-payment/build/
 feature-home/build/.transforms/aa4015523819b9d019101f8a0c919e51/results.bin
 feature-home/build/.transforms/aa4015523819b9d019101f8a0c919e51/transformed/bundleLibRuntimeToDirDebug/desugar_graph.bin
 feature-home/build/.transforms/aa4015523819b9d019101f8a0c919e51/transformed/bundleLibRuntimeToDirDebug/bundleLibRuntimeToDirDebug_dex/com/mivuelto/feature/home/ComposableSingletons$HomeScreenKt$lambda-1$1.dex
