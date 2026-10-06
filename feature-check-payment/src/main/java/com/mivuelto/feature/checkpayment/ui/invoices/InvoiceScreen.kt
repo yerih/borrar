@@ -88,7 +88,7 @@ fun InvoiceScreen(
                                     label = "monto",
                                     style = Lato.invoiceIconTitle.copy(fontSize = 22.sp),
                                     value = "Bs. ${amount.checkAmount()}",
-                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+                                    modifier = Modifier.fillMaxWidth().padding(horizontal = 10.dp)
                                         .padding(bottom = 10.dp),
                                     withoutFontWeight = false
                                 )

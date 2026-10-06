@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.mivuelto.core.isGreaterThanZero
 import com.mivuelto.core.ui.design.HeaderTitles
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
@@ -83,15 +84,17 @@ fun SingleFormScreen(
                 textStyle = LocalTextStyle.current.copy(fontSize = fontSize, textAlign = textAlign),
                 modifier = Modifier.padding(horizontal = 10.dp).align(Alignment.Center),
                 onValueChange = {
-                    if(it.length > digitsLimit) return@TextFieldCustom
-                    val filtered = if (digitsOnly || visualTransformation is DecimalCurrencyVisualTransformation) {
+                    val filtered = if (visualTransformation is DecimalCurrencyVisualTransformation) {
+                        it.filter { e -> e.isDigit() }.dropWhile { e -> e == '0' }
+                    } else if (digitsOnly) {
                         it.filter { e -> e.isDigit() }
                     } else {
                         it
                     }
+                    if(filtered.length > digitsLimit) return@TextFieldCustom
                     textValue.value = filtered
-                    if(filtered.isNotEmpty())
-                        onValueChange(filtered)
+                    val isDigitField = digitsOnly || visualTransformation is DecimalCurrencyVisualTransformation
+                    onValueChange(if (isDigitField && !filtered.isGreaterThanZero()) "" else filtered)
                 },
                 label = label,
                 isError = isError,

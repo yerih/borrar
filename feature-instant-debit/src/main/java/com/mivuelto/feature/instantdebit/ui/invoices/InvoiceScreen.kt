@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.mivuelto.core.checkAmount
 import com.mivuelto.core.formatDate
 import com.mivuelto.core.formatTime
+import com.mivuelto.core.lengthGreaterThan
 import com.mivuelto.core.toPhoneFormat
 import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.R
@@ -86,7 +87,7 @@ fun InvoiceScreen(
                                 Spacer(Modifier.height(15.dp))
                                 InvoiceElement(
                                     label = "monto",
-                                    style = Lato.invoiceIconTitle.copy(fontSize = 22.sp),
+                                    style = Lato.invoiceIconTitle.copy(fontSize = if(amount.lengthGreaterThan(10)) 18.sp else 22.sp),
                                     value = "Bs. ${amount.checkAmount()}",
                                     modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
                                         .padding(bottom = 10.dp),

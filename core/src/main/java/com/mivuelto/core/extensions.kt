@@ -28,6 +28,8 @@ fun Double.addCommas(): String {
 
 fun String.checkAmount(): String = if(isEmpty()) String.format("%.2f",0.00).replace(".",",") else if(!contains(",")) String.format("%.2f",toDouble()/100).replace(".",",") else this
 
+fun String.lengthGreaterThan(value: Int): Boolean = replace(".", "").replace(",", "").length > value
+
 fun String.toPhoneFormat(): String {
     val digits = filter(Char::isDigit)
 
@@ -37,3 +39,9 @@ fun String.toPhoneFormat(): String {
 }
 
 fun Any.log(msg: String = "", tag: String = "TGB") = Log.i(tag, msg)
+
+fun String.isGreaterThanZero(): Boolean {
+    val value = toDoubleOrNull() ?: return false
+    return value > 0
+}
+
