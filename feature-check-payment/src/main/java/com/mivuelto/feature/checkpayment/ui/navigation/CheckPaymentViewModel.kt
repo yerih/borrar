@@ -12,7 +12,10 @@ import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionType
 import com.mivuelto.core.domain.usecase.QueryTransactionUseCase
+import com.mivuelto.core.formatDate
 import com.mivuelto.core.log
+import com.mivuelto.core.toDateFormatted
+import com.mivuelto.core.toTimeFormatted
 import com.mivuelto.feature.checkpayment.ui.invoices.InvoiceModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -46,8 +49,10 @@ class CheckPaymentViewModel @Inject constructor(
 
     fun getInvoice(): InvoiceModel = InvoiceModel(
         ref = verifiedTransaction?.referenceNumber ?: state.reference ?: "empty",
-        date = "22/06/2026 6:33 pm",
+        date = verifiedTransaction?.created?.toDateFormatted() ?: "22/06/2026 6:33 pm",
+        time = verifiedTransaction?.created?.toTimeFormatted() ?: "22/06/2026 6:33 pm",
         bank = state.bank ?: BankModel(),
+//        bank = state.bank ?: BankModel(),
         amount = verifiedTransaction?.let { formatCents(it.amountCents) } ?: state.amount ?: "empty",
         phone = verifiedTransaction?.toPhone ?: state.phone ?: "empty"
     )
@@ -78,7 +83,7 @@ class CheckPaymentViewModel @Inject constructor(
         reference = reference?.trim()?.takeIf { it.isNotBlank() },
         phone = phone?.filter(Char::isDigit)?.takeIf { it.isNotBlank() },
         document = null,
-        bankId = bank?.code
+        bankId = bank?.uuid
     )
 
     private companion object {

@@ -41,14 +41,14 @@ fun BankScreen(
 ){
 
     val banks = listOf(
-        BankModel(logo_librepago, "0105", "Mercantil"),
-        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(logo_librepago, "0105", "Mercantil"),
-        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(logo_librepago, "0105", "Mercantil"),
-        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(logo_librepago, "0105", "Mercantil"),
-        BankModel(logo_corpocredit, "0108", "Provincial BBVA")
+        BankModel(ic_bank, "0163", "Banco del Tesoro"),
+        BankModel(ic_bank, "0108", "Provincial BBVA"),
+        BankModel(ic_bank, "0105", "Mercantil"),
+//        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
+//        BankModel(logo_librepago, "0105", "Mercantil"),
+//        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
+//        BankModel(logo_librepago, "0105", "Mercantil"),
+//        BankModel(logo_corpocredit, "0108", "Provincial BBVA")
 //    Bank(R.drawable.ic_bbva, "BBVA", "Cuenta terminación 9012"),
 //    Bank(R.drawable.ic_santander, "Santander", "Cuenta terminación 3456")
     )

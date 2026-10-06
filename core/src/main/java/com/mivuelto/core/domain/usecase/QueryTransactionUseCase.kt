@@ -35,7 +35,7 @@ class QueryTransactionUseCase @Inject constructor(
 
         return repository.queryTransaction(
             query.copy(
-                phone = if (query.transactionType == TransactionType.PAGO_MOVIL) query.phone else null
+                phone = if (query.transactionType == TransactionType.PAGO_MOVIL) query.phone else null,
             )
         )
     }

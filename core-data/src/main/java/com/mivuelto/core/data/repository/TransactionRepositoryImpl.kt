@@ -30,7 +30,7 @@ class TransactionRepositoryImpl @Inject constructor(
             request = TransactionQueryRequest(
                 transactionType = query.transactionType.wireValue,
                 amount = query.amount,
-                date = query.date.format(API_DATE),
+                date = "2026-08-07",//query.date.format(API_DATE),
                 reference = query.reference,
                 phone = query.phone,
                 document = query.document,

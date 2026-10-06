@@ -6,7 +6,8 @@ import androidx.annotation.DrawableRes
 data class BankModel(
     @DrawableRes val logo: Int? = null,
     val code: String = "",
-    val name: String = ""
+    val name: String = "",
+    val uuid: String = "",
 )
 
 

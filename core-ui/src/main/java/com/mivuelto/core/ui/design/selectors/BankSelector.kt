@@ -1,5 +1,6 @@
 package com.mivuelto.core.ui.design.selectors
 
+import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,6 +22,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mivuelto.core.domain.model.BankModel
@@ -53,7 +55,8 @@ fun BankSelector(
             },
             leadingIcon = {
                 Image(
-                    painter = painterResource(selectedBank.logo?:R.drawable.ic_anulacion),
+                    painter = painterResource(R.drawable.ic_bank),
+//                    painter = painterResource(selectedBank.logo?:R.drawable.ic_anulacion),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp)
                 )

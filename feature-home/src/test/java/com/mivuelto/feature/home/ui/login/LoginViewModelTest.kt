@@ -178,6 +178,36 @@ class LoginViewModelTest {
     }
 
     @Test
+    fun `OnLoginClicked enables isLoading while the login runs and clears it after`() = runTest {
+        viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
+        viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onIntent(LoginIntent.OnLoginClicked)
+        assertEquals(true, viewModel.state.value.isLoading)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+        assertEquals(false, viewModel.state.value.isLoading)
+    }
+
+    @Test
+    fun `OnLoginClicked while loading is ignored`() = runTest {
+        viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
+        viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.onIntent(LoginIntent.OnLoginClicked)
+        viewModel.onIntent(LoginIntent.OnLoginClicked)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.effect.test {
+            assertEquals(true, awaitItem() is LoginEffect.NavigateToHome)
+            expectNoEvents()
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
     fun `checkCredentials returns true for valid input`() = runTest {
         viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
         viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))

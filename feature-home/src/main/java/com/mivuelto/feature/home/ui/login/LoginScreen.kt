@@ -27,7 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mivuelto.core.ui.R
-import com.mivuelto.core.ui.design.buttons.ButtonFilled
+import com.mivuelto.core.ui.design.buttons.ButtonLoader
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.design.textfields.OutlinedTextFieldCustom
 import com.mivuelto.core.ui.getVersionName
@@ -117,9 +117,10 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(24.dp))
         }
 
-        ButtonFilled(
+        ButtonLoader(
             text = stringResource(R.string.login),
             paddingHz = 60.dp,
+            isLoading = state.isLoading,
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)

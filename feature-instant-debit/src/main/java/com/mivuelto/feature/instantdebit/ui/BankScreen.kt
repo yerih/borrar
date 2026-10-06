@@ -42,7 +42,7 @@ fun BankScreen(
 ){
 
     val banks = listOf(
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
+        BankModel(R.drawable.logo_librepago, "0163", "Banco del Tesoro", uuid = "c5d6e7f8-a9b0-1234-cdef-345678901234-uuid"),
         BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),
         BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
         BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),

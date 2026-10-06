@@ -38,13 +38,16 @@ class LoginViewModel @Inject constructor(
     }
 
     fun onLoginClicked() {
+        if(_state.value.isLoading) return
         if(checkCredentials()){
+            _state.value = _state.value.copy(isLoading = true)
             viewModelScope.launch{
                 val result = authRepo.login(
                     username = _state.value.user,
                     password = _state.value.password,
                     terminalSerial = serialNumHolder.serialNumber.firstOrNull() ?: ""
                 )
+                _state.value = _state.value.copy(isLoading = false)
                 result.fold(
                     onSuccess = { _effect.send(LoginEffect.NavigateToHome) },
                     onFailure = {

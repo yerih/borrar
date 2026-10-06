@@ -1,6 +1,9 @@
 package com.mivuelto.core
 
 import android.util.Log
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 fun Int.isOdd(): Boolean = this % 2 != 0
 
@@ -45,3 +48,15 @@ fun String.isGreaterThanZero(): Boolean {
     return value > 0
 }
 
+fun String.toDateFormatted(): String {
+    val inputFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault() )
+    val outputFormatter = DateTimeFormatter.ofPattern( "dd/MM/yyyy", Locale.getDefault() )
+    return LocalDateTime.parse(this, inputFormatter) .format(outputFormatter)
+}
+
+
+fun String.toTimeFormatted(): String {
+    val inputFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss" )
+    val outputFormatter = DateTimeFormatter.ofPattern( "h:mm a", Locale.ENGLISH )
+    return LocalDateTime.parse(this, inputFormatter) .format(outputFormatter) .lowercase(Locale.ENGLISH)
+}

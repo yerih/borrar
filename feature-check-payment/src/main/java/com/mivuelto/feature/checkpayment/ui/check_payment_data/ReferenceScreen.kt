@@ -35,7 +35,7 @@ fun ReferenceScreen(
         title = "Ingrese referencia",
         label = "Referencia",
         onBack = onBack,
-        digitsLimit = 6,
+        digitsLimit = 12,
         digitsOnly = true,
         isError = referenceError.value,
         errorMsg = "La referencia es requerida",

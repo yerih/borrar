@@ -57,7 +57,7 @@ fun SingleFormScreen(
     onValueChange: (String)->Unit,
     onTaskDone: ()->Unit = {}
 ){
-    val textValue = remember{ mutableStateOf("") }
+    val textValue = remember{ mutableStateOf(initialValue) }
 
     BaseScreen(onBack = onBack) {
 
