@@ -9,6 +9,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.sp
 import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.ui.SingleFormScreen
 import com.mivuelto.feature.checkpayment.ui.navigation.CheckPaymentViewModel
@@ -40,6 +41,7 @@ fun ReferenceScreen(
         isError = referenceError.value,
         errorMsg = "La referencia es requerida",
         onValueChange = { reference = it },
+        fontSize = 40.sp,
         keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done, keyboardType = KeyboardType.Number),
         keyboardActions = KeyboardActions(onDone = {onDone()}),
         onTaskDone = onDone

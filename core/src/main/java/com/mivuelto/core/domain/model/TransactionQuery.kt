@@ -14,7 +14,7 @@ import java.time.LocalDate
 data class TransactionQuery(
     val transactionType: TransactionType,
     val amount: BigDecimal,
-    val date: LocalDate,
+    val date: String? = null,
     val reference: String? = null,
     val phone: String? = null,
     val document: String? = null,

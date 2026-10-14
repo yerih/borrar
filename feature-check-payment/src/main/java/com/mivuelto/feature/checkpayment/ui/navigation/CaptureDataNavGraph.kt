@@ -13,11 +13,13 @@ import com.mivuelto.core.ui.sharedViewModel
 import com.mivuelto.feature.checkpayment.R
 import com.mivuelto.feature.checkpayment.ui.check_payment_data.AmountScreen
 import com.mivuelto.feature.checkpayment.ui.check_payment_data.BankScreen
+import com.mivuelto.feature.checkpayment.ui.check_payment_data.DateScreen
 import com.mivuelto.feature.checkpayment.ui.check_payment_data.PhoneScreen
 import com.mivuelto.feature.checkpayment.ui.check_payment_data.ReferenceScreen
 
 
 sealed class CaptureDataFlow(val route: String) {
+    object DATE : CaptureDataFlow("capture_data/date")
     object REFERENCE : CaptureDataFlow("capture_data/reference")
     object AMOUNT : CaptureDataFlow("capture_data/amount")
     object PHONE : CaptureDataFlow("capture_data/phone")
@@ -29,9 +31,21 @@ fun NavGraphBuilder.captureDataNavGraph(
     navController: NavController
 ) {
     navigation(
-        startDestination = CaptureDataFlow.REFERENCE.route,
+        startDestination = CaptureDataFlow.DATE.route,
         route = CheckPaymentFlow.FORM.route
     ){
+
+        composableWithTransitions(
+            route = CaptureDataFlow.DATE.route
+        ){
+            val viewModel = it.sharedViewModel<CheckPaymentViewModel>(navController, route = NavFeature.CHECK_PAYMENT.route)
+            DateScreen(
+                onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
+                onTaskDone = { navController.navigate(route = CaptureDataFlow.REFERENCE.route) },
+                viewModel = viewModel,
+                flowTitle = stringResource(R.string.verify_payment_mobile)
+            )
+        }
 
         composableWithTransitions(
             route = CaptureDataFlow.REFERENCE.route

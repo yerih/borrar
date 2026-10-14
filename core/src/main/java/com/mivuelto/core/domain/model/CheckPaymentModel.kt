@@ -4,6 +4,7 @@ data class CheckPaymentModel(
     var reference: String? = null,
     var amount: String? = null,
     var phone: String? = null,
+    var date: String? = null,
     var bank: BankModel? = null
 )
 

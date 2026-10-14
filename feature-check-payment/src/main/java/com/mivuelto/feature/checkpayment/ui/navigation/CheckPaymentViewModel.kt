@@ -52,7 +52,6 @@ class CheckPaymentViewModel @Inject constructor(
         date = verifiedTransaction?.created?.toDateFormatted() ?: "22/06/2026 6:33 pm",
         time = verifiedTransaction?.created?.toTimeFormatted() ?: "22/06/2026 6:33 pm",
         bank = state.bank ?: BankModel(),
-//        bank = state.bank ?: BankModel(),
         amount = verifiedTransaction?.let { formatCents(it.amountCents) } ?: state.amount ?: "empty",
         phone = verifiedTransaction?.toPhone ?: state.phone ?: "empty"
     )
@@ -79,7 +78,7 @@ class CheckPaymentViewModel @Inject constructor(
     private fun CheckPaymentModel.toTransactionQuery() = TransactionQuery(
         transactionType = TransactionType.PAGO_MOVIL,
         amount = parseAmountCents(amount),
-        date = LocalDate.now(),
+        date = date,
         reference = reference?.trim()?.takeIf { it.isNotBlank() },
         phone = phone?.filter(Char::isDigit)?.takeIf { it.isNotBlank() },
         document = null,

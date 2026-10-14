@@ -135,7 +135,7 @@ class CheckPaymentViewModelTest {
         val query = captured.captured
         assertEquals(TransactionType.PAGO_MOVIL, query.transactionType)
         assertEquals(BigDecimal("150.50"), query.amount)
-        assertEquals(LocalDate.now(), query.date)
+        assertEquals("2026-9-25", query.date)
         assertEquals("009281129281", query.reference)
         assertEquals("04121234567", query.phone)
         assertEquals(null, query.document)

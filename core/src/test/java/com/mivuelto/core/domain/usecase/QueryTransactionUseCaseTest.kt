@@ -100,7 +100,7 @@ class QueryTransactionUseCaseTest {
     private fun baseQuery() = TransactionQuery(
         transactionType = TransactionType.PAGO_MOVIL,
         amount = BigDecimal("150.50"),
-        date = LocalDate.of(2026, 9, 25),
+        date = "2026-9-25",//LocalDate.of(2026, 9, 25),
         reference = "009281129281"
     )
 }
