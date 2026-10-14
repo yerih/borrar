@@ -1,13 +1,15 @@
 package com.mivuelto.core.ui.design.selectors
 
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -17,12 +19,16 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.mivuelto.core.domain.model.BankModel
@@ -38,6 +44,14 @@ fun BankSelector(
 
     var expanded by remember { mutableStateOf(false) }
     var selectedBank by remember { mutableStateOf(banks.first()) }
+    var anchorBottomPx by remember { mutableIntStateOf(0) }
+
+    val view = LocalView.current
+    val menuMaxHeight = with(LocalDensity.current) {
+        val bottomMargin = 8.dp.roundToPx()
+        val minMenu = 120.dp.roundToPx()
+        (view.height - anchorBottomPx - bottomMargin).coerceAtLeast(minMenu).toDp()
+    }
 
     ExposedDropdownMenuBox(
         modifier = modifier,
@@ -49,14 +63,18 @@ fun BankSelector(
             value = selectedBank.name,
             onValueChange = {},
             readOnly = true,
-            modifier = Modifier.fillMaxWidth().menuAnchor(),
+            modifier = Modifier
+                .fillMaxWidth()
+                .menuAnchor()
+                .onGloballyPositioned { coordinates ->
+                    anchorBottomPx = coordinates.boundsInWindow().bottom.toInt()
+                },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
             },
             leadingIcon = {
                 Image(
                     painter = painterResource(R.drawable.ic_bank),
-//                    painter = painterResource(selectedBank.logo?:R.drawable.ic_anulacion),
                     contentDescription = null,
                     modifier = Modifier.size(28.dp)
                 )
@@ -68,45 +86,51 @@ fun BankSelector(
             onDismissRequest = { expanded = false }
         ) {
 
-            banks.forEachIndexed { i, bank ->
+            Column(
+                modifier = Modifier
+                    .heightIn(max = menuMaxHeight)
+                    .verticalScroll(rememberScrollState())
+            ) {
 
-                DropdownMenuItem(
-                    onClick = {
-                        selectedBank = bank
-                        expanded = false
-                        onItemSelected(i)
-                    },
-                    text = {
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                banks.forEachIndexed { i, bank ->
 
-                            Image(
-                                painter = painterResource(bank.logo?:R.drawable.ic_anulacion),
-                                contentDescription = null,
-                                modifier = Modifier.size(40.dp)
-                            )
+                    DropdownMenuItem(
+                        onClick = {
+                            selectedBank = bank
+                            expanded = false
+                            onItemSelected(i)
+                        },
+                        text = {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
 
-                            Spacer(Modifier.width(12.dp))
-
-                            Column {
-                                Text(
-                                    text = bank.name,
-                                    style = MaterialTheme.typography.bodyLarge
+                                Image(
+                                    painter = painterResource(bank.logo?:R.drawable.ic_anulacion),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(40.dp)
                                 )
 
-                                Text(
-                                    text = bank.code,
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                Spacer(Modifier.width(12.dp))
+
+                                Column {
+                                    Text(
+                                        text = bank.name,
+                                        style = MaterialTheme.typography.bodyLarge
+                                    )
+
+                                    Text(
+                                        text = bank.code,
+                                        style = MaterialTheme.typography.bodySmall,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
                             }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
     }
 }
-

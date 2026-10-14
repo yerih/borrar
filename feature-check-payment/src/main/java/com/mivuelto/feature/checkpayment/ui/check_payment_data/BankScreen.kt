@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,25 +41,21 @@ fun BankScreen(
     onTaskDone: ()->Unit
 ){
 
-    val banks = listOf(
-        BankModel(ic_bank, "0163", "Banco del Tesoro"),
-        BankModel(ic_bank, "0108", "Provincial BBVA"),
-        BankModel(ic_bank, "0105", "Mercantil"),
-//        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
-//        BankModel(logo_librepago, "0105", "Mercantil"),
-//        BankModel(logo_corpocredit, "0108", "Provincial BBVA"),
-//        BankModel(logo_librepago, "0105", "Mercantil"),
-//        BankModel(logo_corpocredit, "0108", "Provincial BBVA")
-//    Bank(R.drawable.ic_bbva, "BBVA", "Cuenta terminación 9012"),
-//    Bank(R.drawable.ic_santander, "Santander", "Cuenta terminación 3456")
-    )
-    val bank = remember{ mutableStateOf(banks[0]) }
-    val bankError = remember{ mutableStateOf(false) }
+    val banks = remember(viewModel.banks) {
+        viewModel.banks.map { it.copy(logo = ic_bank) }
+    }
+    val bank = remember { mutableStateOf<BankModel?>(null) }
+    val bankError = remember { mutableStateOf(false) }
+    val selectedBank = bank.value ?: banks.firstOrNull()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadBanks()
+    }
 
     val onDone: ()->Unit = {
-        bankError.value = bank.value.logo == null
+        bankError.value = selectedBank == null
         if(!bankError.value){
-            viewModel.state.bank = bank.value
+            viewModel.state.bank = selectedBank
             onTaskDone()
         }
     }
@@ -79,18 +76,22 @@ fun BankScreen(
                     flowTitle = flowTitle,
                     instruction = stringResource(R.string.enter_bank)
                 )
-            }
 
-            Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                BankSelector(
-                    modifier = Modifier,
-                    onItemSelected = { index -> bank.value = banks[index] },
-                    banks,
-                )
+
+                Column(
+                    modifier = Modifier.padding(vertical = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    if (banks.isNotEmpty()) {
+                        BankSelector(
+                            modifier = Modifier,
+                            onItemSelected = { index -> bank.value = banks[index] },
+                            banks = banks,
+                        )
+                    }
+                }
+
             }
 
 
@@ -111,10 +112,7 @@ fun BankScreen(
                     modifier = Modifier.weight(1f),
                     paddingHz = 0.dp,
                     text = stringResource(R.string.next),
-                    onClick = {
-                        onDone()
-                        onTaskDone()
-                    }
+                    onClick = { onDone() }
                 )
 
             }

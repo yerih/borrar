@@ -8,7 +8,9 @@ import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionType
+import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.QueryTransactionUseCase
+import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.feature.checkpayment.ui.invoices.InvoiceModel
 import com.mivuelto.feature.checkpayment.ui.navigation.CheckPaymentViewModel
 import io.mockk.coEvery
@@ -17,6 +19,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
@@ -34,12 +37,14 @@ class CheckPaymentViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val queryTransaction: QueryTransactionUseCase = mockk()
+    private val observeBanks: ObserveBanksUseCase = mockk()
+    private val syncBanks: SyncBanksUseCase = mockk()
     private lateinit var viewModel: CheckPaymentViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = CheckPaymentViewModel(queryTransaction)
+        viewModel = CheckPaymentViewModel(queryTransaction, observeBanks, syncBanks)
     }
 
     @After
@@ -121,6 +126,7 @@ class CheckPaymentViewModelTest {
         coEvery { queryTransaction(any()) } returns Result.failure(ApiError.Validation("no-op"))
         viewModel.updateState(
             CheckPaymentModel(
+                date = "2026-09-25",
                 reference = "009281129281",
                 amount = "15050",
                 phone = "04121234567"
@@ -135,7 +141,7 @@ class CheckPaymentViewModelTest {
         val query = captured.captured
         assertEquals(TransactionType.PAGO_MOVIL, query.transactionType)
         assertEquals(BigDecimal("150.50"), query.amount)
-        assertEquals("2026-9-25", query.date)
+        assertEquals("2026-09-25", query.date)
         assertEquals("009281129281", query.reference)
         assertEquals("04121234567", query.phone)
         assertEquals(null, query.document)
@@ -192,6 +198,49 @@ class CheckPaymentViewModelTest {
         assertEquals("009281129281", invoice.ref)
         assertEquals("150,50", invoice.amount)
         assertEquals("04121234567", invoice.phone)
+    }
+
+    @Test
+    fun `loadBanks reads cached banks from the database without syncing`() = runTest {
+        val cached = listOf(BankModel(code = "0138", name = "BANCO PLAZA"))
+        coEvery { observeBanks() } returns flowOf(cached)
+
+        viewModel.loadBanks()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(cached, viewModel.banks)
+        coVerify(exactly = 0) { syncBanks() }
+    }
+
+    @Test
+    fun `loadBanks syncs the remote catalog when the database is empty`() = runTest {
+        val remote = listOf(BankModel(code = "0138", name = "BANCO PLAZA"))
+        coEvery { observeBanks() } returns flowOf(emptyList())
+        coEvery { syncBanks() } returns Result.success(remote)
+
+        viewModel.loadBanks()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(remote, viewModel.banks)
+        coVerify { syncBanks() }
+    }
+
+    @Test
+    fun `loadBanks emits error with the API message when the list stays empty`() = runTest {
+        coEvery { observeBanks() } returns flowOf(emptyList())
+        coEvery { syncBanks() } returns Result.failure(ApiError.Server(503, "Bank is unavailable"))
+
+        viewModel.loadBanks()
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertTrue(viewModel.banks.isEmpty())
+        assertEquals("Bank is unavailable", viewModel.errorMsg)
+        viewModel.effect.test {
+            val event = awaitItem()
+            assertTrue(event is UiEvent.Error)
+            assertEquals("Bank is unavailable", (event as UiEvent.Error).msg)
+            cancelAndIgnoreRemainingEvents()
+        }
     }
 }
 

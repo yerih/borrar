@@ -6,7 +6,9 @@ import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.AuthSession
 import com.mivuelto.core.domain.model.AuthUser
 import com.mivuelto.core.domain.repository.AuthRepository
+import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -25,6 +27,7 @@ class LoginViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private val serialNumberHolder: SerialNumberHolder = mockk(relaxed = true)
     private val authRepository: AuthRepository = mockk(relaxed = true)
+    private val syncBanks: SyncBanksUseCase = mockk()
     private lateinit var viewModel: LoginViewModel
 
     private val authSession = AuthSession(
@@ -42,7 +45,8 @@ class LoginViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         coEvery { authRepository.login(any(), any(), any()) } returns Result.success(authSession)
-        viewModel = LoginViewModel(serialNumberHolder, authRepository)
+        coEvery { syncBanks() } returns Result.success(emptyList())
+        viewModel = LoginViewModel(serialNumberHolder, authRepository, syncBanks)
     }
 
     @After
@@ -205,6 +209,29 @@ class LoginViewModelTest {
             expectNoEvents()
             cancelAndIgnoreRemainingEvents()
         }
+    }
+
+    @Test
+    fun `OnLoginClicked success triggers banks sync`() = runTest {
+        viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
+        viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))
+        viewModel.onIntent(LoginIntent.OnLoginClicked)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { syncBanks() }
+    }
+
+    @Test
+    fun `OnLoginClicked failure does not trigger banks sync`() = runTest {
+        coEvery { authRepository.login(any(), any(), any()) } returns
+            Result.failure(ApiError.Unauthorized("Invalid credentials"))
+
+        viewModel.onIntent(LoginIntent.OnUsernameChanged("admin"))
+        viewModel.onIntent(LoginIntent.OnPasswordChanged("pass123"))
+        viewModel.onIntent(LoginIntent.OnLoginClicked)
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        coVerify(exactly = 0) { syncBanks() }
     }
 
     @Test

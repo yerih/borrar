@@ -4,6 +4,7 @@ import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.mivuelto.core.data.BuildConfig
 import com.mivuelto.core.data.network.ApiService
 import com.mivuelto.core.data.network.AuthApiService
+import com.mivuelto.core.data.network.BankApiService
 import com.mivuelto.core.data.network.TransactionApiService
 import dagger.Module
 import dagger.Provides
@@ -59,6 +60,12 @@ object NetworkModule {
     @Singleton
     fun provideTransactionApiService(retrofit: Retrofit): TransactionApiService {
         return retrofit.create(TransactionApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideBankApiService(retrofit: Retrofit): BankApiService {
+        return retrofit.create(BankApiService::class.java)
     }
 
     @Provides

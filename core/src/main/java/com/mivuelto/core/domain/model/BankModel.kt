@@ -8,6 +8,7 @@ data class BankModel(
     val code: String = "",
     val name: String = "",
     val uuid: String = "",
+    val apiActive: Boolean = true,
 )
 
 

@@ -21,7 +21,7 @@ data class TransactionQueryRequest(
     @SerializedName("amount")
     val amount: BigDecimal,
     @SerializedName("date")
-    val date: String,
+    val date: String? = null,
     @SerializedName("reference")
     val reference: String? = null,
     @SerializedName("phone")

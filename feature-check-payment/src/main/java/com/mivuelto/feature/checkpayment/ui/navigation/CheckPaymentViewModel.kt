@@ -11,7 +11,9 @@ import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionType
+import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.QueryTransactionUseCase
+import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.core.formatDate
 import com.mivuelto.core.log
 import com.mivuelto.core.toDateFormatted
@@ -20,6 +22,7 @@ import com.mivuelto.feature.checkpayment.ui.invoices.InvoiceModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.math.BigDecimal
@@ -30,6 +33,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CheckPaymentViewModel @Inject constructor(
     private val queryTransaction: QueryTransactionUseCase,
+    private val observeBanks: ObserveBanksUseCase,
+    private val syncBanks: SyncBanksUseCase,
 ) : ViewModel() {
 
     var state by mutableStateOf(CheckPaymentModel())
@@ -40,12 +45,39 @@ class CheckPaymentViewModel @Inject constructor(
     var verifiedTransaction: Transaction? = null
         private set
 
+    var banks by mutableStateOf<List<BankModel>>(emptyList())
+        private set
+
 
     private val _effect = Channel<UiEvent>()
     val effect = _effect.receiveAsFlow()
 
 
     fun updateState(model: CheckPaymentModel) { state = model }
+
+    private var banksLoaded = false
+
+    fun loadBanks() {
+        if (banksLoaded) return
+        banksLoaded = true
+        viewModelScope.launch {
+            observeBanks().collect { banks = it }
+        }
+        viewModelScope.launch {
+            val cached = observeBanks().first()
+            if (cached.isNotEmpty()) {
+                banks = cached
+                return@launch
+            }
+            syncBanks().fold(
+                onSuccess = { banks = it },
+                onFailure = { e ->
+                    errorMsg = e.message ?: "Unknown error"
+                    _effect.send(UiEvent.Error(msg = errorMsg))
+                }
+            )
+        }
+    }
 
     fun getInvoice(): InvoiceModel = InvoiceModel(
         ref = verifiedTransaction?.referenceNumber ?: state.reference ?: "empty",
@@ -78,7 +110,7 @@ class CheckPaymentViewModel @Inject constructor(
     private fun CheckPaymentModel.toTransactionQuery() = TransactionQuery(
         transactionType = TransactionType.PAGO_MOVIL,
         amount = parseAmountCents(amount),
-        date = date,
+        date = date?.trim()?.takeIf { it.isNotBlank() },
         reference = reference?.trim()?.takeIf { it.isNotBlank() },
         phone = phone?.filter(Char::isDigit)?.takeIf { it.isNotBlank() },
         document = null,
