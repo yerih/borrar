@@ -73,7 +73,6 @@ fun InvoiceScreen(
                                 InvoiceElement(center = address, style)
                                 Spacer(Modifier.height(10.dp))
 
-                                InvoiceElement(label = "rif", value = rif)
 
                                 Spacer(Modifier.height(10.dp))
 
