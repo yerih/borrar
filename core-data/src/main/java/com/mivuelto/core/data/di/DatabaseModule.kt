@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.mivuelto.core.data.local.AppDatabase
 import com.mivuelto.core.data.local.BankDao
+import com.mivuelto.core.data.local.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -25,4 +26,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideBankDao(database: AppDatabase): BankDao = database.bankDao()
+
+    @Provides
+    @Singleton
+    fun provideUserDao(database: AppDatabase): UserDao = database.userDao()
 }

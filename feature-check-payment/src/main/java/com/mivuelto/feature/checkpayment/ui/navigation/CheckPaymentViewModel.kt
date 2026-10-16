@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.domain.model.BankModel
+import com.mivuelto.core.domain.model.AuthUser
 import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionType
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
+import com.mivuelto.core.domain.usecase.ObserveUserUseCase
 import com.mivuelto.core.domain.usecase.QueryTransactionUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.core.formatDate
@@ -35,6 +37,7 @@ class CheckPaymentViewModel @Inject constructor(
     private val queryTransaction: QueryTransactionUseCase,
     private val observeBanks: ObserveBanksUseCase,
     private val syncBanks: SyncBanksUseCase,
+    private val observeUser: ObserveUserUseCase,
 ) : ViewModel() {
 
     var state by mutableStateOf(CheckPaymentModel())
@@ -47,6 +50,15 @@ class CheckPaymentViewModel @Inject constructor(
 
     var banks by mutableStateOf<List<BankModel>>(emptyList())
         private set
+
+    var merchantRif by mutableStateOf<String?>(null)
+        private set
+
+    init {
+        viewModelScope.launch {
+            observeUser().collect { merchantRif = it?.merchantRif }
+        }
+    }
 
 
     private val _effect = Channel<UiEvent>()
@@ -84,6 +96,7 @@ class CheckPaymentViewModel @Inject constructor(
         date = verifiedTransaction?.created?.toDateFormatted() ?: "22/06/2026 6:33 pm",
         time = verifiedTransaction?.created?.toTimeFormatted() ?: "22/06/2026 6:33 pm",
         bank = state.bank ?: BankModel(),
+        businessBankRif = merchantRif ?: "J-12345678",
         amount = verifiedTransaction?.let { formatCents(it.amountCents) } ?: state.amount ?: "empty",
         phone = verifiedTransaction?.toPhone ?: state.phone ?: "empty"
     )

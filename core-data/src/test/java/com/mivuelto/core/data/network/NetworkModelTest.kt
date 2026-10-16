@@ -94,12 +94,16 @@ class NetworkRequestTest {
             id = "usr_001",
             username = "merchant",
             roleId = "role_admin",
-            merchantId = "mch_123"
+            merchantId = "mch_123",
+            merchantName = "Dayerling Aular",
+            merchantRif = "V13824919"
         )
         assertEquals("usr_001", user.id)
         assertEquals("merchant", user.username)
         assertEquals("role_admin", user.roleId)
         assertEquals("mch_123", user.merchantId)
+        assertEquals("Dayerling Aular", user.merchantName)
+        assertEquals("V13824919", user.merchantRif)
     }
 }
 

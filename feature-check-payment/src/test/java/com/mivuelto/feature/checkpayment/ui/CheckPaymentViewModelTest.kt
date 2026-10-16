@@ -3,12 +3,14 @@ package com.mivuelto.feature.checkpayment.ui
 import app.cash.turbine.test
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.domain.error.ApiError
+import com.mivuelto.core.domain.model.AuthUser
 import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.domain.model.CheckPaymentModel
 import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionType
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
+import com.mivuelto.core.domain.usecase.ObserveUserUseCase
 import com.mivuelto.core.domain.usecase.QueryTransactionUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.feature.checkpayment.ui.invoices.InvoiceModel
@@ -19,6 +21,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.resetMain
@@ -39,12 +42,15 @@ class CheckPaymentViewModelTest {
     private val queryTransaction: QueryTransactionUseCase = mockk()
     private val observeBanks: ObserveBanksUseCase = mockk()
     private val syncBanks: SyncBanksUseCase = mockk()
+    private val observeUser: ObserveUserUseCase = mockk()
+    private val userFlow = MutableStateFlow<AuthUser?>(null)
     private lateinit var viewModel: CheckPaymentViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        viewModel = CheckPaymentViewModel(queryTransaction, observeBanks, syncBanks)
+        coEvery { observeUser() } returns userFlow
+        viewModel = CheckPaymentViewModel(queryTransaction, observeBanks, syncBanks, observeUser)
     }
 
     @After
@@ -201,6 +207,31 @@ class CheckPaymentViewModelTest {
     }
 
     @Test
+    fun `getInvoice uses the persisted merchant rif`() = runTest {
+        userFlow.value = AuthUser(
+            id = "user-1",
+            username = "V13824919",
+            roleId = "role-1",
+            merchantId = "merchant-1",
+            merchantName = "Dayerling Aular",
+            merchantRif = "V13824919"
+        )
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val invoice = viewModel.getInvoice()
+        assertEquals("V13824919", invoice.businessBankRif)
+    }
+
+    @Test
+    fun `getInvoice falls back to the default rif when no user is stored`() = runTest {
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        val invoice = viewModel.getInvoice()
+        assertEquals("J-12345678", invoice.businessBankRif)
+    }
+
+    @Test
     fun `loadBanks reads cached banks from the database without syncing`() = runTest {
         val cached = listOf(BankModel(code = "0138", name = "BANCO PLAZA"))
         coEvery { observeBanks() } returns flowOf(cached)
@@ -253,7 +284,6 @@ class InvoiceModelTest {
         assertEquals("banco del comercio", invoice.businessBank)
         assertEquals("J-12345678", invoice.businessBankRif)
         assertEquals("localidad o direcci\u00f3n", invoice.address)
-        assertEquals("JXXXXXX", invoice.rif)
         assertEquals("0901", invoice.date)
         assertEquals("095959", invoice.time)
         assertEquals("XXXX", invoice.ref)
@@ -271,7 +301,6 @@ class InvoiceModelTest {
             businessBankRif = "J-87654321",
             bank = bank,
             address = "Av Principal",
-            rif = "V12345678",
             date = "0608",
             time = "153000",
             ref = "54321",
@@ -288,9 +317,7 @@ class InvoiceModelTest {
     @Test
     fun `InvoiceModel fields are mutable`() {
         val invoice = InvoiceModel()
-        invoice.rif = "NEW_RIF"
         invoice.ref = "NEW_REF"
-        assertEquals("NEW_RIF", invoice.rif)
         assertEquals("NEW_REF", invoice.ref)
     }
 }

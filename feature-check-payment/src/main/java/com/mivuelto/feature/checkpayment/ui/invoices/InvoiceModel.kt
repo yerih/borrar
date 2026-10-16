@@ -11,7 +11,6 @@ data class InvoiceModel(
 
     val bank: BankModel = BankModel(),
     val address: String = "localidad o dirección",
-    var rif: String = "JXXXXXX",
     var date: String = "0901",
     var time: String = "095959",
     var ref: String = "XXXX",

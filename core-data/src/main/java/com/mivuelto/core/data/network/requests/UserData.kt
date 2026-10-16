@@ -5,7 +5,8 @@ import com.google.gson.annotations.SerializedName
 /**
  * `user` dentro de POST /auth/app/login 200 (API.md § 1).
  * `roleId` es el **id** del rol (no el slug); login POS solo admite ADM/CSH.
- * Nota spec: el JSON trae `merchantId` (id del comercio).
+ * Nota spec: el JSON trae `merchantId` (id del comercio) junto con el nombre
+ * y RIF del comercio.
  */
 data class UserData(
     @SerializedName("id")
@@ -15,6 +16,10 @@ data class UserData(
     @SerializedName("roleId")
     val roleId: String,
     @SerializedName("merchantId")
-    val merchantId: String
+    val merchantId: String,
+    @SerializedName("merchantName")
+    val merchantName: String? = null,
+    @SerializedName("merchantRif")
+    val merchantRif: String? = null
 )
 
