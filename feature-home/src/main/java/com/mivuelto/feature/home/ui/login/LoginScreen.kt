@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.design.buttons.ButtonLoader
+import com.mivuelto.core.ui.design.dialogs.DialogError
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.design.textfields.OutlinedTextFieldCustom
 import com.mivuelto.core.ui.getVersionName
@@ -74,16 +75,17 @@ fun LoginScreen(
             modifier = modifier
                 .fillMaxWidth()
                 .padding(20.dp)
-                .align(Alignment.Center),
+                .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
 
+            Spacer(modifier = Modifier.height(70.dp))
             Text(text = "Bienvenido a CorpoServices", style = Lato.headlineMedium)
             Spacer(modifier = Modifier.height(32.dp))
 
 
             Text(
-                text = stringResource(R.string.login)+"\nserial: $serialNum",
+                text = stringResource(R.string.login),
                 style = Lato.headlineSmall,
                 modifier = Modifier.padding(top = 20.dp, bottom = 30.dp),
             )
@@ -129,7 +131,16 @@ fun LoginScreen(
             viewModel.onIntent(LoginIntent.OnLoginClicked)
         }
 
+        Text("serial: $serialNum", modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 22.dp), style = Lato.bodySmall)
         Text("version "+context.getVersionName(), modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 2.dp), style = Lato.bodySmall)
+
+        state.error?.takeIf { it.isNotBlank() }?.let { error ->
+            DialogError(
+                descrp = error,
+                onDismiss = { viewModel.onIntent(LoginIntent.OnDismissError) },
+                onConfirm = { viewModel.onIntent(LoginIntent.OnDismissError) }
+            )
+        }
     }
 }
 

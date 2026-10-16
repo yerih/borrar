@@ -58,8 +58,8 @@ class LoginViewModel @Inject constructor(
                         }
                         _effect.send(LoginEffect.NavigateToHome)
                     },
-                    onFailure = {
-                        _effect.send(LoginEffect.NavigateToHome)
+                    onFailure = { e ->
+                        _state.value = _state.value.copy(error = e.message ?: "Unknown error")
                     }
                 )
             }
