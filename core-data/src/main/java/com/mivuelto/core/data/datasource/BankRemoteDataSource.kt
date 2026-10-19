@@ -16,7 +16,7 @@ class BankRemoteDataSource @Inject constructor(
     private val bankApi: BankApiService
 ) {
     suspend fun getBanks(authorization: String): Result<List<BankResponse>> = try {
-        Result.success(bankApi.getBanks(authorization).filter{ it.apiActive })
+        Result.success(bankApi.getBanks(authorization))//.filter{ it.apiActive })
     } catch (cancellation: CancellationException) {
         throw cancellation
     } catch (t: Throwable) {

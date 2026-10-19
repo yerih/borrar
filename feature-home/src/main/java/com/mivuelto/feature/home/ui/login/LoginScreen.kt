@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.LineHeightStyle
@@ -49,6 +50,7 @@ fun LoginScreen(
     val userError = remember { mutableStateOf(false) }
     val passwordError = remember { mutableStateOf(false) }
     val serialNum by viewModel.serialNumHolder.serialNumber.collectAsStateWithLifecycle()
+    val keyboardController = LocalSoftwareKeyboardController.current
 
 
     BackHandler{ onBack() }
@@ -112,6 +114,7 @@ fun LoginScreen(
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = {
+                    keyboardController?.hide()
                     viewModel.onIntent(intent = LoginIntent.OnLoginClicked)
                 })
             )
