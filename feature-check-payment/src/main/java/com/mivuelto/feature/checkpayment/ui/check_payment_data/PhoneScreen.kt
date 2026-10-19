@@ -42,6 +42,7 @@ fun PhoneScreen(
         isError = phoneError.value,
         initialValue = "0",
         fontSize = 37.sp,
+        digitsOnly = true,
         errorMsg = "El teléfono es requerido",
         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
         visualTransformation = PhoneVisualTransformation(),

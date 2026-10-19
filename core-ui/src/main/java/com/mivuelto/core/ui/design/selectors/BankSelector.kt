@@ -5,11 +5,13 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
@@ -45,12 +47,17 @@ fun BankSelector(
     var expanded by remember { mutableStateOf(false) }
     var selectedBank by remember { mutableStateOf(banks.first()) }
     var anchorBottomPx by remember { mutableIntStateOf(0) }
+    var menuWidthPx by remember { mutableIntStateOf(0) }
 
     val view = LocalView.current
     val menuMaxHeight = with(LocalDensity.current) {
         val bottomMargin = 8.dp.roundToPx()
-        val minMenu = 120.dp.roundToPx()
-        (view.height - anchorBottomPx - bottomMargin).coerceAtLeast(minMenu).toDp()
+        val minMenu = 300.dp.roundToPx()
+        val maxMenu = (view.height.toFloat() * 0.6f).toInt()
+        (view.height - anchorBottomPx - bottomMargin)
+            .coerceAtLeast(minMenu)
+            .coerceAtMost(maxMenu)
+            .toDp()
     }
 
     ExposedDropdownMenuBox(
@@ -68,6 +75,7 @@ fun BankSelector(
                 .menuAnchor()
                 .onGloballyPositioned { coordinates ->
                     anchorBottomPx = coordinates.boundsInWindow().bottom.toInt()
+                    menuWidthPx = coordinates.boundsInWindow().width.toInt()
                 },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded)
@@ -86,13 +94,12 @@ fun BankSelector(
             onDismissRequest = { expanded = false }
         ) {
 
-            Column(
+            LazyColumn(
                 modifier = Modifier
-                    .heightIn(max = menuMaxHeight)
-                    .verticalScroll(rememberScrollState())
+                    .width(menuWidthPx.dp)
+                    .height(menuMaxHeight)
             ) {
-
-                banks.forEachIndexed { i, bank ->
+                itemsIndexed(banks) { i, bank ->
 
                     DropdownMenuItem(
                         onClick = {
@@ -102,7 +109,9 @@ fun BankSelector(
                         },
                         text = {
                             Row(
-                                modifier = Modifier.fillMaxWidth(),
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 8.dp),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
 

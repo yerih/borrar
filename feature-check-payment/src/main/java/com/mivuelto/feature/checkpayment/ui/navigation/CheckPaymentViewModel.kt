@@ -73,21 +73,18 @@ class CheckPaymentViewModel @Inject constructor(
         if (banksLoaded) return
         banksLoaded = true
         viewModelScope.launch {
-            observeBanks().collect { banks = it }
-        }
-        viewModelScope.launch {
-            val cached = observeBanks().first()
-            if (cached.isNotEmpty()) {
-                banks = cached
-                return@launch
-            }
-            syncBanks().fold(
-                onSuccess = { banks = it },
-                onFailure = { e ->
-                    errorMsg = e.message ?: "Unknown error"
-                    _effect.send(UiEvent.Error(msg = errorMsg))
+            observeBanks().collect { bankList ->
+                banks = bankList
+                if (bankList.isEmpty()) {
+                    syncBanks().fold(
+                        onSuccess = { banks = it },
+                        onFailure = { e ->
+                            errorMsg = e.message ?: "Unknown error"
+                            _effect.send(UiEvent.Error(msg = errorMsg))
+                        }
+                    )
                 }
-            )
+            }
         }
     }
 
