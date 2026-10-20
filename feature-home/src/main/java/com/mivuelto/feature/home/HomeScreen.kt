@@ -73,9 +73,10 @@ fun HomeScreen(
                                 0 -> onFunctionClicked(NavFeature.CHECK_PAYMENT)
                                 1 -> onFunctionClicked(NavFeature.SEND_CHANGE)
                                 2 -> onFunctionClicked(NavFeature.INSTANT_DEBIT)
-                                3 -> scope.launch {
-                                    snackBar.showSnackbar(message = "Funcionalidad en desarrollo")
-                                }//onFunctionClicked(NavFeature.HISTORICAL)
+                                3 -> onFunctionClicked(NavFeature.HISTORICAL) 
+                                //scope.launch {
+                                //    snackBar.showSnackbar(message = "Funcionalidad en desarrollo")
+                                //}//onFunctionClicked(NavFeature.HISTORICAL)
                                 4 -> scope.launch {
                                     snackBar.showSnackbar(message = "Funcionalidad en desarrollo")
                                 }//onFunctionClicked(NavFeature.SETTING)

@@ -67,6 +67,7 @@
     <string name="operations_summary">Resumen de operaciones</string>
     <string name="search_by_invoice">Búsqueda por recibo</string>
     <string name="last_transactions">Últimas transacciones</string>
+<string name="historical_title">Histórico</string>
     <string name="last_operations">Últimas operaciones</string>
     <string name="by_invoice">Por recibo</string>
     <string name="last_op">Últimas op.</string>

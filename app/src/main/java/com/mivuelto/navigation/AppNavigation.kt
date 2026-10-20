@@ -1,5 +1,6 @@
 package com.mivuelto.navigation
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +11,7 @@ import com.mivuelto.feature.instantdebit.navigation.instantDebitGraph
 import com.mivuelto.feature.sendchange.navigation.sendChangeGraph
 import com.mivuelto.feature.checkpayment.DigitalChangeScreen
 import com.mivuelto.feature.checkpayment.HistoricalScreen
+import com.mivuelto.feature.checkpayment.ui.navigation.HistoricalViewModel
 import com.mivuelto.feature.home.ui.login.LoginScreen
 import com.mivuelto.feature.checkpayment.SettingScreen
 import com.mivuelto.feature.checkpayment.ui.navigation.checkPaymentGraph
@@ -39,7 +41,9 @@ fun AppNavigation() {
             )
         }
         composable(NavFeature.HISTORICAL.route) {
+            val viewModel: HistoricalViewModel = hiltViewModel()
             HistoricalScreen(
+                viewModel = viewModel,
                 onBack = { navController.popBackStack() }
             )
         }

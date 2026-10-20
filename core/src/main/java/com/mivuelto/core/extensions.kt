@@ -60,3 +60,9 @@ fun String.toTimeFormatted(): String {
     val outputFormatter = DateTimeFormatter.ofPattern( "h:mm a", Locale.ENGLISH )
     return LocalDateTime.parse(this, inputFormatter) .format(outputFormatter) .lowercase(Locale.ENGLISH)
 }
+
+fun Long.formatCents(): String {
+    val units = this / 100
+    val remainder = (this % 100).toString().padStart(2, '0')
+    return "$units,$remainder"
+}
