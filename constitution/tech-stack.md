@@ -78,7 +78,7 @@ _Core entities and their fields/rules._
 |--------|--------|-------|
 | `CheckPaymentModel` | reference, amount, phone, bank | `amount` stored as cents (integer string), formatted on display |
 | `BankModel` | logo, code, name | `code` is 4-digit bank identifier (e.g., "0105") |
-| `DetailedReportModel` | isSale, reference, isApproved, pan, brand, date, amount | `amount` formatted with "Bs." prefix |
+| `DetailedReportModel` | reference, date, amount, bank, fromPhone | `amount` in cents formatted ("150,50"), `bank` resolved from id to name, `ButtonReport` prefixes with "Bs." |
 | `InvoiceModel` | businessName, bank, address, rif, date, time, ref, phone, amount | Read-only after creation |
 | `LoginRequest` | username, password, terminalSerial | `terminalSerial` from POS device |
 | `TransactionQueryRequest` | reference, amount, date, phone, document, bankId | `bankId` optional for multi-account |

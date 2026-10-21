@@ -61,12 +61,10 @@ class DomainModelTest {
     @Test
     fun `DetailedReportModel default values are correct`() {
         val report = com.mivuelto.core.domain.DetailedReportModel()
-        assertEquals(true, report.isSale)
         assertEquals("", report.reference)
-        assertEquals(true, report.isApproved)
-        assertEquals("", report.pan)
-        assertEquals("", report.brand)
         assertEquals("", report.date)
         assertEquals("", report.amount)
+        assertEquals("", report.bank)
+        assertEquals("", report.fromPhone)
     }
 }

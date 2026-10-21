@@ -11,15 +11,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.mivuelto.core.addCommas
 import com.mivuelto.core.domain.DetailedReportModel
-import com.mivuelto.core.formatDate
 import com.mivuelto.core.isOdd
-import com.mivuelto.core.toMaskedRange
-import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.theme.CorpoCreditTheme
 import com.mivuelto.core.ui.theme.GreyDark
 import com.mivuelto.core.ui.theme.GreyLight
@@ -44,36 +39,27 @@ fun ButtonReport(
     ){
         Column(){
             Text(
-                text = "${if(data.isSale)"Compra" else "Anulación"} - ${data.brand}",//,"${if(data.isSale)"Compra" else "Anulación"} - ${brandByLot(data.lotType, data.brand)}",
+                text = data.reference,
                 style = Lato.invoiceAddress,
             )
             Text(
-                text = data.reference,//data.recoveryRefNum,
+                text = data.bank,
                 style = Lato.invoiceAddress,
             )
             Text(
-                text = stringResource(id = if(data.isApproved) R.string.approved else R.string.declined),
+                text = data.fromPhone,
                 style = Lato.invoiceAddress,
             )
         }
-        Text(
-            text = "_",
-            style = Lato.invoiceAddress,
-        )
         Column(
             horizontalAlignment = Alignment.End
         ){
-
             Text(
-                text = data.pan.toMaskedRange(end = 5),
+                text = data.date,
                 style = Lato.detail,
             )
             Text(
-                text = data.date.formatDate(),
-                style = Lato.detail,
-            )
-            Text(
-                text = "Bs. ${data.amount.addCommas()}",
+                text = "Bs. ${data.amount}",
                 style = Lato.detail,
             )
         }
@@ -93,5 +79,16 @@ private fun DefaultPreviewOdd() {
 @Preview(widthDp = 320, showBackground = true)
 @Composable
 private fun DefaultPreviewEven() {
-    CorpoCreditTheme { ButtonReport(index = 2, data = DetailedReportModel(isSale = false)) }
+    CorpoCreditTheme {
+        ButtonReport(
+            index = 2,
+            data = DetailedReportModel(
+                reference = "883921",
+                date = "24/09/2026",
+                amount = "150,50",
+                bank = "BANCO PLAZA",
+                fromPhone = "04121234567",
+            )
+        )
+    }
 }
