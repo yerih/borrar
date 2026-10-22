@@ -84,7 +84,7 @@ private fun DefaultPreviewEven() {
             index = 2,
             data = DetailedReportModel(
                 reference = "883921",
-                date = "24/09/2026",
+                date = "24/09/2026 06:33 pm",
                 amount = "150,50",
                 bank = "BANCO PLAZA",
                 fromPhone = "04121234567",

@@ -31,7 +31,8 @@ class MainApplication : Application() {
                 serialNumberHolder.setSerialNumber(serialNum)
             }
             else -> {
-                serialNum = "97220811789034"
+                serialNum = "97230221981212"
+//                serialNum = "97220811789034"
                 serialNumberHolder.setSerialNumber(serialNum)
             }
         }

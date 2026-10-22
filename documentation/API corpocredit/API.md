@@ -236,7 +236,7 @@ para verificarlos.
   {
     "id": "...", "amount": 25.00, "referenceNumber": "883921",
     "toPhone": "04121234567", "toBankId": "e3f4a5b6-...-uuid",
-    "status": "a526bd58-...-uuid", "created": "2026-09-24T18:03:11", "...": "..."
+    "status": "a526bd58-...-uuid", "created": "2026-10-22T07:53:34.330994", "...": "..."
   }
 ]
 ```

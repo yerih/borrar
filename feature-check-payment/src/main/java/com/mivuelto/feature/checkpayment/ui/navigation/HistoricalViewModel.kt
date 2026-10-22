@@ -12,7 +12,7 @@ import com.mivuelto.core.domain.usecase.GetTransactionHistoryUseCase
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.core.formatCents
-import com.mivuelto.core.toDateFormatted
+import com.mivuelto.core.toDateTimeFormatted
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.first
@@ -66,7 +66,7 @@ class HistoricalViewModel @Inject constructor(
 
     private fun Transaction.toReport(bankNames: Map<String, String>) = DetailedReportModel(
         reference = referenceNumber.orEmpty(),
-        date = runCatching { created.toDateFormatted() }.getOrElse { created },
+        date = runCatching { created.toDateTimeFormatted() }.getOrElse { created },
         amount = amountCents.formatCents(),
         bank = fromBankId?.let { bankNames[it] }.orEmpty(),
         fromPhone = fromPhone.orEmpty()

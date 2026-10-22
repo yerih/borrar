@@ -3,6 +3,8 @@ package com.mivuelto.core
 import android.util.Log
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.format.DateTimeFormatterBuilder
+import java.time.temporal.ChronoField
 import java.util.Locale
 
 fun Int.isOdd(): Boolean = this % 2 != 0
@@ -48,21 +50,33 @@ fun String.isGreaterThanZero(): Boolean {
     return value > 0
 }
 
-fun String.toDateFormatted(): String {
-    val inputFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault() )
-    val outputFormatter = DateTimeFormatter.ofPattern( "dd/MM/yyyy", Locale.getDefault() )
-    return LocalDateTime.parse(this, inputFormatter) .format(outputFormatter)
-}
+/**
+ * Parser único y tolerante para las fechas ISO del backend:
+ * acepta el formato de la spec (`2026-09-24T18:03:11`) y segundos con
+ * fracción de longitud variable (`2026-10-22T07:53:34.330994`).
+ */
+private val API_DATE_TIME_PARSER: DateTimeFormatter = DateTimeFormatterBuilder()
+    .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
+    .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
+    .toFormatter(Locale.ENGLISH)
 
+private val DATE_OUTPUT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH)
+private val TIME_OUTPUT: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
+private val DATE_TIME_OUTPUT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.ENGLISH)
 
-fun String.toTimeFormatted(): String {
-    val inputFormatter = DateTimeFormatter.ofPattern( "yyyy-MM-dd'T'HH:mm:ss" )
-    val outputFormatter = DateTimeFormatter.ofPattern( "h:mm a", Locale.ENGLISH )
-    return LocalDateTime.parse(this, inputFormatter) .format(outputFormatter) .lowercase(Locale.ENGLISH)
-}
+private fun String.parseApiDateTime(): LocalDateTime = LocalDateTime.parse(this, API_DATE_TIME_PARSER)
 
-fun LocalDateTime.toDateTimeFormatted(): String =
-    format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.ENGLISH))
+/** `2026-09-24T18:03:11` -> `24/09/2026` */
+fun String.toDateFormatted(): String = parseApiDateTime().format(DATE_OUTPUT)
+
+/** `2026-09-24T18:03:11` -> `6:03 pm` */
+fun String.toTimeFormatted(): String = parseApiDateTime().format(TIME_OUTPUT).lowercase(Locale.ENGLISH)
+
+/** `2026-09-24T18:03:11` -> `24/09/2026 06:03 pm` */
+fun LocalDateTime.toDateTimeFormatted(): String = format(DATE_TIME_OUTPUT).lowercase(Locale.ENGLISH)
+
+/** `2026-09-24T18:03:11` -> `24/09/2026 06:03 pm` */
+fun String.toDateTimeFormatted(): String = parseApiDateTime().toDateTimeFormatted()
 
 fun Long.formatCents(): String {
     val units = this / 100
