@@ -88,7 +88,6 @@ fun CheckPaymentScreen(
                             label = stringResource(R.string.amount),
                             isError = amountError.value,
                             errorMessage = "El monto es requerido",
-                            isPassword = true,
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
                             visualTransformation = DecimalCurrencyVisualTransformation("Bs. "),
                             modifier = Modifier.fillMaxWidth()
@@ -100,7 +99,6 @@ fun CheckPaymentScreen(
                             value = phone.value,
                             onValueChange = { phone.value = it },
                             label = stringResource(R.string.phone)+" (opcional)",
-                            isPassword = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
                             modifier = Modifier.fillMaxWidth()
                         )
@@ -109,7 +107,6 @@ fun CheckPaymentScreen(
                             value = bank.value,
                             onValueChange = { phone.value = it },
                             label = stringResource(R.string.bank)+" (opcional)",
-                            isPassword = true,
                             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                             modifier = Modifier.fillMaxWidth()
                         )

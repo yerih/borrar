@@ -167,4 +167,6 @@
     <string name="enter_bank">Seleccione banco</string>
     <string name="verify_payment">Verificar pago móvil</string>
     <string name="verify_payment_mobile">Verificar pago móvil</string>
+    <string name="show_password">Mostrar contraseña</string>
+    <string name="hide_password">Ocultar contraseña</string>
 </resources>
