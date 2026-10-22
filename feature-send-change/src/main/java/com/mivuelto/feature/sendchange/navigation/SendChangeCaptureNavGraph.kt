@@ -1,9 +1,11 @@
 package com.mivuelto.feature.sendchange.navigation
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.design.composableWithTransitions
@@ -67,6 +69,13 @@ fun NavGraphBuilder.sendChangeCaptureNavGraph(
             route = SendChangeCaptureFlow.BANK.route
         ){
             val viewModel = it.sharedViewModel<SendChangeViewModel>(navController, route = NavFeature.SEND_CHANGE.route)
+            LaunchedEffect(Unit) {
+                viewModel.effect.collect { event ->
+                    if (event is UiEvent.Error) {
+                        navController.navigate(SendChangeFlow.ERROR.route)
+                    }
+                }
+            }
             BankScreen(
                 viewModel = viewModel,
                 flowTitle = stringResource(com.mivuelto.feature.sendchange.R.string.send_change),

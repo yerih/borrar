@@ -217,6 +217,15 @@ para verificarlos.
 | 400 | `bankId` (destino) no reconocido |
 | **501** | **siempre**, tras pasar todas las validaciones — función no implementada todavía |
 
+```json
+{
+  "timestamp": "2026-10-21T02:51:06.793-04:00",
+  "status": 422,
+  "error": "Unprocessable Content",
+  "path": "/transactions/send-change"
+}
+```
+
 ### GET /transactions/history
 
 Últimos 20 **vueltos** (`transactionType = VUELTO`) del comercio del token, sin paginación ni filtros.

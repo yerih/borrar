@@ -61,6 +61,9 @@ fun String.toTimeFormatted(): String {
     return LocalDateTime.parse(this, inputFormatter) .format(outputFormatter) .lowercase(Locale.ENGLISH)
 }
 
+fun LocalDateTime.toDateTimeFormatted(): String =
+    format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a", Locale.ENGLISH))
+
 fun Long.formatCents(): String {
     val units = this / 100
     val remainder = (this % 100).toString().padStart(2, '0')
