@@ -2,10 +2,12 @@ package com.mivuelto.core.data.di
 
 import com.mivuelto.core.data.repository.AuthRepositoryImpl
 import com.mivuelto.core.data.repository.BankRepositoryImpl
+import com.mivuelto.core.data.repository.ConfigRepositoryImpl
 import com.mivuelto.core.data.repository.DataRepositoryImpl
 import com.mivuelto.core.data.repository.TransactionRepositoryImpl
 import com.mivuelto.core.domain.repository.AuthRepository
 import com.mivuelto.core.domain.repository.BankRepository
+import com.mivuelto.core.domain.repository.ConfigRepository
 import com.mivuelto.core.domain.repository.DataRepository
 import com.mivuelto.core.domain.repository.TransactionRepository
 import dagger.Binds
@@ -41,4 +43,10 @@ abstract class RepositoryModule {
     abstract fun bindBankRepository(
         bankRepositoryImpl: BankRepositoryImpl
     ): BankRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindConfigRepository(
+        configRepositoryImpl: ConfigRepositoryImpl
+    ): ConfigRepository
 }

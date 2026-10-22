@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.mivuelto.core.SerialNumberHolder
 import com.mivuelto.core.domain.repository.AuthRepository
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
+import com.mivuelto.core.domain.usecase.SyncTransactionTypesUseCase
 import com.mivuelto.core.log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +23,7 @@ class LoginViewModel @Inject constructor(
     val serialNumHolder: SerialNumberHolder,
     val authRepo: AuthRepository,
     private val syncBanks: SyncBanksUseCase,
+    private val transactionTypesUseCase: SyncTransactionTypesUseCase,
 ) : ViewModel() {
 
 
@@ -55,6 +57,9 @@ class LoginViewModel @Inject constructor(
                     onSuccess = {
                         viewModelScope.launch {
                             syncBanks().onFailure { e -> log("banks sync failed: $e") }
+                        }
+                        viewModelScope.launch {
+                            transactionTypesUseCase().onFailure { e -> log("types sync failed: $e") }
                         }
                         _effect.send(LoginEffect.NavigateToHome)
                     },

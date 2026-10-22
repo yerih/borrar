@@ -11,8 +11,8 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 /**
- * Catálogos públicos de backoffice-service (API.md § 7) — rutas sin prefijo
- * `/backoffice` y sin autenticación (`permitAll`), pensadas para poblar selects.
+ * Catálogos de backoffice-service (API.md § 7) — rutas sin prefijo `/backoffice`.
+ * `getConfigs` exige `Authorization: Bearer <token de sesión>`.
  *
  * Endpoints de auth-service y core-service viven en [AuthApiService] y
  * [TransactionApiService]: un cliente por microservicio, igual que la spec.
@@ -45,6 +45,7 @@ interface ApiService {
      */
     @GET("configs")
     suspend fun getConfigs(
+        @Header("Authorization") authorization: String,
         @Query("type") type: String
     ): List<ConfigResponse>
 }

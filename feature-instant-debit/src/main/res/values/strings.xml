@@ -6,5 +6,7 @@
     <string name="amount">Monto</string>
     <string name="phone">Teléfono</string>
     <string name="bank">Banco</string>
+    <string name="enter_bank">Seleccione banco</string>
+    <string name="next">Siguiente</string>
     <string name="instant_debit">Débito inmediato</string>
 </resources>

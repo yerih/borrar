@@ -7,11 +7,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -20,17 +19,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.ui.BaseScreen
-import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.design.HeaderTitles
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
 import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.design.selectors.BankSelector
-import com.mivuelto.core.ui.theme.Lato
+
+import com.mivuelto.core.ui.R.drawable.*
+import com.mivuelto.feature.instantdebit.R
 import com.mivuelto.feature.instantdebit.navigation.InstantDebitViewModel
-
-
-
 
 
 @Composable
@@ -41,23 +38,21 @@ fun BankScreen(
     onTaskDone: ()->Unit
 ){
 
-    val banks = listOf(
-        BankModel(R.drawable.logo_librepago, "0163", "Banco del Tesoro", uuid = "c5d6e7f8-a9b0-1234-cdef-345678901234-uuid"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA"),
-        BankModel(R.drawable.logo_librepago, "0105", "Mercantil"),
-        BankModel(R.drawable.logo_corpocredit, "0108", "Provincial BBVA")
-    )
-    val bank = remember{ mutableStateOf(banks[0]) }
-    val bankError = remember{ mutableStateOf(false) }
+    val banks = remember(viewModel.banks) {
+        viewModel.banks.map { it.copy(logo = ic_bank) }
+    }
+    val bank = remember { mutableStateOf<BankModel?>(null) }
+    val bankError = remember { mutableStateOf(false) }
+    val selectedBank = bank.value ?: banks.firstOrNull()
+
+    LaunchedEffect(Unit) {
+        viewModel.loadBanks()
+    }
 
     val onDone: ()->Unit = {
-        bankError.value = bank.value.logo == null
+        bankError.value = selectedBank == null
         if(!bankError.value){
-            viewModel.state.bank = bank.value
+            viewModel.state.bank = selectedBank
             onTaskDone()
         }
     }
@@ -78,18 +73,22 @@ fun BankScreen(
                     flowTitle = flowTitle,
                     instruction = stringResource(R.string.enter_bank)
                 )
-            }
 
-            Column(
-                modifier = Modifier.align(Alignment.Center),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
-            ) {
-                BankSelector(
-                    modifier = Modifier,
-                    onItemSelected = { index -> bank.value = banks[index] },
-                    banks,
-                )
+
+                Column(
+                    modifier = Modifier.padding(vertical = 20.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Top
+                ) {
+                    if (banks.isNotEmpty()) {
+                        BankSelector(
+                            modifier = Modifier,
+                            onItemSelected = { index -> bank.value = banks[index] },
+                            banks = banks,
+                        )
+                    }
+                }
+
             }
 
 
@@ -110,9 +109,7 @@ fun BankScreen(
                     modifier = Modifier.weight(1f),
                     paddingHz = 0.dp,
                     text = stringResource(R.string.next),
-                    onClick = {
-                        onDone()
-                    }
+                    onClick = { onDone() }
                 )
 
             }

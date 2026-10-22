@@ -1,9 +1,11 @@
 package com.mivuelto.feature.instantdebit.navigation
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
+import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.sharedViewModel
@@ -67,6 +69,13 @@ fun NavGraphBuilder.instantDebitCaptureNavGraph(
             route = InstantDebitCaptureFlow.BANK.route
         ){
             val viewModel = it.sharedViewModel<InstantDebitViewModel>(navController, route = NavFeature.INSTANT_DEBIT.route)
+            LaunchedEffect(Unit) {
+                viewModel.effect.collect { event ->
+                    if (event is UiEvent.Error) {
+                        navController.navigate(InstantDebitFlow.ERROR.route)
+                    }
+                }
+            }
             BankScreen(
                 viewModel = viewModel,
                 flowTitle = stringResource(R.string.instant_debit),

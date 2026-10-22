@@ -665,6 +665,21 @@ Response: mismo `VerificacionResponse` con `tipoOperacion: "TRANSFERENCIA"`.
 
 ---
 
+## GET /configs?type=TRANSACCIONES
+Authorization: Bearer TOKEN
+```json
+Response [
+{
+"key": "e383f064-58cc-4944-9f51-f349f72399b0",
+"value": "VUELTO"
+},
+{
+"key": "4740ac2a-38c8-4f7c-8cdc-d28eb25eec20",
+"value": "PAGO"
+}
+]
+```
+
 ## Notas de integración
 
 - **App móvil / POS**: usa exclusivamente `auth-service` (`/auth/app/*`) para login y `core-service`

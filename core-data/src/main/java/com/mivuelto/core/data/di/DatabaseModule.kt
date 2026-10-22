@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Room
 import com.mivuelto.core.data.local.AppDatabase
 import com.mivuelto.core.data.local.BankDao
+import com.mivuelto.core.data.local.TransactionTypeDao
 import com.mivuelto.core.data.local.UserDao
 import dagger.Module
 import dagger.Provides
@@ -30,4 +31,8 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideUserDao(database: AppDatabase): UserDao = database.userDao()
+
+    @Provides
+    @Singleton
+    fun provideTransactionTypeDao(database: AppDatabase): TransactionTypeDao = database.transactionTypeDao()
 }
