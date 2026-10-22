@@ -33,8 +33,8 @@ fun NavGraphBuilder.captureDataNavGraph(
     navController: NavController
 ) {
     navigation(
-//        startDestination = CaptureDataFlow.BANK.route,
-        startDestination = CaptureDataFlow.DATE.route,
+        startDestination = CaptureDataFlow.BANK.route,
+//        startDestination = CaptureDataFlow.DATE.route,
         route = CheckPaymentFlow.FORM.route
     ){
 
