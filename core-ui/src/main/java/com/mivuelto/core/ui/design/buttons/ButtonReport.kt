@@ -59,6 +59,10 @@ fun ButtonReport(
                 style = Lato.detail,
             )
             Text(
+                text = data.type,
+                style = Lato.detail,
+            )
+            Text(
                 text = "Bs. ${data.amount}",
                 style = Lato.detail,
             )

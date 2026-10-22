@@ -6,6 +6,7 @@ data class DetailedReportModel(
     val amount: String = "",
     val bank: String = "",
     val fromPhone: String = "",
+    val type: String = "",
 
 ) {
 }

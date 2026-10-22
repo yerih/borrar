@@ -8,9 +8,11 @@ import androidx.lifecycle.viewModelScope
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.domain.DetailedReportModel
 import com.mivuelto.core.domain.model.Transaction
+import com.mivuelto.core.domain.model.TransactionTypeModel
 import com.mivuelto.core.domain.usecase.GetTransactionHistoryUseCase
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
+import com.mivuelto.core.domain.usecase.SyncTransactionTypesUseCase
 import com.mivuelto.core.formatCents
 import com.mivuelto.core.toDateTimeFormatted
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,6 +27,7 @@ class HistoricalViewModel @Inject constructor(
     private val getHistory: GetTransactionHistoryUseCase,
     private val observeBanks: ObserveBanksUseCase,
     private val syncBanks: SyncBanksUseCase,
+    private val trxTypeUseCase: SyncTransactionTypesUseCase,
 ) : ViewModel() {
 
     var items by mutableStateOf<List<DetailedReportModel>>(emptyList())
@@ -38,9 +41,17 @@ class HistoricalViewModel @Inject constructor(
     private val _effect = Channel<UiEvent>()
     val effect = _effect.receiveAsFlow()
 
+    var trxTypes: List<TransactionTypeModel>? = null
+
     fun loadHistory() {
         if (isLoading) return
         isLoading = true
+        viewModelScope.launch {
+            trxTypeUseCase().fold(
+                onFailure = {},
+                onSuccess = { trxTypes = it }
+            )
+        }
         viewModelScope.launch {
             val bankNames = loadBankNames()
             getHistory().fold(
@@ -69,6 +80,7 @@ class HistoricalViewModel @Inject constructor(
         date = runCatching { created.toDateTimeFormatted() }.getOrElse { created },
         amount = amountCents.formatCents(),
         bank = fromBankId?.let { bankNames[it] }.orEmpty(),
-        fromPhone = fromPhone.orEmpty()
+        fromPhone = fromPhone.orEmpty(),
+        type = trxTypes?.find{ it.id == transactionTypeId }?.name ?: "unknown type"
     )
 }
