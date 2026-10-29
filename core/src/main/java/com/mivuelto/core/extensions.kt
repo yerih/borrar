@@ -1,9 +1,11 @@
 package com.mivuelto.core
 
 import android.util.Log
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatterBuilder
+import java.time.format.TextStyle
 import java.time.temporal.ChronoField
 import java.util.Locale
 
@@ -59,6 +61,23 @@ private val API_DATE_TIME_PARSER: DateTimeFormatter = DateTimeFormatterBuilder()
     .appendPattern("yyyy-MM-dd'T'HH:mm:ss")
     .appendFraction(ChronoField.NANO_OF_SECOND, 0, 9, true)
     .toFormatter(Locale.ENGLISH)
+
+private val SPANISH = Locale("es")
+
+/** `29, septiembre` — etiqueta de día para las opciones rápidas de fecha. */
+fun LocalDate.toDayMonthLabel(): String =
+    "%02d de %s".format(dayOfMonth, month.getDisplayName(TextStyle.FULL, SPANISH))
+
+/** `martes, septiembre` — etiqueta con nombre de día para la opción "hace 2 días". */
+fun LocalDate.toWeekdayMonthLabel(): String =
+    "%s, %02d de %s".format(
+        dayOfWeek.getDisplayName(TextStyle.FULL, SPANISH),
+        dayOfMonth,
+        month.getDisplayName(TextStyle.FULL, SPANISH)
+    )
+
+/** `yyyy-MM-dd` — formato que espera el backend para `TransactionQuery.date` (API.md § 2). */
+fun LocalDate.toApiDate(): String = format(DateTimeFormatter.ISO_LOCAL_DATE)
 
 private val DATE_OUTPUT: DateTimeFormatter = DateTimeFormatter.ofPattern("dd/MM/yyyy", Locale.ENGLISH)
 private val TIME_OUTPUT: DateTimeFormatter = DateTimeFormatter.ofPattern("h:mm a", Locale.ENGLISH)
