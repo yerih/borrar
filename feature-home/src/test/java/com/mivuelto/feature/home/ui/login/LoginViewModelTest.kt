@@ -7,6 +7,7 @@ import com.mivuelto.core.domain.model.AuthSession
 import com.mivuelto.core.domain.model.AuthUser
 import com.mivuelto.core.domain.repository.AuthRepository
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
+import com.mivuelto.core.domain.usecase.SyncTransactionTypesUseCase
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -28,6 +29,7 @@ class LoginViewModelTest {
     private val serialNumberHolder: SerialNumberHolder = mockk(relaxed = true)
     private val authRepository: AuthRepository = mockk(relaxed = true)
     private val syncBanks: SyncBanksUseCase = mockk()
+    private val syncTransactionTypes: SyncTransactionTypesUseCase = mockk()
     private lateinit var viewModel: LoginViewModel
 
     private val authSession = AuthSession(
@@ -46,7 +48,8 @@ class LoginViewModelTest {
         Dispatchers.setMain(testDispatcher)
         coEvery { authRepository.login(any(), any(), any()) } returns Result.success(authSession)
         coEvery { syncBanks() } returns Result.success(emptyList())
-        viewModel = LoginViewModel(serialNumberHolder, authRepository, syncBanks)
+        coEvery { syncTransactionTypes() } returns Result.success(emptyList())
+        viewModel = LoginViewModel(serialNumberHolder, authRepository, syncBanks, syncTransactionTypes)
     }
 
     @After

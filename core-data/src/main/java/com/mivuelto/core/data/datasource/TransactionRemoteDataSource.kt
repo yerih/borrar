@@ -2,6 +2,7 @@ package com.mivuelto.core.data.datasource
 
 import com.mivuelto.core.data.network.TransactionApiService
 import com.mivuelto.core.data.network.toCoreApiError
+import com.mivuelto.core.data.network.requests.DebinChargeRequest
 import com.mivuelto.core.data.network.requests.DebinTokenRequest
 import com.mivuelto.core.data.network.requests.SendChangeRequest
 import com.mivuelto.core.data.network.requests.TransactionQueryRequest
@@ -63,6 +64,26 @@ class TransactionRemoteDataSource @Inject constructor(
         throw cancellation
     } catch (t: Throwable) {
         Result.failure(t.toCoreApiError())
+    }
+
+    /** Paso 2 DEBIN: confirma la operación (200 sin body; errores en el body). */
+    suspend fun debinCharge(
+        authorization: String,
+        request: DebinChargeRequest
+    ): Result<Unit> {
+        val response = try {
+            transactionApi.debinCharge(authorization, request)
+        } catch (cancellation: CancellationException) {
+            throw cancellation
+        } catch (t: Throwable) {
+            return Result.failure(t.toCoreApiError())
+        }
+
+        return if (response.isSuccessful) {
+            Result.success(Unit)
+        } else {
+            Result.failure(HttpException(response).toCoreApiError())
+        }
     }
 
     suspend fun getHistory(authorization: String): Result<List<TransactionResponse>> = try {

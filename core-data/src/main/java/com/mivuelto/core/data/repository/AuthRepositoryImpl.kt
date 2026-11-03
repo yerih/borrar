@@ -6,6 +6,7 @@ import com.mivuelto.core.data.local.UserEntity
 import com.mivuelto.core.data.network.requests.LoginRequest
 import com.mivuelto.core.data.network.requests.UserData
 import com.mivuelto.core.data.network.responses.LoginResponse
+import com.mivuelto.core.data.session.SessionCredentials
 import com.mivuelto.core.data.session.SessionManager
 import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.AuthSession
@@ -18,6 +19,7 @@ import javax.inject.Inject
 class AuthRepositoryImpl @Inject constructor(
     private val remote: AuthRemoteDataSource,
     private val session: SessionManager,
+    private val credentials: SessionCredentials,
     private val local: UserLocalDataSource
 ) : AuthRepository {
 
@@ -28,9 +30,16 @@ class AuthRepositoryImpl @Inject constructor(
     ): Result<AuthSession> =
         remote.login(LoginRequest(username, password, terminalSerial)).map { response ->
             session.saveToken(response.sessionToken)
+            credentials.save(username, password, terminalSerial)
             local.upsert(response.user.toEntity())
             response.toDomain()
         }
+
+    override suspend fun refreshSession(): Result<AuthSession> {
+        val cached = credentials.get()
+            ?: return Result.failure(ApiError.Unauthorized("No cached credentials. Login required."))
+        return login(cached.username, cached.password, cached.terminalSerial)
+    }
 
     override suspend fun logout(): Result<Unit> {
         val token = session.currentToken()
@@ -40,6 +49,7 @@ class AuthRepositoryImpl @Inject constructor(
             remote.logout(token)
         }
         session.clear()
+        credentials.clear()
         local.clear()
         return result
     }

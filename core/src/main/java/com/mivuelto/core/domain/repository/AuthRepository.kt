@@ -18,6 +18,14 @@ interface AuthRepository {
         terminalSerial: String
     ): Result<AuthSession>
 
+    /**
+     * Refresca el token re-logueando con las credenciales en memoria
+     * (API.md § 1 — no hay endpoint de refresh). Llamar antes de cada
+     * operación transaccional. `ApiError.Unauthorized` si no hay credenciales
+     * cacheadas (proceso nuevo o logout).
+     */
+    suspend fun refreshSession(): Result<AuthSession>
+
     /** POST /auth/app/logout con el token guardado. Limpia la sesión local y el usuario persistido. */
     suspend fun logout(): Result<Unit>
 

@@ -3,9 +3,11 @@ package com.mivuelto.core.data
 import com.mivuelto.core.data.datasource.AuthRemoteDataSource
 import com.mivuelto.core.data.datasource.UserLocalDataSource
 import com.mivuelto.core.data.local.UserEntity
+import com.mivuelto.core.data.network.requests.LoginRequest
 import com.mivuelto.core.data.network.requests.UserData
 import com.mivuelto.core.data.network.responses.LoginResponse
 import com.mivuelto.core.data.repository.AuthRepositoryImpl
+import com.mivuelto.core.data.session.SessionCredentials
 import com.mivuelto.core.data.session.SessionManager
 import com.mivuelto.core.domain.error.ApiError
 import io.mockk.coEvery
@@ -28,8 +30,9 @@ class AuthRepositoryImplTest {
 
     private val remote: AuthRemoteDataSource = mockk()
     private val session: SessionManager = mockk(relaxed = true)
+    private val credentials = SessionCredentials()
     private val local: UserLocalDataSource = mockk()
-    private val repository = AuthRepositoryImpl(remote, session, local)
+    private val repository = AuthRepositoryImpl(remote, session, credentials, local)
 
     private val userEntity = UserEntity(
         id = "user-1",
@@ -90,6 +93,36 @@ class AuthRepositoryImplTest {
 
         verify { session.clear() }
         coVerify { local.clear() }
+    }
+
+    @Test
+    fun `refreshSession re-logins with the cached credentials`() = runTest {
+        coEvery { remote.login(any()) } returns Result.success(loginResponse)
+
+        repository.login("user", "pass", "POS-0001").getOrThrow()
+        val result = repository.refreshSession().getOrThrow()
+
+        coVerify(exactly = 2) { remote.login(LoginRequest("user", "pass", "POS-0001")) }
+        assertEquals("token", result.sessionToken)
+    }
+
+    @Test
+    fun `refreshSession fails when no credentials are cached`() = runTest {
+        val result = repository.refreshSession()
+
+        assertTrue(result.exceptionOrNull() is ApiError.Unauthorized)
+        coVerify(exactly = 0) { remote.login(any()) }
+    }
+
+    @Test
+    fun `logout clears the cached credentials`() = runTest {
+        coEvery { remote.login(any()) } returns Result.success(loginResponse)
+        coEvery { remote.logout(any()) } returns Result.success(Unit)
+
+        repository.login("user", "pass", "POS-0001").getOrThrow()
+        repository.logout()
+
+        assertTrue(repository.refreshSession().exceptionOrNull() is ApiError.Unauthorized)
     }
 
     @Test

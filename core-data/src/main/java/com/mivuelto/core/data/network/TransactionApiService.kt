@@ -1,5 +1,6 @@
 package com.mivuelto.core.data.network
 
+import com.mivuelto.core.data.network.requests.DebinChargeRequest
 import com.mivuelto.core.data.network.requests.DebinTokenRequest
 import com.mivuelto.core.data.network.requests.SendChangeRequest
 import com.mivuelto.core.data.network.requests.TransactionQueryRequest
@@ -53,6 +54,16 @@ interface TransactionApiService {
         @Header("Authorization") authorization: String,
         @Body request: DebinTokenRequest
     ): DebinTokenResponse
+
+    /**
+     * POST /transactions/debin/charge — débito inmediato, paso 2 (confirmación).
+     * 200 -> sin body; por eso se devuelve [Response] y no un body tipado.
+     */
+    @POST("transactions/debin/charge")
+    suspend fun debinCharge(
+        @Header("Authorization") authorization: String,
+        @Body request: DebinChargeRequest
+    ): Response<Unit>
 
     /**
      * GET /transactions/history — últimos 20 **vueltos** del comercio del token.
