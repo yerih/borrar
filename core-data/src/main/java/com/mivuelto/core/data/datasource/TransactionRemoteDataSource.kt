@@ -2,8 +2,10 @@ package com.mivuelto.core.data.datasource
 
 import com.mivuelto.core.data.network.TransactionApiService
 import com.mivuelto.core.data.network.toCoreApiError
+import com.mivuelto.core.data.network.requests.DebinTokenRequest
 import com.mivuelto.core.data.network.requests.SendChangeRequest
 import com.mivuelto.core.data.network.requests.TransactionQueryRequest
+import com.mivuelto.core.data.network.responses.DebinTokenResponse
 import com.mivuelto.core.data.network.responses.TransactionResponse
 import com.mivuelto.core.data.network.responses.TransactionStatsResponse
 import kotlinx.coroutines.CancellationException
@@ -49,6 +51,18 @@ class TransactionRemoteDataSource @Inject constructor(
         } else {
             Result.failure(HttpException(response).toCoreApiError())
         }
+    }
+
+    /** Paso 1 DEBIN: reserva el token (201 -> [DebinTokenResponse]). */
+    suspend fun debinToken(
+        authorization: String,
+        request: DebinTokenRequest
+    ): Result<DebinTokenResponse> = try {
+        Result.success(transactionApi.debinToken(authorization, request))
+    } catch (cancellation: CancellationException) {
+        throw cancellation
+    } catch (t: Throwable) {
+        Result.failure(t.toCoreApiError())
     }
 
     suspend fun getHistory(authorization: String): Result<List<TransactionResponse>> = try {

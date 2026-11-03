@@ -680,6 +680,48 @@ Response [
 ]
 ```
 
+## POST /transactions/debin/token
+Authorization: Bearer TOKEN
+
+```json
+{
+  "amount": 50.00,
+  "phone": "04242143162",
+  "bankId": "d0e1f2a3-b4c5-6789-defa-890123456789",
+  "document": "V13824919",
+  "sourceBankId": "d0e1f2a3-b4c5-6789-defa-890123456789"
+}
+```
+
+
+Response 201 
+```json
+{ 
+  "id": "9b1e...-uuid",   //To use for the next step
+  "mensaje": "0000 - Transaccion Exitosa", 
+  "expiresInSeconds": 120 
+}
+```
+
+## POST /transactions/debin/charge
+```json
+{ 
+  "id": "9b1e...-uuid",  // Usar del response anterior
+  "token": "12345678" 
+}
+```
+
+Remember the error response body for all endpoints
+```json
+{
+    "timestamp": "2026-11-03T03:55:22.165-04:00",
+    "status": 500,
+    "error": "Internal Server Error",
+    "path": "/transactions/debin/token"
+} 
+```
+
+
 ## Notas de integración
 
 - **App móvil / POS**: usa exclusivamente `auth-service` (`/auth/app/*`) para login y `core-service`

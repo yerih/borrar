@@ -6,10 +6,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.domain.model.BankModel
+import com.mivuelto.core.domain.model.DebinToken
+import com.mivuelto.core.domain.model.DebinTokenCommand
 import com.mivuelto.core.domain.model.InstantDebitModel
+import com.mivuelto.core.domain.usecase.DebinTokenUseCase
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.ObserveUserUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
+import com.mivuelto.core.log
 import com.mivuelto.core.toDateTimeFormatted
 import com.mivuelto.core.ui.launch
 import com.mivuelto.feature.instantdebit.ui.invoices.InvoiceModel
@@ -17,6 +21,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.receiveAsFlow
+import java.math.BigDecimal
 import java.time.LocalDateTime
 import javax.inject.Inject
 
@@ -25,12 +30,16 @@ class InstantDebitViewModel @Inject constructor(
     private val observeUser: ObserveUserUseCase,
     private val observeBanks: ObserveBanksUseCase,
     private val syncBanks: SyncBanksUseCase,
+    private val debinTokenUseCase: DebinTokenUseCase,
 ) : ViewModel() {
 
     var state by mutableStateOf(InstantDebitModel())
         private set
 
     var errorMsg = ""
+
+    var tokenResult by mutableStateOf<DebinToken?>(null)
+        private set
 
     var merchantRif by mutableStateOf<String?>(null)
         private set
@@ -82,10 +91,38 @@ class InstantDebitViewModel @Inject constructor(
 
     fun sendPayment() {
         launch {
-            delay(3000)
-            _effect.send(UiEvent.OnSuccess)
-            delay(2000)
-            _effect.send(UiEvent.TaskDone())
+            debinTokenUseCase(state.toDebinTokenCommand())
+                .fold(
+                    onFailure = { e ->
+                        log("excep = $e")
+                        errorMsg = e.message ?: "Unknown error"
+                        _effect.send(UiEvent.Error(msg = errorMsg))
+                    },
+                    onSuccess = { token ->
+                        log("onSuccess: token = ${token.id}")
+                        tokenResult = token
+                        _effect.send(UiEvent.OnSuccess)
+                        delay(SUCCESS_VISIBLE_MS)
+                        _effect.send(UiEvent.TaskDone())
+                    }
+                )
+        }
+    }
+
+    private fun InstantDebitModel.toDebinTokenCommand() = DebinTokenCommand(
+        amount = parseAmount(amount),
+        phone = phone?.filter(Char::isDigit).orEmpty(),
+        bankId = bank?.uuid.orEmpty(),
+        document = idNumber.orEmpty()
+    )
+
+    private companion object {
+        const val SUCCESS_VISIBLE_MS = 1_500L
+
+        fun parseAmount(raw: String?): BigDecimal {
+            val digits = raw?.filter(Char::isDigit).orEmpty()
+            if (digits.isBlank()) return BigDecimal.ZERO
+            return BigDecimal(digits).movePointLeft(2)
         }
     }
 }

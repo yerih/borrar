@@ -1,7 +1,9 @@
 package com.mivuelto.core.data.network
 
+import com.mivuelto.core.data.network.requests.DebinTokenRequest
 import com.mivuelto.core.data.network.requests.SendChangeRequest
 import com.mivuelto.core.data.network.requests.TransactionQueryRequest
+import com.mivuelto.core.data.network.responses.DebinTokenResponse
 import com.mivuelto.core.data.network.responses.TransactionResponse
 import com.mivuelto.core.data.network.responses.TransactionStatsResponse
 import retrofit2.Response
@@ -41,6 +43,16 @@ interface TransactionApiService {
         @Header("Authorization") authorization: String,
         @Body request: SendChangeRequest
     ): Response<Unit>
+
+    /**
+     * POST /transactions/debin/token — débito inmediato, paso 1.
+     * 201 -> [DebinTokenResponse]; el `id` sirve para `/transactions/debin/charge`.
+     */
+    @POST("transactions/debin/token")
+    suspend fun debinToken(
+        @Header("Authorization") authorization: String,
+        @Body request: DebinTokenRequest
+    ): DebinTokenResponse
 
     /**
      * GET /transactions/history — últimos 20 **vueltos** del comercio del token.

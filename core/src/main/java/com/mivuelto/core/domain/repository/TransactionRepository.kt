@@ -1,5 +1,7 @@
 package com.mivuelto.core.domain.repository
 
+import com.mivuelto.core.domain.model.DebinToken
+import com.mivuelto.core.domain.model.DebinTokenCommand
 import com.mivuelto.core.domain.model.SendChangeCommand
 import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
@@ -24,6 +26,9 @@ interface TransactionRepository {
      * `ApiError.NotImplemented` (501) tras pasar las validaciones.
      */
     suspend fun sendChange(command: SendChangeCommand): Result<Unit>
+
+    /** `POST /transactions/debin/token` — débito inmediato, paso 1 (reserva token). */
+    suspend fun debinToken(command: DebinTokenCommand): Result<DebinToken>
 
     /** `GET /transactions/history` — últimos 20 vueltos del comercio, sin filtros. */
     suspend fun getHistory(): Result<List<Transaction>>
