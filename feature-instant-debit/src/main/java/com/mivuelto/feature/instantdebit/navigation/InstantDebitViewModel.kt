@@ -6,9 +6,11 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.domain.model.BankModel
+import com.mivuelto.core.domain.model.DebinChargeCommand
 import com.mivuelto.core.domain.model.DebinToken
 import com.mivuelto.core.domain.model.DebinTokenCommand
 import com.mivuelto.core.domain.model.InstantDebitModel
+import com.mivuelto.core.domain.usecase.DebinChargeUseCase
 import com.mivuelto.core.domain.usecase.DebinTokenUseCase
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.ObserveUserUseCase
@@ -31,6 +33,7 @@ class InstantDebitViewModel @Inject constructor(
     private val observeBanks: ObserveBanksUseCase,
     private val syncBanks: SyncBanksUseCase,
     private val debinTokenUseCase: DebinTokenUseCase,
+    private val debinChargeUseCase: DebinChargeUseCase,
 ) : ViewModel() {
 
     var state by mutableStateOf(InstantDebitModel())
@@ -39,6 +42,9 @@ class InstantDebitViewModel @Inject constructor(
     var errorMsg = ""
 
     var tokenResult by mutableStateOf<DebinToken?>(null)
+        private set
+
+    var isCharging by mutableStateOf(false)
         private set
 
     var merchantRif by mutableStateOf<String?>(null)
@@ -91,21 +97,21 @@ class InstantDebitViewModel @Inject constructor(
 
     fun sendPayment() {
         launch {
-            debinTokenUseCase(state.toDebinTokenCommand())
-                .fold(
-                    onFailure = { e ->
-                        log("excep = $e")
-                        errorMsg = e.message ?: "Unknown error"
-                        _effect.send(UiEvent.Error(msg = errorMsg))
-                    },
-                    onSuccess = { token ->
-                        log("onSuccess: token = ${token.id}")
-                        tokenResult = token
+//            debinTokenUseCase(state.toDebinTokenCommand())
+//                .fold(
+//                    onFailure = { e ->
+//                        log("excep = $e")
+//                        errorMsg = e.message ?: "Unknown error"
+//                        _effect.send(UiEvent.Error(msg = errorMsg))
+//                    },
+//                    onSuccess = { token ->
+//                        log("onSuccess: token = ${token.id}")
+//                        tokenResult = token
                         _effect.send(UiEvent.OnSuccess)
                         delay(SUCCESS_VISIBLE_MS)
                         _effect.send(UiEvent.TaskDone())
-                    }
-                )
+//                    }
+//                )
         }
     }
 
@@ -115,6 +121,33 @@ class InstantDebitViewModel @Inject constructor(
         bankId = bank?.uuid.orEmpty(),
         document = idNumber.orEmpty()
     )
+
+    /** Paso 2 DEBIN: confirma con el `id` del token reservado + el código del usuario. */
+    fun chargePayment(token: String) {
+        val id = tokenResult?.id
+        if (id.isNullOrBlank()) {
+            errorMsg = "Token operation not available"
+            launch { _effect.send(UiEvent.Error(msg = errorMsg)) }
+            return
+        }
+        isCharging = true
+        launch {
+            debinChargeUseCase(DebinChargeCommand(id = id, token = token))
+                .fold(
+                    onFailure = { e ->
+                        isCharging = false
+                        log("excep = $e")
+                        errorMsg = e.message ?: "Unknown error"
+                        _effect.send(UiEvent.Error(msg = errorMsg))
+                    },
+                    onSuccess = {
+                        isCharging = false
+                        log("onSuccess: charge completed")
+                        _effect.send(UiEvent.TaskDone())
+                    }
+                )
+        }
+    }
 
     private companion object {
         const val SUCCESS_VISIBLE_MS = 1_500L

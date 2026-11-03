@@ -76,7 +76,7 @@ class SendChangeViewModel @Inject constructor(
     }
 
     fun getInvoice(): InvoiceModel = InvoiceModel(
-        ref = "SC-${System.currentTimeMillis() % 10000}",
+        ref = "empty",
         date = LocalDateTime.now().toDateTimeFormatted(),
         time = "",
         bank = state.bank ?: BankModel(),

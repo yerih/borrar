@@ -1,5 +1,6 @@
 package com.mivuelto.feature.instantdebit.navigation
 
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.navigation
@@ -8,6 +9,8 @@ import com.mivuelto.core.ui.LoaderScreen
 import com.mivuelto.core.ui.design.composableWithTransitions
 import com.mivuelto.core.ui.NavFeature
 import com.mivuelto.core.ui.sharedViewModel
+import com.mivuelto.feature.instantdebit.R
+import com.mivuelto.feature.instantdebit.ui.TokenScreen
 import com.mivuelto.feature.instantdebit.ui.invoices.InvoiceScreen
 
 
@@ -17,6 +20,7 @@ sealed class InstantDebitFlow(val route: String) {
 
     object INVOICE : InstantDebitFlow("instant_debit/invoice")
     object LOADER : InstantDebitFlow("instant_debit/loader")
+    object TOKEN : InstantDebitFlow("instant_debit/token")
 
     object ERROR : InstantDebitFlow("instant_debit/confirm")
 
@@ -37,8 +41,21 @@ fun NavGraphBuilder.instantDebitGraph(navController: NavController) {
                 eventFlow = viewModel.effect,
                 action = { viewModel.sendPayment() },
                 onTaskDone = {
-                    navController.navigate(InstantDebitFlow.INVOICE.route)
+                    navController.navigate(InstantDebitFlow.TOKEN.route)
                 },
+                onError = { navController.navigate(InstantDebitFlow.ERROR.route) }
+            )
+        }
+
+        composableWithTransitions(
+            route = InstantDebitFlow.TOKEN.route
+        ){
+            val viewModel: InstantDebitViewModel = it.sharedViewModel(navController)
+            TokenScreen(
+                viewModel = viewModel,
+                flowTitle = stringResource(R.string.instant_debit),
+                onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
+                onTaskDone = { navController.navigate(InstantDebitFlow.INVOICE.route) },
                 onError = { navController.navigate(InstantDebitFlow.ERROR.route) }
             )
         }

@@ -36,6 +36,7 @@ fun PhoneScreen(
 
     SingleFormScreen(
         title = "Ingrese teléfono",
+        initialValue = "0",
         digitsLimit = 11,
         flowTitle = flowTitle,
         label = "Teléfono",

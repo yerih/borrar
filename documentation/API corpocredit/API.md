@@ -704,12 +704,18 @@ Response 201
 ```
 
 ## POST /transactions/debin/charge
+Authorization: Bearer TOKEN
+
+Request — usar el `id` obtenido del response de `/debin/token`:
 ```json
 { 
   "id": "9b1e...-uuid",  // Usar del response anterior
   "token": "12345678" 
 }
 ```
+
+Response **200** — sin body: el éxito se indica solo por el código HTTP.
+Los errores usan el body de error estándar de abajo.
 
 Remember the error response body for all endpoints
 ```json
