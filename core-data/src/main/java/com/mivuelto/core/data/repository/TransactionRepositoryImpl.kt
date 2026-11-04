@@ -10,6 +10,7 @@ import com.mivuelto.core.data.session.SessionManager
 import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.DailyStat
 import com.mivuelto.core.domain.model.DebinChargeCommand
+import com.mivuelto.core.domain.model.DebinChargeResult
 import com.mivuelto.core.domain.model.DebinToken
 import com.mivuelto.core.domain.model.DebinTokenCommand
 import com.mivuelto.core.domain.model.SendChangeCommand
@@ -72,15 +73,22 @@ class TransactionRepositoryImpl @Inject constructor(
         ).map { DebinToken(it.id, it.mensaje, it.expiresInSeconds) }
     }
 
-    override suspend fun debinCharge(command: DebinChargeCommand): Result<Unit> {
-        val authorization = authorization().getOrElse { return Result.failure(it) }
+    override suspend fun debinCharge(command: DebinChargeCommand): Result<DebinChargeResult> {
+//        val authorization = authorization().getOrElse { return Result.failure(it) }
+        val authorization = session.currentToken() ?: authorization().getOrElse { return Result.failure(it) }
         return remote.debinCharge(
             authorization = authorization,
             request = DebinChargeRequest(
                 id = command.id,
                 token = command.token
             )
-        )
+        ).map { response ->
+            DebinChargeResult(
+                estado = response.estado,
+                mensaje = response.mensaje,
+                transaction = response.transaction.toDomain()
+            )
+        }
     }
 
     override suspend fun getHistory(): Result<List<Transaction>> {

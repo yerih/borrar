@@ -47,6 +47,12 @@ class InstantDebitViewModel @Inject constructor(
     var isCharging by mutableStateOf(false)
         private set
 
+    var isRequestingToken by mutableStateOf(false)
+        private set
+
+    var tokenErrorMsg by mutableStateOf<String?>(null)
+        private set
+
     var merchantRif by mutableStateOf<String?>(null)
         private set
 
@@ -97,23 +103,51 @@ class InstantDebitViewModel @Inject constructor(
 
     fun sendPayment() {
         launch {
-//            debinTokenUseCase(state.toDebinTokenCommand())
-//                .fold(
-//                    onFailure = { e ->
-//                        log("excep = $e")
-//                        errorMsg = e.message ?: "Unknown error"
-//                        _effect.send(UiEvent.Error(msg = errorMsg))
-//                    },
-//                    onSuccess = { token ->
-//                        log("onSuccess: token = ${token.id}")
-//                        tokenResult = token
+            requestNewToken()
+                .fold(
+                    onFailure = { e ->
+                        log("excep = $e")
+                        errorMsg = e.message ?: "Unknown error"
+                        _effect.send(UiEvent.Error(msg = errorMsg))
+                    },
+                    onSuccess = { token ->
+                        log("onSuccess: token = ${token.id}")
+                        tokenResult = token
                         _effect.send(UiEvent.OnSuccess)
                         delay(SUCCESS_VISIBLE_MS)
                         _effect.send(UiEvent.TaskDone())
-//                    }
-//                )
+                    }
+                )
         }
     }
+
+    /**
+     * Re-solicita `POST /transactions/debin/token` cuando el token vigente
+     * expiró (pantalla TOKEN). Al recibir el nuevo, [tokenResult] cambia y la
+     * pantalla reinicia la cuenta regresiva con el `expiresInSeconds` nuevo.
+     */
+    fun retryToken() {
+        if (isRequestingToken) return
+        isRequestingToken = true
+        tokenErrorMsg = null
+        launch {
+            requestNewToken()
+                .fold(
+                    onFailure = { e ->
+                        isRequestingToken = false
+                        tokenErrorMsg = e.message ?: "Unknown error"
+                        log("token retry failed = $e")
+                    },
+                    onSuccess = { token ->
+                        isRequestingToken = false
+                        tokenResult = token
+                    }
+                )
+        }
+    }
+
+    private suspend fun requestNewToken(): Result<DebinToken> =
+        debinTokenUseCase(state.toDebinTokenCommand())
 
     private fun InstantDebitModel.toDebinTokenCommand() = DebinTokenCommand(
         amount = parseAmount(amount),
@@ -140,9 +174,9 @@ class InstantDebitViewModel @Inject constructor(
                         errorMsg = e.message ?: "Unknown error"
                         _effect.send(UiEvent.Error(msg = errorMsg))
                     },
-                    onSuccess = {
+                    onSuccess = { result ->
                         isCharging = false
-                        log("onSuccess: charge completed")
+                        log("onSuccess: estado = ${result.estado}")
                         _effect.send(UiEvent.TaskDone())
                     }
                 )

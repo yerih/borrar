@@ -706,15 +706,38 @@ Response 201
 ## POST /transactions/debin/charge
 Authorization: Bearer TOKEN
 
-Request — usar el `id` obtenido del response de `/debin/token`:
+Response **200** — body:
 ```json
-{ 
-  "id": "9b1e...-uuid",  // Usar del response anterior
-  "token": "12345678" 
+{
+"estado": "APROBADO",
+"mensaje": "0000 - Transaccion exitosa.",
+"transaction": {
+  "amount": 4.04,
+  "cashRegisterId": null,
+  "commerceId": "0db4fb14-2017-4f65-975d-5519330cfa90",
+  "created": "2026-11-04T08:32:42.707743",
+  "endToEnd": null,
+  "fromBankId": "c3d4e5f6-a7b8-9012-cdef-123456789012",
+  "fromDocumentType": "074dfe46-70e5-4fda-a108-11ecd3608c01",
+  "fromIdDocument": "17855550",
+  "fromPhone": "04241440310",
+  "id": "3ba96f30-b2ac-4797-b271-fc40f17c99a9",
+  "idempotencyKey": null,
+  "isValidated": false,
+  "referenceNumber": null,
+  "response": "Token enviado al pagador; esperando cobro",
+  "sessionId": null,
+  "status": "9d2c4f7a-6b1e-4c3a-9f58-2e7d1a0b6c41",
+  "toBankId": "d0e1f2a3-b4c5-6789-defa-890123456789",
+  "toDocumentType": "074dfe46-70e5-4fda-a108-11ecd3608c01",
+  "toIdDocument": "13824919",
+  "toPhone": "04142143162",
+  "transactionType": "b7c1e2d4-5f6a-4b8c-9d0e-1f2a3b4c5d6e",
+  "updated": "2026-11-04T08:32:43.984657"
+  }
 }
 ```
 
-Response **200** — sin body: el éxito se indica solo por el código HTTP.
 Los errores usan el body de error estándar de abajo.
 
 Remember the error response body for all endpoints

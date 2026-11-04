@@ -1,6 +1,7 @@
 package com.mivuelto.core.domain.repository
 
 import com.mivuelto.core.domain.model.DebinChargeCommand
+import com.mivuelto.core.domain.model.DebinChargeResult
 import com.mivuelto.core.domain.model.DebinToken
 import com.mivuelto.core.domain.model.DebinTokenCommand
 import com.mivuelto.core.domain.model.SendChangeCommand
@@ -31,8 +32,8 @@ interface TransactionRepository {
     /** `POST /transactions/debin/token` — débito inmediato, paso 1 (reserva token). */
     suspend fun debinToken(command: DebinTokenCommand): Result<DebinToken>
 
-    /** `POST /transactions/debin/charge` — débito inmediato, paso 2 (200 sin body). */
-    suspend fun debinCharge(command: DebinChargeCommand): Result<Unit>
+    /** `POST /transactions/debin/charge` — débito inmediato, paso 2 (200 con body). */
+    suspend fun debinCharge(command: DebinChargeCommand): Result<DebinChargeResult>
 
     /** `GET /transactions/history` — últimos 20 vueltos del comercio, sin filtros. */
     suspend fun getHistory(): Result<List<Transaction>>

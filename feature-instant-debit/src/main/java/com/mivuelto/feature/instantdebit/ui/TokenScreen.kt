@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.LocalTextStyle
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -20,6 +21,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -35,6 +37,7 @@ import com.mivuelto.core.ui.design.buttons.ButtonLoader
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.design.textfields.TextFieldCustom
 import com.mivuelto.feature.instantdebit.navigation.InstantDebitViewModel
+import kotlinx.coroutines.delay
 
 @Composable
 fun TokenScreen(
@@ -46,6 +49,20 @@ fun TokenScreen(
 ) {
     var token by remember { mutableStateOf("") }
     val tokenError = remember { mutableStateOf(false) }
+    val tokenResult = viewModel.tokenResult
+    var secondsLeft by remember { mutableStateOf(tokenResult?.expiresInSeconds ?: 0) }
+    val expired = tokenResult != null && secondsLeft <= 0
+
+    LaunchedEffect(tokenResult) {
+        val expires = tokenResult?.expiresInSeconds ?: return@LaunchedEffect
+        token = ""
+        tokenError.value = false
+        secondsLeft = expires
+        while (secondsLeft > 0) {
+            delay(1_000)
+            secondsLeft--
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effect.collect { event ->
@@ -58,9 +75,11 @@ fun TokenScreen(
     }
 
     val onDone: () -> Unit = {
-        tokenError.value = token.length != TOKEN_LENGTH
-        if (!tokenError.value) {
-            viewModel.chargePayment(token)
+        if (!expired) {
+            tokenError.value = token.length != TOKEN_LENGTH
+            if (!tokenError.value) {
+                viewModel.chargePayment(token)
+            }
         }
     }
 
@@ -75,6 +94,24 @@ fun TokenScreen(
                     flowTitle = flowTitle,
                     instruction = "Ingrese token"
                 )
+                if (tokenResult != null) {
+                    Text(
+                        text = if (expired) "Tiempo expirado"
+                        else "%02d:%02d".format(secondsLeft / 60, secondsLeft % 60),
+                        color = if (expired) Color.Red else Color.Black,
+                        fontSize = 20.sp,
+                        modifier = Modifier.padding(top = 8.dp)
+                    )
+                }
+                viewModel.tokenErrorMsg?.let { msg ->
+                    Text(
+                        text = msg,
+                        color = Color.Red,
+                        fontSize = 12.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(top = 4.dp, start = 20.dp, end = 20.dp)
+                    )
+                }
             }
 
             TextFieldCustom(
@@ -109,14 +146,25 @@ fun TokenScreen(
 
                 Spacer(modifier = Modifier.width(10.dp))
 
-                ButtonLoader(
-                    text = stringResource(R.string.next),
-                    isLoading = viewModel.isCharging,
-                    isMaxWidth = false,
-                    paddingHz = 0.dp,
-                    modifier = Modifier.weight(1f),
-                    onClick = { onDone() }
-                )
+                if (expired) {
+                    ButtonLoader(
+                        text = stringResource(R.string.retry),
+                        isLoading = viewModel.isRequestingToken,
+                        isMaxWidth = false,
+                        paddingHz = 0.dp,
+                        modifier = Modifier.weight(1f),
+                        onClick = { viewModel.retryToken() }
+                    )
+                } else {
+                    ButtonLoader(
+                        text = stringResource(R.string.next),
+                        isLoading = viewModel.isCharging,
+                        isMaxWidth = false,
+                        paddingHz = 0.dp,
+                        modifier = Modifier.weight(1f),
+                        onClick = { onDone() }
+                    )
+                }
             }
         }
     }
