@@ -743,11 +743,14 @@ Los errores usan el body de error estándar de abajo.
 Remember the error response body for all endpoints
 ```json
 {
-    "timestamp": "2026-11-03T03:55:22.165-04:00",
-    "status": 500,
-    "error": "Internal Server Error",
-    "path": "/transactions/debin/token"
-} 
+  "timestamp": "2026-11-04T09:00:45.292512184-04:00",
+  "status": 422,
+  "error": "Unprocessable Content",
+  "message": "El cobro fue rechazado: El token venció (120 s); solicite uno nuevo.",
+  "path": "/transactions/debin/charge",
+  "codigo": "TOKEN_VENCIDO",
+  "transactionId": "199e4d85-d2e7-43f3-9f18-95f37f417f0d"
+}
 ```
 
 

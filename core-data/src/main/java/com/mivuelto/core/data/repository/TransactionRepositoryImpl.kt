@@ -77,7 +77,7 @@ class TransactionRepositoryImpl @Inject constructor(
 //        val authorization = authorization().getOrElse { return Result.failure(it) }
         val authorization = session.currentToken() ?: authorization().getOrElse { return Result.failure(it) }
         return remote.debinCharge(
-            authorization = authorization,
+            authorization = "Bearer $authorization",
             request = DebinChargeRequest(
                 id = command.id,
                 token = command.token

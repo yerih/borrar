@@ -7,15 +7,22 @@ import retrofit2.HttpException
 import java.io.IOException
 
 /**
- * Formato default de error de Spring Boot (API.md § Convenciones).
- * Ejemplo: {"timestamp":"...","status":401,"error":"Unauthorized",
- *           "message":"Invalid credentials","path":"/auth/app/login"}
+ * Formato default de error de Spring Boot (API.md § Convenciones), tal como
+ * aparece en `/transactions/debin/charge` (API.md § 2):
+ * {"timestamp":"...","status":422,"error":"Unprocessable Content",
+ *  "message":"El cobro fue rechazado: ...","path":"/transactions/debin/charge",
+ *  "codigo":"TOKEN_VENCIDO","transactionId":"..."}
+ *
+ * [message] es el texto que se muestra en la pantalla de error.
  */
 data class ErrorResponse(
+    @SerializedName("timestamp") val timestamp: String? = null,
     @SerializedName("status") val status: Int? = null,
     @SerializedName("error") val error: String? = null,
     @SerializedName("message") val message: String? = null,
-    @SerializedName("path") val path: String? = null
+    @SerializedName("path") val path: String? = null,
+    @SerializedName("codigo") val codigo: String? = null,
+    @SerializedName("transactionId") val transactionId: String? = null
 )
 
 private val gson = Gson()
@@ -46,7 +53,7 @@ fun HttpException.toAuthApiError(): ApiError = toApiError(
 
 private fun HttpException.toApiError(forbidden: (String) -> ApiError): ApiError {
     val parsed = parseErrorBody()
-    val message = parsed?.message ?: this.message()
+    val message = parsed?.message?.takeIf { it.isNotBlank() } ?: this.message()
     return when (code()) {
         400 -> ApiError.Validation(message ?: "Invalid request")
         401 -> ApiError.Unauthorized(message ?: "Invalid credentials")
