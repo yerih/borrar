@@ -28,7 +28,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.ui.R
 import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.design.HeaderTitles
@@ -44,8 +43,7 @@ fun TokenScreen(
     viewModel: InstantDebitViewModel,
     flowTitle: String,
     onBack: () -> Unit,
-    onTaskDone: () -> Unit,
-    onError: () -> Unit
+    onCharge: () -> Unit
 ) {
     var token by remember { mutableStateOf("") }
     val tokenError = remember { mutableStateOf(false) }
@@ -64,21 +62,12 @@ fun TokenScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.effect.collect { event ->
-            when (event) {
-                is UiEvent.TaskDone -> onTaskDone()
-                is UiEvent.Error -> onError()
-                else -> Unit
-            }
-        }
-    }
-
     val onDone: () -> Unit = {
         if (!expired) {
             tokenError.value = token.length != TOKEN_LENGTH
             if (!tokenError.value) {
-                viewModel.chargePayment(token)
+                viewModel.startCharge(token)
+                onCharge()
             }
         }
     }
@@ -126,7 +115,7 @@ fun TokenScreen(
                 label = "Token",
                 isError = tokenError.value,
                 errorMessage = "El token debe tener $TOKEN_LENGTH dígitos",
-                textStyle = LocalTextStyle.current.copy(fontSize = 24.sp, textAlign = TextAlign.Center),
+                textStyle = LocalTextStyle.current.copy(fontSize = 37.sp, textAlign = TextAlign.Center),
                 modifier = Modifier.align(Alignment.Center).padding(horizontal = 10.dp),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { onDone() })
@@ -158,7 +147,6 @@ fun TokenScreen(
                 } else {
                     ButtonLoader(
                         text = stringResource(R.string.next),
-                        isLoading = viewModel.isCharging,
                         isMaxWidth = false,
                         paddingHz = 0.dp,
                         modifier = Modifier.weight(1f),

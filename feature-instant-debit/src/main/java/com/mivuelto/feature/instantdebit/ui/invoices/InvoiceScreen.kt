@@ -53,7 +53,7 @@ fun InvoiceScreen(
                     items(1) {
 
                         InvoiceIconTitle(
-                            textId = R.string.validation_successful,
+                            textId = R.string.operation_successful,
                             modifier = Modifier.padding(top = 10.dp)
                         )
                         Column(

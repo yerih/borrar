@@ -3,7 +3,6 @@ package com.mivuelto.feature.checkpayment.ui
 import app.cash.turbine.test
 import com.mediosdepago.corpocredit.core.ui_atomics.UiEvent
 import com.mivuelto.core.domain.error.ApiError
-import com.mivuelto.core.domain.model.AuthSession
 import com.mivuelto.core.domain.model.AuthUser
 import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.domain.model.CheckPaymentModel
@@ -13,7 +12,6 @@ import com.mivuelto.core.domain.model.TransactionType
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.ObserveUserUseCase
 import com.mivuelto.core.domain.usecase.QueryTransactionUseCase
-import com.mivuelto.core.domain.usecase.RefreshSessionUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.feature.checkpayment.ui.invoices.InvoiceModel
 import com.mivuelto.feature.checkpayment.ui.navigation.CheckPaymentViewModel
@@ -42,7 +40,6 @@ class CheckPaymentViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private val queryTransaction: QueryTransactionUseCase = mockk()
-    private val refreshSession: RefreshSessionUseCase = mockk()
     private val observeBanks: ObserveBanksUseCase = mockk()
     private val syncBanks: SyncBanksUseCase = mockk()
     private val observeUser: ObserveUserUseCase = mockk()
@@ -53,19 +50,7 @@ class CheckPaymentViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         coEvery { observeUser() } returns userFlow
-        coEvery { refreshSession() } returns Result.success(
-            AuthSession(
-                sessionToken = "token",
-                expiresAt = "2030-01-01T00:00:00",
-                user = AuthUser(
-                    id = "u1",
-                    username = "admin",
-                    roleId = "ADM",
-                    merchantId = "m1"
-                )
-            )
-        )
-        viewModel = CheckPaymentViewModel(queryTransaction, refreshSession, observeBanks, syncBanks, observeUser)
+        viewModel = CheckPaymentViewModel(queryTransaction, observeBanks, syncBanks, observeUser)
     }
 
     @After
@@ -167,42 +152,6 @@ class CheckPaymentViewModelTest {
         assertEquals("04121234567", query.phone)
         assertEquals(null, query.document)
         assertEquals(null, query.bankId)
-    }
-
-    @Test
-    fun `sendPayment refreshes the session before querying`() = runTest {
-        coEvery { refreshSession() } returns Result.success(
-            AuthSession(
-                sessionToken = "fresh",
-                expiresAt = "2030-01-01T00:00:00",
-                user = AuthUser(id = "u1", username = "admin", roleId = "ADM", merchantId = "m1")
-            )
-        )
-        coEvery { queryTransaction(any()) } returns Result.failure(ApiError.Validation("no-op"))
-
-        viewModel.sendPayment()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify { refreshSession() }
-        coVerify { queryTransaction(any()) }
-    }
-
-    @Test
-    fun `sendPayment emits error and skips the query when the session refresh fails`() = runTest {
-        coEvery { refreshSession() } returns
-            Result.failure(ApiError.Unauthorized("No cached credentials. Login required."))
-
-        viewModel.sendPayment()
-        testDispatcher.scheduler.advanceUntilIdle()
-
-        coVerify(exactly = 0) { queryTransaction(any()) }
-        viewModel.effect.test {
-            val event = awaitItem()
-            assertTrue(event is UiEvent.Error)
-            assertEquals("No cached credentials. Login required.", (event as UiEvent.Error).msg)
-            cancelAndIgnoreRemainingEvents()
-        }
-        assertEquals("No cached credentials. Login required.", viewModel.errorMsg)
     }
 
     @Test

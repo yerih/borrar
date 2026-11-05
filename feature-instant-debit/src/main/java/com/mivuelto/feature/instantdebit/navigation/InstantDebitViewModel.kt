@@ -102,20 +102,22 @@ class InstantDebitViewModel @Inject constructor(
     )
 
     fun sendPayment() {
+        if (isRequestingToken) return
+        isRequestingToken = true
         launch {
             requestNewToken()
                 .fold(
                     onFailure = { e ->
+                        isRequestingToken = false
                         log("excep = $e")
                         errorMsg = e.message ?: "Unknown error"
                         _effect.send(UiEvent.Error(msg = errorMsg))
                     },
                     onSuccess = { token ->
+                        isRequestingToken = false
                         log("onSuccess: token = ${token.id}")
                         tokenResult = token
                         _effect.send(UiEvent.OnSuccess)
-                        delay(SUCCESS_VISIBLE_MS)
-                        _effect.send(UiEvent.TaskDone())
                     }
                 )
         }
@@ -156,17 +158,26 @@ class InstantDebitViewModel @Inject constructor(
         document = idNumber.orEmpty()
     )
 
-    /** Paso 2 DEBIN: confirma con el `id` del token reservado + el código del usuario. */
-    fun chargePayment(token: String) {
+    /** Código de verificación guardado en [startCharge]; lo consume el LOADER de carga. */
+    private var chargeTokenNumber: String? = null
+
+    /** Guarda el código del usuario y prepara el charge para el LOADER de carga. */
+    fun startCharge(token: String) {
+        chargeTokenNumber = token
+    }
+
+    /** Paso 2 DEBIN: confirma con el `id` del token reservado + el código guardado. */
+    fun chargePayment() {
         val id = tokenResult?.id
-        if (id.isNullOrBlank()) {
+        val tokenNumber = chargeTokenNumber
+        if (id.isNullOrBlank() || tokenNumber.isNullOrBlank()) {
             errorMsg = "Token operation not available"
             launch { _effect.send(UiEvent.Error(msg = errorMsg)) }
             return
         }
         isCharging = true
         launch {
-            debinChargeUseCase(DebinChargeCommand(id = id, token = token))
+            debinChargeUseCase(DebinChargeCommand(id = id, token = tokenNumber))
                 .fold(
                     onFailure = { e ->
                         isCharging = false
@@ -177,6 +188,8 @@ class InstantDebitViewModel @Inject constructor(
                     onSuccess = { result ->
                         isCharging = false
                         log("onSuccess: estado = ${result.estado}")
+                        _effect.send(UiEvent.OnSuccess)
+                        delay(SUCCESS_VISIBLE_MS)
                         _effect.send(UiEvent.TaskDone())
                     }
                 )

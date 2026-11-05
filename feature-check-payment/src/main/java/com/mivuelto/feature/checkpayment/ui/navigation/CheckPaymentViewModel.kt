@@ -15,7 +15,6 @@ import com.mivuelto.core.domain.model.TransactionType
 import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.ObserveUserUseCase
 import com.mivuelto.core.domain.usecase.QueryTransactionUseCase
-import com.mivuelto.core.domain.usecase.RefreshSessionUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.core.formatDate
 import com.mivuelto.core.log
@@ -36,7 +35,6 @@ import javax.inject.Inject
 @HiltViewModel
 class CheckPaymentViewModel @Inject constructor(
     private val queryTransaction: QueryTransactionUseCase,
-    private val refreshSession: RefreshSessionUseCase,
     private val observeBanks: ObserveBanksUseCase,
     private val syncBanks: SyncBanksUseCase,
     private val observeUser: ObserveUserUseCase,
@@ -102,28 +100,18 @@ class CheckPaymentViewModel @Inject constructor(
 
     fun sendPayment() {
         viewModelScope.launch {
-            refreshSession()
+            queryTransaction(state.toTransactionQuery())
                 .fold(
                     onFailure = { e ->
-                        log("refresh failed = $e")
+                        log("excep = $e")
                         errorMsg = e.message ?: "Unknown error"
                         _effect.send(UiEvent.Error(msg = errorMsg))
                     },
-                    onSuccess = {
-                        queryTransaction(state.toTransactionQuery())
-                            .fold(
-                                onFailure = { e ->
-                                    log("excep = $e")
-                                    errorMsg = e.message ?: "Unknown error"
-                                    _effect.send(UiEvent.Error(msg = errorMsg))
-                                },
-                                onSuccess = { transaction ->
-                                    verifiedTransaction = transaction
-                                    _effect.send(UiEvent.OnSuccess)
-                                    delay(SUCCESS_VISIBLE_MS)
-                                    _effect.send(UiEvent.TaskDone())
-                                }
-                            )
+                    onSuccess = { transaction ->
+                        verifiedTransaction = transaction
+                        _effect.send(UiEvent.OnSuccess)
+                        delay(SUCCESS_VISIBLE_MS)
+                        _effect.send(UiEvent.TaskDone())
                     }
                 )
         }

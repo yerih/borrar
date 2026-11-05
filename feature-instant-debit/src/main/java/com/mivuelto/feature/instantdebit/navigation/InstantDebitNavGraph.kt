@@ -19,7 +19,7 @@ sealed class InstantDebitFlow(val route: String) {
     object FORM : InstantDebitFlow("instant_debit/start")
 
     object INVOICE : InstantDebitFlow("instant_debit/invoice")
-    object LOADER : InstantDebitFlow("instant_debit/loader")
+    object CHARGE_LOADER : InstantDebitFlow("instant_debit/charge_loader")
     object TOKEN : InstantDebitFlow("instant_debit/token")
 
     object ERROR : InstantDebitFlow("instant_debit/confirm")
@@ -33,19 +33,6 @@ fun NavGraphBuilder.instantDebitGraph(navController: NavController) {
     ) {
 
         instantDebitCaptureNavGraph(navController)
-        composableWithTransitions(
-            route = InstantDebitFlow.LOADER.route
-        ){
-            val viewModel: InstantDebitViewModel = it.sharedViewModel(navController)
-            LoaderScreen(
-                eventFlow = viewModel.effect,
-                action = { viewModel.sendPayment() },
-                onTaskDone = {
-                    navController.navigate(InstantDebitFlow.TOKEN.route)
-                },
-                onError = { navController.navigate(InstantDebitFlow.ERROR.route) }
-            )
-        }
 
         composableWithTransitions(
             route = InstantDebitFlow.TOKEN.route
@@ -55,7 +42,20 @@ fun NavGraphBuilder.instantDebitGraph(navController: NavController) {
                 viewModel = viewModel,
                 flowTitle = stringResource(R.string.instant_debit),
                 onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
-                onTaskDone = { navController.navigate(InstantDebitFlow.INVOICE.route) },
+                onCharge = { navController.navigate(InstantDebitFlow.CHARGE_LOADER.route) }
+            )
+        }
+
+        composableWithTransitions(
+            route = InstantDebitFlow.CHARGE_LOADER.route
+        ){
+            val viewModel: InstantDebitViewModel = it.sharedViewModel(navController)
+            LoaderScreen(
+                eventFlow = viewModel.effect,
+                action = { viewModel.chargePayment() },
+                onTaskDone = {
+                    navController.navigate(InstantDebitFlow.INVOICE.route)
+                },
                 onError = { navController.navigate(InstantDebitFlow.ERROR.route) }
             )
         }

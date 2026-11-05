@@ -7,7 +7,6 @@ import com.mivuelto.core.data.network.requests.SendChangeRequest
 import com.mivuelto.core.data.network.requests.TransactionQueryRequest
 import com.mivuelto.core.data.network.responses.TransactionResponse
 import com.mivuelto.core.data.session.SessionManager
-import com.mivuelto.core.domain.error.ApiError
 import com.mivuelto.core.domain.model.DailyStat
 import com.mivuelto.core.domain.model.DebinChargeCommand
 import com.mivuelto.core.domain.model.DebinChargeResult
@@ -17,6 +16,7 @@ import com.mivuelto.core.domain.model.SendChangeCommand
 import com.mivuelto.core.domain.model.Transaction
 import com.mivuelto.core.domain.model.TransactionQuery
 import com.mivuelto.core.domain.model.TransactionStats
+import com.mivuelto.core.domain.repository.AuthRepository
 import com.mivuelto.core.domain.repository.TransactionRepository
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -26,7 +26,8 @@ import javax.inject.Inject
 
 class TransactionRepositoryImpl @Inject constructor(
     private val remote: TransactionRemoteDataSource,
-    private val session: SessionManager
+    private val session: SessionManager,
+    private val authRepository: AuthRepository
 ) : TransactionRepository {
 
     override suspend fun queryTransaction(query: TransactionQuery): Result<Transaction> {
@@ -74,10 +75,9 @@ class TransactionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun debinCharge(command: DebinChargeCommand): Result<DebinChargeResult> {
-//        val authorization = authorization().getOrElse { return Result.failure(it) }
-        val authorization = session.currentToken() ?: authorization().getOrElse { return Result.failure(it) }
+        val authorization = authorization().getOrElse { return Result.failure(it) }
         return remote.debinCharge(
-            authorization = "Bearer $authorization",
+            authorization = authorization,
             request = DebinChargeRequest(
                 id = command.id,
                 token = command.token
@@ -118,12 +118,19 @@ class TransactionRepositoryImpl @Inject constructor(
 
     /**
      * core-service exige `Authorization: Bearer <token de auth-service>` (§ 2).
-     * Sin sesión en memoria no hay request posible: fallar rápido en cliente en
-     * lugar de dejar que el gateway responda 401.
+     * Valida el TTL de la sesión (1 h) en cada llamada transaccional: si el
+     * token venció o no hay, re-loguea en silencio con las credenciales
+     * cacheadas antes de hacer el request. Sin sesión ni credenciales no hay
+     * request posible: fallar rápido en cliente en lugar de dejar que el
+     * gateway responda 401.
      */
-    private fun authorization(): Result<String> =
-        session.currentToken()?.let { Result.success("Bearer $it") }
-            ?: Result.failure(ApiError.Unauthorized("No active session. Login required."))
+    private suspend fun authorization(): Result<String> {
+        val token = session.currentToken()
+        if (token != null && !session.isTokenExpired()) {
+            return Result.success("Bearer $token")
+        }
+        return authRepository.refreshSession().map { "Bearer ${it.sessionToken}" }
+    }
 
     private fun TransactionResponse.toDomain() = Transaction(
         id = id,
