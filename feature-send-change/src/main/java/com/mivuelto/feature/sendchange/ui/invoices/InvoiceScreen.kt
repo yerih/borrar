@@ -70,7 +70,7 @@ fun InvoiceScreen(
 
                                 style = Lato.invoiceAddress
                                 InvoiceElement(center = businessName, style)
-                                InvoiceElement(center = address, style)
+//                                InvoiceElement(center = address, style)
                                 Spacer(Modifier.height(10.dp))
 
 

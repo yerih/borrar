@@ -13,7 +13,9 @@ import com.mivuelto.core.domain.usecase.ObserveUserUseCase
 import com.mivuelto.core.domain.usecase.SendChangeUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.core.log
+import com.mivuelto.core.toDateFormatted
 import com.mivuelto.core.toDateTimeFormatted
+import com.mivuelto.core.toTimeFormatted
 import com.mivuelto.core.ui.launch
 import com.mivuelto.feature.sendchange.ui.invoices.InvoiceModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -46,6 +48,11 @@ class SendChangeViewModel @Inject constructor(
     private val _effect = Channel<UiEvent>()
     val effect = _effect.receiveAsFlow()
 
+    var reference: String? = null
+    var merchantName: String? = null
+    var date: String? = null
+    var time: String? = null
+
     init {
         launch {
             observeUser().collect { merchantRif = it?.merchantRif }
@@ -76,11 +83,12 @@ class SendChangeViewModel @Inject constructor(
     }
 
     fun getInvoice(): InvoiceModel = InvoiceModel(
-        ref = "empty",
-        date = LocalDateTime.now().toDateTimeFormatted(),
-        time = "",
+        ref = reference ?: "empty",
+        date = date ?: LocalDateTime.now().toDateFormatted(),
+        time = time ?: LocalDateTime.now().toTimeFormatted(),
         bank = state.bank ?: BankModel(),
         businessBankRif = merchantRif ?: "J-12345678",
+        businessName = merchantName ?: "",
         amount = state.amount ?: "empty",
         phone = state.phone ?: "empty"
     )
