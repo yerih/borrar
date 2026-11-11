@@ -21,7 +21,7 @@ import com.mivuelto.core.domain.model.BankModel
 import com.mivuelto.core.ui.BaseScreen
 import com.mivuelto.core.ui.design.HeaderTitles
 import com.mivuelto.core.ui.design.buttons.ButtonBorder
-import com.mivuelto.core.ui.design.buttons.ButtonLoader
+import com.mivuelto.core.ui.design.buttons.ButtonFilled
 import com.mivuelto.core.ui.design.logos.CorpoCreditLogo
 import com.mivuelto.core.ui.design.selectors.BankSelector
 
@@ -105,11 +105,10 @@ fun BankScreen(
                 )
 
                 Spacer(modifier = Modifier.width(10.dp))
-                ButtonLoader(
+                ButtonFilled(
                     modifier = Modifier.weight(1f),
                     paddingHz = 0.dp,
                     text = stringResource(R.string.next),
-                    isLoading = viewModel.isRequestingToken,
                     onClick = { onDone() }
                 )
 

@@ -56,6 +56,7 @@ fun LoaderScreen(
 //                    isError = true; msg = event.msg.ifEmpty { context.getString(event.msgId) }
                 }
                 is UiEvent.TaskDone -> {isDone = true; isError = false; isLoading = false; onTaskDone()}
+                is UiEvent.NextScreen -> {isError = false; isLoading = true; onTaskDone()}
                 is UiEvent.Notification -> { isLoading = event.isLoading; loaderMsg = event.msg }
                 UiEvent.OnBack -> onBack()
                 UiEvent.OnSuccess -> {

@@ -129,7 +129,8 @@ class InstantDebitViewModel @Inject constructor(
                         isRequestingToken = false
                         log("onSuccess: token = ${token.id}")
                         tokenResult = token
-                        _effect.send(UiEvent.OnSuccess)
+                        delay(SUCCESS_VISIBLE_MS)
+                        _effect.send(UiEvent.NextScreen)
                     }
                 )
         }

@@ -71,10 +71,8 @@ fun NavGraphBuilder.instantDebitCaptureNavGraph(
             val viewModel = it.sharedViewModel<InstantDebitViewModel>(navController, route = NavFeature.INSTANT_DEBIT.route)
             LaunchedEffect(Unit) {
                 viewModel.effect.collect { event ->
-                    when (event) {
-                        is UiEvent.Error -> navController.navigate(InstantDebitFlow.ERROR.route)
-                        is UiEvent.OnSuccess -> navController.navigate(InstantDebitFlow.TOKEN.route)
-                        else -> Unit
+                    if (event is UiEvent.Error) {
+                        navController.navigate(InstantDebitFlow.ERROR.route)
                     }
                 }
             }
@@ -82,7 +80,7 @@ fun NavGraphBuilder.instantDebitCaptureNavGraph(
                 viewModel = viewModel,
                 flowTitle = stringResource(R.string.instant_debit),
                 onBack = { navController.popBackStack(route = NavFeature.HOME.route, inclusive = false) },
-                onTaskDone = { viewModel.sendPayment() }
+                onTaskDone = { navController.navigate(route = InstantDebitFlow.LOADER.route) }
             )
         }
 

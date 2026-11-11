@@ -19,6 +19,7 @@ sealed class InstantDebitFlow(val route: String) {
     object FORM : InstantDebitFlow("instant_debit/start")
 
     object INVOICE : InstantDebitFlow("instant_debit/invoice")
+    object LOADER : InstantDebitFlow("instant_debit/loader")
     object CHARGE_LOADER : InstantDebitFlow("instant_debit/charge_loader")
     object TOKEN : InstantDebitFlow("instant_debit/token")
 
@@ -33,6 +34,20 @@ fun NavGraphBuilder.instantDebitGraph(navController: NavController) {
     ) {
 
         instantDebitCaptureNavGraph(navController)
+
+        composableWithTransitions(
+            route = InstantDebitFlow.LOADER.route
+        ){
+            val viewModel: InstantDebitViewModel = it.sharedViewModel(navController)
+            LoaderScreen(
+                eventFlow = viewModel.effect,
+                action = { viewModel.sendPayment() },
+                onTaskDone = {
+                    navController.navigate(InstantDebitFlow.TOKEN.route)
+                },
+                onError = { navController.navigate(InstantDebitFlow.ERROR.route) }
+            )
+        }
 
         composableWithTransitions(
             route = InstantDebitFlow.TOKEN.route

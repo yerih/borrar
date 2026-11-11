@@ -17,6 +17,7 @@ sealed interface UiEvent{
     data class Toast(val msg: String = "", val msgId: Int = 0): UiEvent
     data object OnBack : UiEvent
     data object OnSuccess : UiEvent
+    data object NextScreen : UiEvent
     data class Dialog(val msg: String = "", val msgId: Int = 0, val event: UiEvent = NoEvent, val arg1: String = ""): UiEvent
     data class Progress(val isLoading: Boolean = true, val progress: Int): UiEvent
     data class SnackBar(val msg: String = "", val msgId: Int = 0) : UiEvent
