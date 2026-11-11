@@ -93,6 +93,8 @@ fun String.toTimeFormatted(): String = parseApiDateTime().format(TIME_OUTPUT).lo
 
 /** `2026-09-24T18:03:11` -> `24/09/2026 06:03 pm` */
 fun LocalDateTime.toDateTimeFormatted(): String = format(DATE_TIME_OUTPUT).lowercase(Locale.ENGLISH)
+fun LocalDateTime.toDateFormatted(): String = format(DATE_OUTPUT).lowercase(Locale.ENGLISH)
+fun LocalDateTime.toTimeFormatted(): String = format(TIME_OUTPUT).lowercase(Locale.ENGLISH)
 
 /** `2026-09-24T18:03:11` -> `24/09/2026 06:03 pm` */
 fun String.toDateTimeFormatted(): String = parseApiDateTime().toDateTimeFormatted()

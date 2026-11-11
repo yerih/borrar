@@ -16,7 +16,9 @@ import com.mivuelto.core.domain.usecase.ObserveBanksUseCase
 import com.mivuelto.core.domain.usecase.ObserveUserUseCase
 import com.mivuelto.core.domain.usecase.SyncBanksUseCase
 import com.mivuelto.core.log
+import com.mivuelto.core.toDateFormatted
 import com.mivuelto.core.toDateTimeFormatted
+import com.mivuelto.core.toTimeFormatted
 import com.mivuelto.core.ui.launch
 import com.mivuelto.feature.instantdebit.ui.invoices.InvoiceModel
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -56,15 +58,24 @@ class InstantDebitViewModel @Inject constructor(
     var merchantRif by mutableStateOf<String?>(null)
         private set
 
+    var merchantName: String? = null
+
     var banks by mutableStateOf<List<BankModel>>(emptyList())
         private set
+
+    var referenceNumber: String? = null
+    var time: String? = null
+    var date: String? = null
 
     private val _effect = Channel<UiEvent>()
     val effect = _effect.receiveAsFlow()
 
     init {
         launch {
-            observeUser().collect { merchantRif = it?.merchantRif }
+            observeUser().collect {
+                merchantRif = it?.merchantRif
+                merchantName = it?.merchantName
+            }
         }
     }
 
@@ -92,11 +103,12 @@ class InstantDebitViewModel @Inject constructor(
     }
 
     fun getInvoice(): InvoiceModel = InvoiceModel(
-        ref = "ID-${System.currentTimeMillis() % 10000}",
-        date = LocalDateTime.now().toDateTimeFormatted(),
-        time = "",
+        ref = referenceNumber ?: "empty",
+        date = date ?: LocalDateTime.now().toDateTimeFormatted(),
+        time = time ?: LocalDateTime.now().toTimeFormatted(),
         bank = state.bank ?: BankModel(),
         businessBankRif = merchantRif ?: "J-12345678",
+        businessName = merchantName ?: "",
         amount = state.amount ?: "empty",
         phone = state.phone ?: "empty"
     )
@@ -187,6 +199,9 @@ class InstantDebitViewModel @Inject constructor(
                     },
                     onSuccess = { result ->
                         isCharging = false
+                        referenceNumber = result.transaction.referenceNumber
+                        date = result.transaction.created.toDateFormatted()
+                        time = result.transaction.created.toTimeFormatted()
                         log("onSuccess: estado = ${result.estado}")
                         _effect.send(UiEvent.OnSuccess)
                         delay(SUCCESS_VISIBLE_MS)
